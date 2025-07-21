@@ -1,4 +1,4 @@
-package com.halggeol.backend.entity;
+package com.halggeol.backend.domain;
 
 import java.util.Date;
 import lombok.AllArgsConstructor;

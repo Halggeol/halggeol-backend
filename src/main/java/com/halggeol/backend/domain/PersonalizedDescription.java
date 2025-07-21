@@ -1,4 +1,4 @@
-package com.halggeol.backend.entity;
+package com.halggeol.backend.domain;
 
 public class PersonalizedDescription {
 }

@@ -1,4 +1,4 @@
-package com.halggeol.backend.entity;
+package com.halggeol.backend.domain;
 
 import java.util.Date;
 import lombok.AllArgsConstructor;
@@ -12,13 +12,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Savings {
+public class Deposit {
 
     private String id;
 
     private String name;
 
-    private Double rate; // 저축 금리
+    private Double rate; // 기본 금리
 
     private Double primeRate; // 최고 우대금리
 
@@ -36,9 +36,7 @@ public class Savings {
 
     private Long saveTerm; // 저축 기간
 
-    private String rateType; // 저축 금리 유형
-
-    private String saveType; // 적립 유형
+    private Long minimumCost; // 최소 가입금액
 
     private String company; // 운용 회사
 
@@ -48,7 +46,7 @@ public class Savings {
 
     private String regLink; // 가입 링크
 
-    private String caution; // 유의사항
+    private String caution; // 유의 사항
 
     private Long viewCnt; // 조회수
 
@@ -56,5 +54,5 @@ public class Savings {
 
     private Long regretCnt; // 후회수
 
-    private Double algoCode; // 알고리즘 분류값
+    private Double algoCode; //알고리즘 분류값
 }
