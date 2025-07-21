@@ -38,7 +38,7 @@ CREATE TABLE `deposit` (
                            `join_deny`	INT	NULL,
                            `bonus_condition`	TEXT	NULL,
                            `save_term`	INT	NULL,
-                           `minimum_cost`	TEXT	NULL	COMMENT 'ect_note에서 가져옴',
+                           `minimum_cost`	INT	NULL,
                            `company`	VARCHAR	NULL,
                            `score`	INT	NULL,
                            `risk`	INT	NULL,
