@@ -1,12 +1,14 @@
 package com.halggeol.backend.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.ibatis.type.Alias;
 
+@Alias("DepositVO")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +26,7 @@ public class Deposit {
 
     private String joinWay; // 가입방법
 
-    private Date endDate; // 공시 종료일
+    private LocalDateTime endDate; // 공시 종료일
 
     private Long maxLimit; // 최고 한도
 

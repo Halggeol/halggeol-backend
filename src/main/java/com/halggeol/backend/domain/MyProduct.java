@@ -8,19 +8,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
 
-@Alias("FundTrackVO")
+@Alias("MyProductVO")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FundTrack {
-    private Integer id;
-
+public class MyProduct {
+    private int id;
+    private int mydataId;
+    private Integer amount;
+    private LocalDateTime regDate;
+    private LocalDateTime endDate;
     private String productId;
-
-    private LocalDateTime trackingDate; // 추종일자
-
-    private Integer price;
-
 }

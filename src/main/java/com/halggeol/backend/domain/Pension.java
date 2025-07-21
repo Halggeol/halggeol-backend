@@ -1,8 +1,10 @@
 package com.halggeol.backend.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.*;
+import org.apache.ibatis.type.Alias;
 
+@Alias("PensionVO")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +26,7 @@ public class Pension {
 
     private Double lastYearProfitRate; // 작년 수익률
 
-    private Date endDate; // 공시 종료일
+    private LocalDateTime endDate; // 공시 종료일
 
     private String company; // 운용 회사
 

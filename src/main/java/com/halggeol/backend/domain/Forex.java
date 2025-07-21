@@ -1,12 +1,14 @@
 package com.halggeol.backend.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.ibatis.type.Alias;
 
+@Alias("ForexVO")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,7 +29,7 @@ public class Forex {
 
     private Long regFund; // 가입 가능 금액
 
-    private Date regLimitDate; // 가입 가능 기간
+    private LocalDateTime regLimitDate; // 가입 가능 기간
 
     private String autoRenew; // 자동 연장
 

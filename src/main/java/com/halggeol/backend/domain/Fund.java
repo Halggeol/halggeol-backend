@@ -1,7 +1,9 @@
 package com.halggeol.backend.domain;
 
 import lombok.*;
+import org.apache.ibatis.type.Alias;
 
+@Alias("FundVO")
 @Getter
 @Setter
 @NoArgsConstructor
