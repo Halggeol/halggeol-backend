@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ProductDetailService {
 
-    DepositDetailResponseDTO getDepositDetailById(String depositId, String userId);
-    SavingsDetailResponseDTO getSavingsDetailById(String savingsId, String userId);
+
+    @Transactional(readOnly = true)
+    Object getProductDetailById(String productId, String userId);
 }

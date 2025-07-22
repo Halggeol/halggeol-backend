@@ -134,4 +134,189 @@
     WHERE
       s.id = #{savingsId} AND s.id LIKE 'S%'
   </select>
+
+  <!-- 펀드 -->
+  <resultMap id="fundDetailResponseDTOMap" type="com.halggeol.backend.products.dto.FundDetailResponseDTO">
+    <id property="id" column="f_id"/>
+    <result property="name" column="f_name"/>
+    <result property="rate" column="f_rate"/>
+    <result property="fundPrice" column="f_fund_price"/>
+    <result property="fundPriceMovement" column="f_fund_price_movement"/>
+    <result property="TER" column="f_ter"/> <result property="category" column="f_category"/>
+    <result property="theme" column="f_theme"/>
+    <result property="investmentWarningGrade" column="f_investment_warning_grade"/>
+    <result property="upfrontFee" column="f_upfront_fee"/>
+    <result property="managementFee" column="f_management_fee"/>
+    <result property="minimumCost" column="f_minimum_cost"/>
+    <result property="target" column="f_target"/>
+    <result property="investmentType" column="f_investment_type"/>
+    <result property="company" column="f_company"/>
+    <result property="score" column="f_score"/>
+    <result property="risk" column="f_risk"/>
+    <result property="regLink" column="f_reg_link"/> <result property="caution" column="f_caution"/>
+    <result property="viewCnt" column="f_view_cnt"/>
+    <result property="scrapCnt" column="f_scrap_cnt"/>
+    <result property="regretCnt" column="f_regret_cnt"/>
+
+    <result property="matchScore" column="pd_match_score"/>
+    <result property="advantage" column="pd_advantage"/>
+    <result property="disadvantage" column="pd_disadvantage"/>
+  </resultMap>
+
+  <select id="selectFundDetailById" resultMap="fundDetailResponseDTOMap">
+    SELECT
+      f.id AS f_id,
+      f.name AS f_name,
+      f.rate AS f_rate,
+      f.fund_price AS f_fund_price,
+      f.fund_price_movement AS f_fund_price_movement,
+      f.ter AS f_ter,
+      f.category AS f_category,
+      f.theme AS f_theme,
+      f.investment_warning_grade AS f_investment_warning_grade,
+      f.upfront_fee AS f_upfront_fee,
+      f.management_fee AS f_management_fee,
+      f.minimum_cost AS f_minimum_cost,
+      f.target AS f_target,
+      f.investment_type AS f_investment_type,
+      f.company AS f_company,
+      f.score AS f_score,
+      f.risk AS f_risk,
+      f.reg_link AS f_reg_link,
+      f.caution AS f_caution,
+      f.view_cnt AS f_view_cnt,
+      f.scrap_cnt AS f_scrap_cnt,
+      f.regret_cnt AS f_regret_cnt,
+
+      pd.match_score AS pd_match_score,
+      pd.advantage AS pd_advantage,
+      pd.disadvantage AS pd_disadvantage
+    FROM
+      fund f
+        JOIN
+      users u ON u.id = #{userId}
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND f.id = pd.product_id
+    WHERE
+      f.id = #{fundId} AND f.id LIKE 'F%'
+  </select>
+
+  <!-- 외화 -->
+  <resultMap id="forexDetailResponseDTOMap" type="com.halggeol.backend.products.dto.ForexDetailResponseDTO">
+    <id property="id" column="f_id"/>
+    <result property="name" column="f_name"/>
+    <result property="rate" column="f_rate"/>
+    <result property="description" column="f_description"/>
+    <result property="currency" column="f_currency"/>
+    <result property="regFund" column="f_reg_fund"/>
+    <result property="regLimitDate" column="f_reg_limit_date"/>
+    <result property="autoRenew" column="f_auto_renew"/>
+    <result property="extraDeposit" column="f_extra_deposit"/>
+    <result property="rateGiveWay" column="f_rate_give_way"/>
+    <result property="taxRefund" column="f_tax_refund"/>
+    <result property="protect" column="f_protect"/>
+    <result property="company" column="f_company"/>
+    <result property="score" column="f_score"/>
+    <result property="risk" column="f_risk"/>
+    <result property="regLink" column="f_reg_link"/>
+    <result property="caution" column="f_caution"/>
+    <result property="viewCnt" column="f_view_cnt"/>
+    <result property="scrapCnt" column="f_scrap_cnt"/>
+    <result property="regretCnt" column="f_regret_cnt"/>
+    <result property="algoCode" column="f_algo_code"/>
+
+    <result property="matchScore" column="pd_match_score"/>
+    <result property="advantage" column="pd_advantage"/>
+    <result property="disadvantage" column="pd_disadvantage"/>
+  </resultMap>
+  <select id="selectForexDetailById" resultMap="forexDetailResponseDTOMap">
+    SELECT
+      fx.id AS f_id,
+      fx.name AS f_name,
+      fx.rate AS f_rate,
+      fx.description AS f_description,
+      fx.currency AS f_currency,
+      fx.reg_fund AS f_reg_fund,
+      fx.reg_limit_date AS f_reg_limit_date,
+      fx.auto_renew AS f_auto_renew,
+      fx.extra_deposit AS f_extra_deposit,
+      fx.rate_give_way AS f_rate_give_way,
+      fx.tax_refund AS f_tax_refund,
+      fx.protect AS f_protect,
+      fx.company AS f_company,
+      fx.score AS f_score,
+      fx.risk AS f_risk,
+      fx.reg_link AS f_reg_link,
+      fx.caution AS f_caution,
+      fx.view_cnt AS f_view_cnt,
+      fx.scrap_cnt AS f_scrap_cnt,
+      fx.regret_cnt AS f_regret_cnt,
+
+      pd.match_score AS pd_match_score,
+      pd.advantage AS pd_advantage,
+      pd.disadvantage AS pd_disadvantage
+    FROM
+      forex fx
+        JOIN
+      users u ON u.id = #{userId}
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND fx.id = pd.product_id
+    WHERE
+      fx.id = #{forexId} AND fx.id LIKE 'X%'
+  </select>
+
+  <!-- 연금 -->
+  <resultMap id="pensionDetailResponseDTOMap" type="com.halggeol.backend.products.dto.PensionDetailResponseDTO">
+    <id property="id" column="p_id"/>
+    <result property="name" column="p_name"/>
+    <result property="rate" column="p_rate"/>
+    <result property="pensionKind" column="p_pension_kind"/>
+    <result property="pensionType" column="p_pension_type"/>
+    <result property="minGuaranteeRate" column="p_min_guarantee_rate"/>
+    <result property="lastYearProfitRate" column="p_last_year_profit_rate"/>
+    <result property="endDate" column="p_end_date"/> <result property="company" column="p_company"/>
+    <result property="score" column="p_score"/>
+    <result property="risk" column="p_risk"/>
+    <result property="regLink" column="p_reg_link"/>
+    <result property="caution" column="p_caution"/>
+    <result property="viewCnt" column="p_view_cnt"/>
+    <result property="scrapCnt" column="p_scrap_cnt"/>
+    <result property="regretCnt" column="p_regret_cnt"/>
+    <result property="matchScore" column="pd_match_score"/>
+    <result property="advantage" column="pd_advantage"/>
+    <result property="disadvantage" column="pd_disadvantage"/>
+  </resultMap>
+
+  <select id="selectPensionDetailById" resultMap="pensionDetailResponseDTOMap">
+    SELECT
+      pn.id AS p_id,
+      pn.name AS p_name,
+      pn.rate AS p_rate,
+      pn.pension_kind AS p_pension_kind,
+      pn.pension_type AS p_pension_type,
+      pn.min_guarantee_rate AS p_min_guarantee_rate,
+      pn.last_year_profit_rate AS p_last_year_profit_rate,
+      pn.end_date AS p_end_date,
+      pn.company AS p_company,
+      pn.score AS p_score,
+      pn.risk AS p_risk,
+      pn.reg_link AS p_reg_link,
+      pn.caution AS p_caution,
+      pn.view_cnt AS p_view_cnt,
+      pn.scrap_cnt AS p_scrap_cnt,
+      pn.regret_cnt AS p_regret_cnt,
+
+      pd.match_score AS pd_match_score,
+      pd.advantage AS pd_advantage,
+      pd.disadvantage AS pd_disadvantage
+    FROM
+      pension pn
+        JOIN
+      users u ON u.id = #{userId}
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND pn.id = pd.product_id
+    WHERE
+      pn.id = #{pensionId}
+  </select>
+
 </mapper>
