@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.halggeol.backend.scrap.mapper.ScrapMapper">
+
+  <resultMap id="userScrapResultMap" type="com.halggeol.backend.scrap.domain.Scrap">
+    <id property="userId" column="user_id"/>
+    <id property="productId" column="product_id"/>
+  </resultMap>
+
+  <insert id="insertUserScrap" parameterType="com.halggeol.backend.scrap.domain.Scrap">
+    INSERT INTO scrap (
+      user_id,
+      product_id
+    ) VALUES (
+               #{userId},
+               #{productId}
+             )
+  </insert>
+
+  <delete id="deleteUserScrap" parameterType="map">
+    DELETE FROM scrap
+    WHERE user_id = #{userId} AND product_id = #{productId}
+  </delete>
+
+</mapper>

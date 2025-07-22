@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @PropertySource({"classpath:/application.properties"})
 @ComponentScan(basePackages = {"com.halggeol.backend"})
-@MapperScan(basePackages  = {"com.halggeol.backend.mapper", "com.halggeol.backend.products.mapper"})
+@MapperScan(basePackages  = {"com.halggeol.backend.mapper", "com.halggeol.backend.products.mapper", "com.halggeol.backend.scrap.mapper"})
 @Slf4j
 @EnableTransactionManagement
 public class AppConfig {

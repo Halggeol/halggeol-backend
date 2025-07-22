@@ -1,4 +1,4 @@
-package com.halggeol.backend.domain;
+package com.halggeol.backend.scrap.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
