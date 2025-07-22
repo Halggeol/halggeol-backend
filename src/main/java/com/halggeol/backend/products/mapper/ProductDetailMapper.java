@@ -1,6 +1,5 @@
 package com.halggeol.backend.products.mapper;
 
-import com.halggeol.backend.domain.Deposit;
 import com.halggeol.backend.products.dto.DepositDetailResponseDTO;
 import com.halggeol.backend.products.dto.ForexDetailResponseDTO;
 import com.halggeol.backend.products.dto.FundDetailResponseDTO;

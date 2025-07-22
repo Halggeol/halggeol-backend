@@ -39,7 +39,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             return productDetailMapper.selectPensionDetailById(productId, userId);
         } else {
             // 알 수 없는 접두사일 경우 예외 처리
-            throw new IllegalArgumentException("Invalid product ID prefix: " + prefix + ". Expected 'D' or 'S'.");
+            throw new IllegalArgumentException("Invalid product ID prefix: " + prefix + ". Expected one of 'D', 'S', 'F', 'X', 'A', or 'C'.");
         }
     }
 

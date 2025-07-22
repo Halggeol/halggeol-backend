@@ -7,7 +7,8 @@
 
 <!--  예금  -->
   <resultMap id="depositDetailResponseDTOMap" type="com.halggeol.backend.products.dto.DepositDetailResponseDTO">
-    <id property="id" column="d_id"/> <result property="name" column="d_name"/>
+    <id property="id" column="d_id"/>
+    <result property="name" column="d_name"/>
     <result property="rate" column="d_rate"/>
     <result property="primeRate" column="d_prime_rate"/>
     <result property="joinWay" column="d_join_way"/>
@@ -142,7 +143,8 @@
     <result property="rate" column="f_rate"/>
     <result property="fundPrice" column="f_fund_price"/>
     <result property="fundPriceMovement" column="f_fund_price_movement"/>
-    <result property="TER" column="f_ter"/> <result property="category" column="f_category"/>
+    <result property="TER" column="f_ter"/>
+    <result property="category" column="f_category"/>
     <result property="theme" column="f_theme"/>
     <result property="investmentWarningGrade" column="f_investment_warning_grade"/>
     <result property="upfrontFee" column="f_upfront_fee"/>
@@ -153,7 +155,8 @@
     <result property="company" column="f_company"/>
     <result property="score" column="f_score"/>
     <result property="risk" column="f_risk"/>
-    <result property="regLink" column="f_reg_link"/> <result property="caution" column="f_caution"/>
+    <result property="regLink" column="f_reg_link"/>
+    <result property="caution" column="f_caution"/>
     <result property="viewCnt" column="f_view_cnt"/>
     <result property="scrapCnt" column="f_scrap_cnt"/>
     <result property="regretCnt" column="f_regret_cnt"/>
@@ -274,7 +277,8 @@
     <result property="pensionType" column="p_pension_type"/>
     <result property="minGuaranteeRate" column="p_min_guarantee_rate"/>
     <result property="lastYearProfitRate" column="p_last_year_profit_rate"/>
-    <result property="endDate" column="p_end_date"/> <result property="company" column="p_company"/>
+    <result property="endDate" column="p_end_date"/>
+    <result property="company" column="p_company"/>
     <result property="score" column="p_score"/>
     <result property="risk" column="p_risk"/>
     <result property="regLink" column="p_reg_link"/>

@@ -1,8 +1,5 @@
 package com.halggeol.backend.products.controller;
 
-import com.halggeol.backend.domain.Deposit;
-import com.halggeol.backend.products.dto.DepositDetailResponseDTO;
-import com.halggeol.backend.products.dto.SavingsDetailResponseDTO;
 import com.halggeol.backend.products.service.ProductDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
