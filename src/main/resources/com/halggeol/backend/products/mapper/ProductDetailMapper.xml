@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace는 Mapper 인터페이스의 전체 경로와 일치해야 함 -->
+<mapper namespace="com.halggeol.backend.products.mapper.ProductDetailMapper">
+
+
+    <resultMap id="depositResultMap" type="DepositVO">
+      <id property="id" column="deposit_id"/>
+      <result property="name" column="name"/>
+      <result property="rate" column="rate"/>
+      <result property="primeRate" column="prime_rate"/>
+      <result property="joinWay" column="join_way"/>
+      <result property="endDate" column="end_date"/>
+      <result property="maxLimit" column="max_limit"/>
+      <result property="joinMember" column="join_member"/>
+      <result property="joinDeny" column="join_deny"/>
+      <result property="bonusCondition" column="bonus_condition"/>
+      <result property="saveTerm" column="save_term"/>
+      <result property="minimumCost" column="minimum_cost"/>
+      <result property="company" column="company"/>
+      <result property="score" column="score"/>
+      <result property="risk" column="risk"/>
+      <result property="regLink" column="reg_link"/>
+      <result property="caution" column="caution"/>
+      <result property="viewCnt" column="view_cnt"/>
+      <result property="scrapCnt" column="scrap_cnt"/>
+      <result property="regretCnt" column="regret_cnt"/>
+      <result property="algoCode" column="algo_code"/>
+    </resultMap>
+
+    <select id="selectDepositDetailById" resultMap="depositResultMap">
+      SELECT
+      id, name, rate, prime_rate, join_way, end_date, max_limit,
+      join_member, join_deny, bonus_condition, save_term, minimum_cost,
+      company, score, risk, reg_link, caution, view_cnt, scrap_cnt, regret_cnt, algo_code
+      FROM
+      deposit
+      WHERE
+      id = #{id} AND id LIKE 'D%'
+    </select>
+</mapper>
