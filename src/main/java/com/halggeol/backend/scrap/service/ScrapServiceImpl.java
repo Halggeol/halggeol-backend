@@ -14,6 +14,7 @@ public class ScrapServiceImpl implements ScrapService {
 
     @Override
     @Transactional
+
     public int addScrapProduct(int userId, ScrapRequestDTO requestDto) {
         String productId = requestDto.getProductId();
 
@@ -35,7 +36,6 @@ public class ScrapServiceImpl implements ScrapService {
     public int removeScrapProduct(int userId, ScrapRequestDTO requestDto) {
         String productId = requestDto.getProductId();
         scrapMapper.deleteUserScrap(userId, productId);
-
         return 0;
     }
 }

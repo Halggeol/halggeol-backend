@@ -21,4 +21,13 @@ public interface ProductDetailMapper<T> {
     ForexDetailResponseDTO selectForexDetailById(@Param("forexId") String forexId, @Param("userId") String userId);
 
     PensionDetailResponseDTO selectPensionDetailById(@Param("pensionId") String pensionId, @Param("userId") String userId);
+
+    
+    // 조회수 증가
+    void incrementDepositViewCount(@Param("productId") String productId);
+    void incrementSavingsViewCount(@Param("productId") String productId);
+    void incrementFundViewCount(@Param("productId") String productId);
+    void incrementForexViewCount(@Param("productId") String productId);
+    void incrementPensionViewCount(@Param("productId") String productId);
+
 }

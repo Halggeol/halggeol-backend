@@ -323,4 +323,19 @@
       pn.id = #{pensionId}
   </select>
 
+  <update id="incrementDepositViewCount">
+    UPDATE deposit SET view_cnt = view_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementSavingsViewCount">
+    UPDATE savings SET view_cnt = view_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementFundViewCount">
+    UPDATE fund SET view_cnt = view_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementForexViewCount">
+    UPDATE forex SET view_cnt = view_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementPensionViewCount">
+    UPDATE pension SET view_cnt = view_cnt + 1 WHERE id = #{productId}
+  </update>
 </mapper>
