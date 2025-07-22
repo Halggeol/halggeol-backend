@@ -59,4 +59,14 @@ public class Fund {
     private Integer regretCnt; // 후회수
 
     private Double algoCode; // 알고리즘 분류값
+
+    private Double yieldScore; // 수익성 점수
+
+    private Double riskScore; // 위험성 점수
+
+    private Double costScore; // 비용 점수
+
+    private Double liquidityScore; // 유동성 점수
+
+    private Double complexityScore; // 복잡성 점수
 }
