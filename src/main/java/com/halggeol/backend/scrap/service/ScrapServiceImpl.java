@@ -4,6 +4,7 @@ import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ public class ScrapServiceImpl implements ScrapService {
 
     @Override
     @Transactional
-
     public int addScrapProduct(int userId, ScrapRequestDTO requestDto) {
+
         String productId = requestDto.getProductId();
+
+        incrementProductScrapCountAsync(productId);
 
         Scrap scrap = Scrap.builder()
             .userId(userId)
@@ -26,8 +29,6 @@ public class ScrapServiceImpl implements ScrapService {
 
         scrapMapper.insertUserScrap(scrap);
 
-        // Todo: 상품의 관심수 증가 로직 필요
-
         return 0;
     }
 
@@ -35,7 +36,49 @@ public class ScrapServiceImpl implements ScrapService {
     @Transactional
     public int removeScrapProduct(int userId, ScrapRequestDTO requestDto) {
         String productId = requestDto.getProductId();
+
+        decrementProductScrapCountAsync(productId);
         scrapMapper.deleteUserScrap(userId, productId);
         return 0;
+    }
+
+    @Override
+    @Async
+    @Transactional
+    public void incrementProductScrapCountAsync(String productId) {
+
+        char prefix = productId.charAt(0);
+
+        if (prefix == 'D') {
+            scrapMapper.incrementDepositScrapCount(productId);
+        } else if (prefix == 'S') {
+            scrapMapper.incrementSavingsScrapCount(productId);
+        } else if (prefix == 'F') {
+            scrapMapper.incrementFundScrapCount(productId);
+        } else if (prefix == 'X') {
+            scrapMapper.incrementForexScrapCount(productId);
+        } else if (prefix == 'A' || prefix == 'C') {
+            scrapMapper.incrementPensionScrapCount(productId);
+        }
+    }
+
+    @Override
+    @Async
+    @Transactional
+    public void decrementProductScrapCountAsync(String productId) {
+
+        char prefix = productId.charAt(0);
+
+        if (prefix == 'D') {
+            scrapMapper.decrementDepositScrapCount(productId);
+        } else if (prefix == 'S') {
+            scrapMapper.decrementSavingsScrapCount(productId);
+        } else if (prefix == 'F') {
+            scrapMapper.decrementFundScrapCount(productId);
+        } else if (prefix == 'X') {
+            scrapMapper.decrementForexScrapCount(productId);
+        } else if (prefix == 'A' || prefix == 'C') {
+            scrapMapper.decrementPensionScrapCount(productId);
+        }
     }
 }

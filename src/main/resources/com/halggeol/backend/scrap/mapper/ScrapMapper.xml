@@ -24,4 +24,35 @@
     WHERE user_id = #{userId} AND product_id = #{productId}
   </delete>
 
+  <update id="incrementDepositScrapCount">
+    UPDATE deposit SET scrap_cnt = scrap_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementSavingsScrapCount">
+    UPDATE savings SET scrap_cnt = scrap_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementFundScrapCount">
+    UPDATE fund SET scrap_cnt = scrap_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementForexScrapCount">
+    UPDATE forex SET scrap_cnt = scrap_cnt + 1 WHERE id = #{productId}
+  </update>
+  <update id="incrementPensionScrapCount">
+    UPDATE pension SET scrap_cnt = scrap_cnt + 1 WHERE id = #{productId}
+  </update>
+
+  <update id="decrementDepositScrapCount">
+    UPDATE deposit SET scrap_cnt = scrap_cnt - 1 WHERE id = #{productId}
+  </update>
+  <update id="decrementSavingsScrapCount">
+    UPDATE savings SET scrap_cnt = scrap_cnt - 1 WHERE id = #{productId}
+  </update>
+  <update id="decrementFundScrapCount">
+    UPDATE fund SET scrap_cnt = scrap_cnt - 1 WHERE id = #{productId}
+  </update>
+  <update id="decrementForexScrapCount">
+    UPDATE forex SET scrap_cnt = scrap_cnt - 1 WHERE id = #{productId}
+  </update>
+  <update id="decrementPensionScrapCount">
+    UPDATE pension SET scrap_cnt = scrap_cnt - 1 WHERE id = #{productId}
+  </update>
 </mapper>
