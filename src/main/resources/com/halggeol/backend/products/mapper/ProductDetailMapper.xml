@@ -6,39 +6,67 @@
 <!-- namespace는 Mapper 인터페이스의 전체 경로와 일치해야 함 -->
 <mapper namespace="com.halggeol.backend.products.mapper.ProductDetailMapper">
 
+  <resultMap id="depositDetailResponseDTOMap" type="com.halggeol.backend.products.dto.DepositDetailResponseDTO">
+    <id property="id" column="d_id"/> <result property="name" column="d_name"/>
+    <result property="rate" column="d_rate"/>
+    <result property="primeRate" column="d_prime_rate"/>
+    <result property="joinWay" column="d_join_way"/>
+    <result property="endDate" column="d_end_date"/>
+    <result property="maxLimit" column="d_max_limit"/>
+    <result property="joinMember" column="d_join_member"/>
+    <result property="joinDeny" column="d_join_deny"/>
+    <result property="bonusCondition" column="d_bonus_condition"/>
+    <result property="saveTerm" column="d_save_term"/>
+    <result property="minimumCost" column="d_minimum_cost"/>
+    <result property="company" column="d_company"/>
+    <result property="score" column="d_score"/>
+    <result property="risk" column="d_risk"/>
+    <result property="regLink" column="d_reg_link"/>
+    <result property="caution" column="d_caution"/>
+    <result property="viewCnt" column="d_view_cnt"/>
+    <result property="scrapCnt" column="d_scrap_cnt"/>
+    <result property="regretCnt" column="d_regret_cnt"/>
+    <result property="algoCode" column="d_algo_code"/>
 
-    <resultMap id="depositResultMap" type="DepositVO">
-      <id property="id" column="deposit_id"/>
-      <result property="name" column="name"/>
-      <result property="rate" column="rate"/>
-      <result property="primeRate" column="prime_rate"/>
-      <result property="joinWay" column="join_way"/>
-      <result property="endDate" column="end_date"/>
-      <result property="maxLimit" column="max_limit"/>
-      <result property="joinMember" column="join_member"/>
-      <result property="joinDeny" column="join_deny"/>
-      <result property="bonusCondition" column="bonus_condition"/>
-      <result property="saveTerm" column="save_term"/>
-      <result property="minimumCost" column="minimum_cost"/>
-      <result property="company" column="company"/>
-      <result property="score" column="score"/>
-      <result property="risk" column="risk"/>
-      <result property="regLink" column="reg_link"/>
-      <result property="caution" column="caution"/>
-      <result property="viewCnt" column="view_cnt"/>
-      <result property="scrapCnt" column="scrap_cnt"/>
-      <result property="regretCnt" column="regret_cnt"/>
-      <result property="algoCode" column="algo_code"/>
-    </resultMap>
+    <result property="matchScore" column="pd_match_score"/>
+    <result property="advantage" column="pd_advantage"/>
+    <result property="disadvantage" column="pd_disadvantage"/>
+  </resultMap>
 
-    <select id="selectDepositDetailById" resultMap="depositResultMap">
-      SELECT
-      id, name, rate, prime_rate, join_way, end_date, max_limit,
-      join_member, join_deny, bonus_condition, save_term, minimum_cost,
-      company, score, risk, reg_link, caution, view_cnt, scrap_cnt, regret_cnt, algo_code
-      FROM
-      deposit
-      WHERE
-      id = #{id} AND id LIKE 'D%'
-    </select>
+  <select id="selectDepositDetailById" resultMap="depositDetailResponseDTOMap">
+    SELECT
+      d.id AS d_id,
+      d.name AS d_name,
+      d.rate AS d_rate,
+      d.prime_rate AS d_prime_rate,
+      d.join_way AS d_join_way,
+      d.end_date AS d_end_date,
+      d.max_limit AS d_max_limit,
+      d.join_member AS d_join_member,
+      d.join_deny AS d_join_deny,
+      d.bonus_condition AS d_bonus_condition,
+      d.save_term AS d_save_term,
+      d.minimum_cost AS d_minimum_cost,
+      d.company AS d_company,
+      d.score AS d_score,
+      d.risk AS d_risk,
+      d.reg_link AS d_reg_link,
+      d.caution AS d_caution,
+      d.view_cnt AS d_view_cnt,
+      d.scrap_cnt AS d_scrap_cnt,
+      d.regret_cnt AS d_regret_cnt,
+      d.algo_code AS d_algo_code,
+
+      pd.match_score AS pd_match_score,
+      pd.advantage AS pd_advantage,
+      pd.disadvantage AS pd_disadvantage
+    FROM
+      deposit d
+        JOIN
+      users u ON u.id = #{userId}
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND d.id = pd.product_id
+    WHERE
+      d.id = #{depositId} AND d.id LIKE 'D%'
+  </select>
 </mapper>

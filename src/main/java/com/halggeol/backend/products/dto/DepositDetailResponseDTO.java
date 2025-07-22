@@ -1,16 +1,19 @@
 package com.halggeol.backend.products.dto;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import lombok.Data;
 
 @Data
 public class DepositDetailResponseDTO {
+
+    private String id;
     private String name;
     private Double rate;
     private Double primeRate; // 최고 우대 금리
     private String joinWay; // 가입방법
 
-    private LocalDateTime endDate; // 공시 종료일
+    private Date endDate; // 공시 종료일
 
     private Long maxLimit; // 최고 한도
 
