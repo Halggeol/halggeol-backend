@@ -3,9 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- namespace는 Mapper 인터페이스의 전체 경로와 일치해야 함 -->
 <mapper namespace="com.halggeol.backend.products.mapper.ProductDetailMapper">
 
+<!--  예금  -->
   <resultMap id="depositDetailResponseDTOMap" type="com.halggeol.backend.products.dto.DepositDetailResponseDTO">
     <id property="id" column="d_id"/> <result property="name" column="d_name"/>
     <result property="rate" column="d_rate"/>
@@ -68,5 +68,70 @@
       personalized_description pd ON u.algo_code = pd.algo_code AND d.id = pd.product_id
     WHERE
       d.id = #{depositId} AND d.id LIKE 'D%'
+  </select>
+
+  <!-- 적금 -->
+  <resultMap id="savingsDetailResponseDTOMap" type="com.halggeol.backend.products.dto.SavingsDetailResponseDTO">
+    <id property="id" column="s_id"/>
+    <result property="name" column="s_name"/>
+    <result property="rate" column="s_rate"/>
+    <result property="primeRate" column="s_prime_rate"/>
+    <result property="joinWay" column="s_join_way"/>
+    <result property="endDate" column="s_end_date"/>
+    <result property="maxLimit" column="s_max_limit"/>
+    <result property="joinMember" column="s_join_member"/>
+    <result property="joinDeny" column="s_join_deny"/>
+    <result property="bonusCondition" column="s_bonus_condition"/>
+    <result property="saveTerm" column="s_save_term"/>
+    <result property="rateType" column="s_rate_type"/>
+    <result property="saveType" column="s_save_type"/>
+    <result property="company" column="s_company"/>
+    <result property="score" column="s_score"/>
+    <result property="risk" column="s_risk"/>
+    <result property="regLink" column="s_reg_link"/>
+    <result property="caution" column="s_caution"/>
+    <result property="viewCnt" column="s_view_cnt"/>
+    <result property="scrapCnt" column="s_scrap_cnt"/>
+    <result property="regretCnt" column="s_regret_cnt"/>
+    <result property="matchScore" column="pd_match_score"/>
+    <result property="advantage" column="pd_advantage"/>
+    <result property="disadvantage" column="pd_disadvantage"/>
+  </resultMap>
+  <select id="selectSavingsDetailById" resultMap="savingsDetailResponseDTOMap">
+    SELECT
+      s.id AS s_id,
+      s.name AS s_name,
+      s.rate AS s_rate,
+      s.prime_rate AS s_prime_rate,
+      s.join_way AS s_join_way,
+      s.end_date AS s_end_date,
+      s.max_limit AS s_max_limit,
+      s.join_member AS s_join_member,
+      s.join_deny AS s_join_deny,
+      s.bonus_condition AS s_bonus_condition,
+      s.save_term AS s_save_term,
+      s.rate_type AS s_rate_type,
+      s.save_type AS s_save_type,
+      s.company AS s_company,
+      s.score AS s_score,
+      s.risk AS s_risk,
+      s.reg_link AS s_reg_link,
+      s.caution AS s_caution,
+      s.view_cnt AS s_view_cnt,
+      s.scrap_cnt AS s_scrap_cnt,
+      s.regret_cnt AS s_regret_cnt,
+
+      pd.match_score AS pd_match_score,
+      pd.advantage AS pd_advantage,
+      pd.disadvantage AS pd_disadvantage
+    FROM
+      savings s
+        JOIN
+      users u ON u.id = #{userId}
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND s.id = pd.product_id
+
+    WHERE
+      s.id = #{savingsId} AND s.id LIKE 'S%'
   </select>
 </mapper>
