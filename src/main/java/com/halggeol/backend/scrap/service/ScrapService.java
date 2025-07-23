@@ -8,11 +8,6 @@ public interface ScrapService {
     int addScrapProduct(int userId, ScrapRequestDTO requestDto);
     int removeScrapProduct(int userId, ScrapRequestDTO requestDto);
 
-    @Async
-    @Transactional
     void incrementProductScrapCountAsync(String productId);
-
-    @Async
-    @Transactional
     void decrementProductScrapCountAsync(String productId);
 }

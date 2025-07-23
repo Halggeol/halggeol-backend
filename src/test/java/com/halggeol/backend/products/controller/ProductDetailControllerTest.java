@@ -39,8 +39,8 @@ class ProductDetailControllerTest {
         // Given
         String productId = "D123";
         DepositDetailResponseDTO mockResponse = new DepositDetailResponseDTO(); // 실제 DTO 객체로 대체
-        mockResponse.setProductId(productId);
-        mockResponse.setProductName("Test Deposit Product");
+        mockResponse.setId(productId);
+        mockResponse.setName("Test Deposit Product");
 
         // Service가 특정 productId와 userId로 호출될 때 mockResponse를 반환하도록 설정
         when(productDetailService.getProductDetailById(productId, testUserId)).thenReturn(mockResponse);

@@ -1,8 +1,11 @@
 package com.halggeol.backend.scrap.service;
 
+import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByConsumer;
+
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ScrapServiceImpl implements ScrapService {
+
     private final ScrapMapper scrapMapper;
 
     @Override
@@ -25,7 +29,6 @@ public class ScrapServiceImpl implements ScrapService {
             .userId(userId)
             .productId(productId)
             .build();
-
 
         scrapMapper.insertUserScrap(scrap);
 
@@ -47,38 +50,27 @@ public class ScrapServiceImpl implements ScrapService {
     @Transactional
     public void incrementProductScrapCountAsync(String productId) {
 
-        char prefix = productId.charAt(0);
-
-        if (prefix == 'D') {
-            scrapMapper.incrementDepositScrapCount(productId);
-        } else if (prefix == 'S') {
-            scrapMapper.incrementSavingsScrapCount(productId);
-        } else if (prefix == 'F') {
-            scrapMapper.incrementFundScrapCount(productId);
-        } else if (prefix == 'X') {
-            scrapMapper.incrementForexScrapCount(productId);
-        } else if (prefix == 'A' || prefix == 'C') {
-            scrapMapper.incrementPensionScrapCount(productId);
-        }
+        handleProductByConsumer(
+            productId,
+            scrapMapper::incrementDepositScrapCount,
+            scrapMapper::incrementSavingsScrapCount,
+            scrapMapper::incrementFundScrapCount,
+            scrapMapper::incrementForexScrapCount,
+            scrapMapper::incrementPensionScrapCount);
     }
 
     @Override
     @Async
     @Transactional
     public void decrementProductScrapCountAsync(String productId) {
-
-        char prefix = productId.charAt(0);
-
-        if (prefix == 'D') {
-            scrapMapper.decrementDepositScrapCount(productId);
-        } else if (prefix == 'S') {
-            scrapMapper.decrementSavingsScrapCount(productId);
-        } else if (prefix == 'F') {
-            scrapMapper.decrementFundScrapCount(productId);
-        } else if (prefix == 'X') {
-            scrapMapper.decrementForexScrapCount(productId);
-        } else if (prefix == 'A' || prefix == 'C') {
-            scrapMapper.decrementPensionScrapCount(productId);
-        }
+        handleProductByConsumer(
+            productId,
+            scrapMapper::decrementDepositScrapCount,
+            scrapMapper::decrementSavingsScrapCount,
+            scrapMapper::decrementFundScrapCount,
+            scrapMapper::decrementForexScrapCount,
+            scrapMapper::decrementPensionScrapCount);
     }
+
+
 }

@@ -4,11 +4,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ProductDetailService {
-
-
     Object getProductDetailById(String productId, String userId);
-
-    @Async
-    @Transactional
     void incrementProductViewCountAsync(String productId);
 }

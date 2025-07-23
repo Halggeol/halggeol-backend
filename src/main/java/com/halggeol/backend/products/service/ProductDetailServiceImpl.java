@@ -1,6 +1,10 @@
 package com.halggeol.backend.products.service;
 
+import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByBiFunction;
+import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByConsumer;
+
 import com.halggeol.backend.products.mapper.ProductDetailMapper;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,48 +28,26 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 //            throw new IllegalArgumentException("Product ID cannot be null or empty.");
 //        }
 
-        char prefix = productId.charAt(0);
-
-        if (prefix == 'D') {
-            // Deposit 상품인 경우
-
-            return productDetailMapper.selectDepositDetailById(productId, userId);
-        } else if (prefix == 'S') {
-            // Savings 상품인 경우
-            return productDetailMapper.selectSavingsDetailById(productId, userId);
-        } else if (prefix == 'F') {
-            // Fund 상품인 경우
-            return productDetailMapper.selectFundDetailById(productId, userId);
-        } else if (prefix == 'X') {
-            // Forex 상품인 경우
-            return productDetailMapper.selectForexDetailById(productId, userId);
-        } else if (prefix == 'A' || prefix == 'C') {
-            // Pension 상품인 경우
-            return productDetailMapper.selectPensionDetailById(productId, userId);
-        } else {
-            // 알 수 없는 접두사일 경우 예외 처리
-            throw new IllegalArgumentException("Invalid product ID prefix: " + prefix);
-        }
+        return handleProductByBiFunction(
+            productId,
+            userId,
+            productDetailMapper::selectDepositDetailById,
+            productDetailMapper::selectSavingsDetailById,
+            productDetailMapper::selectFundDetailById,
+            productDetailMapper::selectForexDetailById,
+            productDetailMapper::selectPensionDetailById);
     }
-
 
     @Override
     @Async
     @Transactional
     public void incrementProductViewCountAsync(String productId) {
-        char prefix = productId.charAt(0);
-
-        if (prefix == 'D') {
-            productDetailMapper.incrementDepositViewCount(productId);
-        } else if (prefix == 'S') {
-            productDetailMapper.incrementSavingsViewCount(productId);
-        } else if (prefix == 'F') {
-            productDetailMapper.incrementFundViewCount(productId);
-        } else if (prefix == 'X') {
-            productDetailMapper.incrementForexViewCount(productId);
-        } else if (prefix == 'A' || prefix == 'C') {
-            productDetailMapper.incrementPensionViewCount(productId);
-        }
+        handleProductByConsumer(
+            productId,
+            productDetailMapper::incrementDepositViewCount,
+            productDetailMapper::incrementSavingsViewCount,
+            productDetailMapper::incrementFundViewCount,
+            productDetailMapper::incrementForexViewCount,
+            productDetailMapper::incrementPensionViewCount);
     }
-
 }
