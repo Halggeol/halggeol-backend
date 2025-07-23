@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UnifiedProductServiceImpl implements UnifiedProductService {
 
-    private final UnifiedProductMapper  unifiedProductMapper;
+    private final UnifiedProductMapper unifiedProductMapper;
 
     @Override
     public List<UnifiedProductDTO> getAllProducts() {

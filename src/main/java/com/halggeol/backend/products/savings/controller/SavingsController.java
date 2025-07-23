@@ -1,6 +1,5 @@
 package com.halggeol.backend.products.savings.controller;
 
-import com.halggeol.backend.domain.Deposit;
 import com.halggeol.backend.domain.Savings;
 import com.halggeol.backend.products.savings.service.SavingsService;
 import java.util.List;
