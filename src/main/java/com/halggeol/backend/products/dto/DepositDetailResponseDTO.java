@@ -46,4 +46,13 @@ public class DepositDetailResponseDTO {
     private String matchScore;      // ENUM('상','중','하')
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
+
+//    mock 테스트를 위해 setter 코드 일부 작성
+    public void setProductId(String productId) {
+        this.id = productId;
+    }
+
+    public void setProductName(String productName) {
+        this.name = productName;
+    }
 }
