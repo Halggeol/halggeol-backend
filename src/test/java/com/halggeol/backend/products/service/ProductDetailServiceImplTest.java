@@ -135,12 +135,11 @@ class ProductDetailServiceImplTest {
     void testGetProductDetailById_InvalidPrefix() {
         String productId = "Z7007";
 
-        // IllegalArgumentException이 발생하는지 검증
+
         assertThrows(IllegalArgumentException.class, () -> {
             productDetailService.getProductDetailById(productId, testUserId);
         });
 
-        // 예외 발생 시에는 매퍼 메서드가 호출되지 않았음을 검증
         verify(productDetailMapper, never()).selectDepositDetailById(anyString(), anyString());
         verify(productDetailMapper, never()).selectSavingsDetailById(anyString(), anyString());
         verify(productDetailMapper, never()).selectFundDetailById(anyString(), anyString());
@@ -158,7 +157,7 @@ class ProductDetailServiceImplTest {
     void testGetProductDetailById_NullProductId() {
         String productId = null; // null Product ID
 
-        assertThrows(NullPointerException.class, () -> { // NullPointerException 또는 서비스 로직에 따라 IllegalArgumentException
+        assertThrows(IllegalArgumentException.class, () -> {
             productDetailService.getProductDetailById(productId, testUserId);
         });
 
@@ -171,11 +170,10 @@ class ProductDetailServiceImplTest {
     void testGetProductDetailById_EmptyProductId() {
         String productId = ""; // 빈 문자열 Product ID
 
-        assertThrows(StringIndexOutOfBoundsException.class, () -> { // charAt(0) 때문에 StringIndexOutOfBoundsException 발생
+        assertThrows(IllegalArgumentException.class, () -> { // charAt(0) 때문에 StringIndexOutOfBoundsException 발생
             productDetailService.getProductDetailById(productId, testUserId);
         });
 
-        // 예상대로 매퍼 메서드가 호출되지 않았음을 검증
         verifyNoInteractions(productDetailMapper); // Mock 객체에 대한 어떠한 상호작용도 없었음을 검증
     }
 
