@@ -23,7 +23,7 @@ public class UserController {
     private final UserService userService;
     private final JwtManager jwtManager;
 
-    @GetMapping("/request")
+    @PostMapping("/request")
     public ResponseEntity<Void> requestJoin(UserJoinDTO user) {
         return ResponseEntity.status(userService.requestJoin(user)).build();
     }
