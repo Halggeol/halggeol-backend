@@ -1,9 +1,7 @@
 package com.halggeol.backend.user.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.halggeol.backend.global.config.AppConfig;
-import com.halggeol.backend.security.account.domain.User;
+import com.halggeol.backend.security.domain.User;
 import java.time.LocalDateTime;
 import java.time.Month;
 import lombok.extern.log4j.Log4j2;

@@ -5,12 +5,12 @@
 
 <mapper namespace="com.halggeol.backend.user.mapper.UserMapper">
 
-  <select id="findByEmail" resultType="com.halggeol.backend.security.account.domain.User">
+  <select id="findByEmail" resultType="com.halggeol.backend.security.domain.User">
     SELECT * FROM users WHERE email = #{email}
   </select>
 
   <insert id="insert">
-    INSERT INTO users (email, name, password, phone, birth, reg_date)
-    VALUES(#{email}, #{name}, #{password}, #{phone}, #{birth}, now())
+    INSERT INTO users (email, name, password, phone, birth, reg_date, klg_renew_date, risk_renew_date, docu_renew_date)
+    VALUES(#{email}, #{name}, #{password}, #{phone}, #{birth}, now(), now(), now(), now())
   </insert>
 </mapper>

@@ -1,12 +1,11 @@
 package com.halggeol.backend.user.dto;
 
-import com.halggeol.backend.security.account.domain.User;
+import com.halggeol.backend.security.domain.User;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
