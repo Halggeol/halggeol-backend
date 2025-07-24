@@ -5,9 +5,12 @@ import com.halggeol.backend.security.filter.JwtAuthFilter;
 import com.halggeol.backend.security.filter.JwtLoginAuthFilter;
 import com.halggeol.backend.security.handler.CustomAccessDeniedHandler;
 import com.halggeol.backend.security.handler.CustomAuthEntryPoint;
+import com.halggeol.backend.security.handler.LoginFailureHandler;
+import com.halggeol.backend.security.handler.LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -33,9 +36,12 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthErrorFilter jwtAuthErrorFilter;
-    private final JwtLoginAuthFilter jwtLoginAuthFilter;
     private final CustomAuthEntryPoint customAuthEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    @Autowired
+    // 순환 참조 문제 해결
+    private JwtLoginAuthFilter jwtLoginAuthFilter;
 
     @Bean
     public Argon2PasswordEncoder passwordEncoder() {
