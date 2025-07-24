@@ -5,7 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.halggeol.backend.products.unified.dto.UnifiedProductDTO;
+import com.halggeol.backend.products.unified.dto.UnifiedProducResponsetDTO;
 import com.halggeol.backend.products.unified.mapper.UnifiedProductMapper;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +33,7 @@ class UnifiedProductServiceImplTest {
     @DisplayName("전체 금융 상품 리스트 조회 성공")
     void getAllProducts() {
         // given : Mock 데이터 설정
-        UnifiedProductDTO product1 = UnifiedProductDTO.builder()
+        UnifiedProducResponsetDTO product1 = UnifiedProducResponsetDTO.builder()
             .productId("D1")
             .name("Deposit A")
             .company("A 은행")
@@ -41,7 +41,7 @@ class UnifiedProductServiceImplTest {
             .rate(4.0)
             .build();
 
-        UnifiedProductDTO product2 = UnifiedProductDTO.builder()
+        UnifiedProducResponsetDTO product2 = UnifiedProducResponsetDTO.builder()
             .productId("S1")
             .name("Savings B")
             .company("B 은행")
@@ -53,7 +53,7 @@ class UnifiedProductServiceImplTest {
             Arrays.asList(product1, product2));
 
         // when : 서비스 호출
-        List<UnifiedProductDTO> result = unifiedProductService.getAllProducts();
+        List<UnifiedProducResponsetDTO> result = unifiedProductService.getAllProducts();
 
         // then : 결과 검증
         assertNotNull(result);

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UnifiedProductDTO {
+public class UnifiedProducResponsetDTO {
 
     // 전체 상품 리스트 조회 시 보여줄 데이터 공통 필드
     private String productId; // 상품 ID
