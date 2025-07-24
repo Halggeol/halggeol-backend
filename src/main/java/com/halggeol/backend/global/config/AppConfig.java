@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     "com.halggeol.backend.products.mapper",
     "com.halggeol.backend.scrap.mapper",
     "com.halggeol.backend.user.mapper",
+    "com.halggeol.backend.security.mapper",
     "com.halggeol.backend.products.deposit.mapper",
     "com.halggeol.backend.products.savings.mapper",
     "com.halggeol.backend.products.fund.mapper",
