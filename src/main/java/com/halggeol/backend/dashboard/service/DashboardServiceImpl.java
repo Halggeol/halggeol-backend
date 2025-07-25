@@ -1,6 +1,8 @@
 package com.halggeol.backend.dashboard.service;
 
 import com.halggeol.backend.dashboard.dto.DashboardResponseDTO;
+import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
+import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.user.mapper.UserMapper;
@@ -17,6 +19,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final UserMapper userMapper;
 //    private final UserService userService; // 원래 UserService를 호출하고 싶었으나, 에러나서 Mapper 코드로 대체
     private final RecommendService recommendService;
+    private final UnifiedProductService unifiedProductService;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,16 +49,9 @@ public class DashboardServiceImpl implements DashboardService {
 ////        portfolio.add(new PortfolioDTO("fund", "0.3"));
 ////        dashboardResponse.setPortfolio(portfolio);
 ////
-////        // regretRanking
-////        List<RegretRankingDTO> regretRanking = new ArrayList<>();
-////        regretRanking.add(new RegretRankingDTO(1, "A12", "상품명1", 1, 4.5, 12));
-////        regretRanking.add(new RegretRankingDTO(2, "B34", "상품명2", 1, null, null)); // rate, period는 1위만 있다고 가정
-////        regretRanking.add(new RegretRankingDTO(3, "C56", "상품명3", 2, null, null));
-////        regretRanking.add(new RegretRankingDTO(4, "D78", "상품명4", 2, null, null));
-////        regretRanking.add(new RegretRankingDTO(5, "E90", "상품명5", 1, null, null));
-////        dashboardResponse.setRegretRanking(regretRanking);
-//
-//        // userName
+        List<UnifiedProductRegretRankingResponseDTO> regretRanking = unifiedProductService.getRegretRankingProducts();
+        dashboardResponse.setRegretRanking(regretRanking);
+
         String userName = userMapper.findNameById(Integer.parseInt(userId));
         dashboardResponse.setUserName(userName);
 //

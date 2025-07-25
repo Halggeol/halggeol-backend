@@ -1,5 +1,6 @@
 package com.halggeol.backend.dashboard.dto;
 
+import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class DashboardResponseDTO {
     private int avgRegretScore;
 //    private List<AssetDTO> assets;
 //    private List<PortfolioDTO> portfolio;
-//    private List<RegretRankingDTO> regretRanking;
+    private List<UnifiedProductRegretRankingResponseDTO> regretRanking;
     private String userName;
     private List<RecommendResponseDTO> recommendItems;
 }
