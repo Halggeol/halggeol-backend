@@ -12,7 +12,11 @@
       d.name,
       d.company,
       '예금' AS type,
-      d.rate
+      d.min_save_term AS tag1,
+      d.max_save_term AS tag2,
+      NULL AS tag3,
+      CAST(d.prime_rate AS CHAR) AS title,
+      CAST(d.rate AS CHAR) AS subTitle
     FROM deposit d
 
     UNION ALL
@@ -22,7 +26,11 @@
       s.name,
       s.company,
       '적금' AS type,
-      s.rate
+      s.min_save_term AS tag1,
+      s.max_save_term AS tag2,
+      NULL AS tag3,
+      CAST(s.prime_rate AS CHAR) AS title,
+      CAST(s.rate AS CHAR) AS subTitle
     FROM savings s
 
     UNION ALL
@@ -32,7 +40,15 @@
       p.name,
       p.company,
       '연금' AS type,
-      p.rate
+      p.pension_type AS tag1,
+      p.pension_kind AS tag2,
+      p.risk AS tag3,
+      CAST(
+        IF(p.pension_type = TRUE, p.rate, p.last_year_profit_rate) AS CHAR
+      ) AS title,
+      CAST(
+        IF(p.pension_type = TRUE, p.min_guarantee_rate, p.last_year_profit_rate) AS CHAR
+      ) AS subTitle
     FROM pension p
 
     UNION ALL
@@ -42,7 +58,11 @@
       f.name,
       f.company,
       '펀드' AS type,
-      f.rate
+      f.category AS tag1,
+      f.theme AS tag2,
+      f.investment_warning_grade AS tag3,
+      CAST(f.rate AS CHAR) AS title,
+      CAST(f.fund_price_movement AS CHAR) AS subTitle
     FROM fund f
 
     UNION ALL
@@ -52,8 +72,12 @@
       fx.name,
       fx.company,
       '외화' AS type,
-      fx.rate
-    FROM forex fx
+      fx.currency AS tag1,
+      NULL AS tag2,
+      NULL AS tag3,
+      CAST(fx.rate AS CHAR) AS title,
+      CAST(fx.rate_give_way AS CHAR) AS subTitle
+    FROM forex fx;
 
   </select>
 

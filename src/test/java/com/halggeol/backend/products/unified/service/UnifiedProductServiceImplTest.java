@@ -37,16 +37,22 @@ class UnifiedProductServiceImplTest {
             .productId("D1")
             .name("Deposit A")
             .company("A 은행")
-            .type("D")
-            .rate(4.0)
+            .tag1("12")
+            .tag2("36")
+            .tag3("")
+            .title("3.5")
+            .subTitle("3.2")
             .build();
 
         UnifiedProductResponseDTO product2 = UnifiedProductResponseDTO.builder()
             .productId("S1")
             .name("Savings B")
             .company("B 은행")
-            .type("S")
-            .rate(4.0)
+            .tag1("12")
+            .tag2("36")
+            .tag3("")
+            .title("3.5")
+            .subTitle("3.2")
             .build();
 
         when(unifiedProductMapper.selectAllUnifiedProducts()).thenReturn(
