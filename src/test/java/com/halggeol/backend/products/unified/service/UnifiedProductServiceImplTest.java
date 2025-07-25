@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO;
 import com.halggeol.backend.products.unified.mapper.UnifiedProductMapper;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -126,4 +126,80 @@
 <!--    </choose>-->
   </select>
 
+  <!--  TODO : 현재 period에 대해서 임의 값을 삽입해놨는데, 명확한 기준을 가지고 재수정 해야함 -->
+  <select id="selectUnifiedProductsOrderByRegretCnt" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO">
+    SELECT
+      ranked_products.rank_num AS `rank`,
+      ranked_products.productId,
+      ranked_products.name AS productName,
+      ranked_products.risk,
+      CASE WHEN ranked_products.rank_num = 1 THEN ranked_products.rate ELSE NULL END AS rate,
+      CASE WHEN ranked_products.rank_num = 1 THEN ranked_products.period ELSE NULL END AS period
+    FROM (
+           SELECT
+             *,
+             ROW_NUMBER() OVER (ORDER BY regret_cnt DESC) AS rank_num -- regret_cnt 기준으로 순위를 매깁니다.
+           FROM (
+                  -- 예금 (deposit) 테이블
+                  SELECT
+                    d.id AS productId,
+                    d.name,
+                    d.regret_cnt,
+                    d.risk,
+                    d.rate,
+                    12 AS period -- 예금은 period를 12로 고정
+                  FROM deposit d
+
+                  UNION ALL
+
+                  -- 적금 (savings) 테이블
+                  SELECT
+                    s.id AS productId,
+                    s.name,
+                    s.regret_cnt,
+                    s.risk,
+                    s.rate,
+                    12 AS period -- 적금은 period를 12로 고정
+                  FROM savings s
+
+                  UNION ALL
+
+                  -- 연금 (pension) 테이블
+                  SELECT
+                    p.id AS productId,
+                    p.name,
+                    p.regret_cnt,
+                    p.risk,
+                    p.rate,
+                    3 AS period -- 연금은 period를 3으로 고정
+                  FROM pension p
+
+                  UNION ALL
+
+                  -- 펀드 (fund) 테이블
+                  SELECT
+                    f.id AS productId,
+                    f.name,
+                    f.regret_cnt,
+                    f.risk,
+                    f.rate,
+                    3 AS period -- 외화는 period를 3으로 고정
+                  FROM fund f
+
+                  UNION ALL
+
+                  SELECT
+                    fx.id AS productId,
+                    fx.name,
+                    fx.regret_cnt,
+                    fx.risk,
+                    fx.rate,
+                    3 AS period -- 외화는 period를 3으로 고정
+                  FROM forex fx
+                ) AS combined_unranked_products
+         ) AS ranked_products
+    WHERE ranked_products.rank_num <![CDATA[<=]]> 5
+    ORDER BY ranked_products.rank_num ASC;
+  </select>
+
 </mapper>

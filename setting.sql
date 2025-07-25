@@ -265,6 +265,7 @@ CREATE TABLE `aggressive_pension_track` (
 
 -- 트래킹 끝
 
+drop table `rec_item`;
 CREATE TABLE `rec_item` (
                             `rec_id` INT NOT NULL AUTO_INCREMENT,
                             `user_id` INT NOT NULL,
@@ -274,30 +275,36 @@ CREATE TABLE `rec_item` (
                             `product1_survey` VARCHAR(255),
                             `product1_regret_score` INT,
                             `product1_miss_amount` INT,
+                            `product1_match_score` INT,
+
 
                             `product2_id` VARCHAR(20) NOT NULL,
                             `product2_status` ENUM('가입', '관심', '회고'),
                             `product2_survey` VARCHAR(255),
                             `product2_regret_score` INT,
                             `product2_miss_amount` INT,
+                            `product2_match_score` INT,
 
                             `product3_id` VARCHAR(20) NOT NULL,
                             `product3_status` ENUM('가입', '관심', '회고'),
                             `product3_survey` VARCHAR(255),
                             `product3_regret_score` INT,
                             `product3_miss_amount` INT,
+                            `product3_match_score` INT,
 
                             `product4_id` VARCHAR(20) NOT NULL,
                             `product4_status` ENUM('가입', '관심', '회고'),
                             `product4_survey` VARCHAR(255),
                             `product4_regret_score` INT,
                             `product4_miss_amount` INT,
+                            `product4_match_score` INT,
 
                             `product5_id` VARCHAR(20) NOT NULL,
                             `product5_status` ENUM('가입', '관심', '회고'),
                             `product5_survey` VARCHAR(255),
                             `product5_regret_score` INT,
                             `product5_miss_amount` INT,
+                            `product5_match_score` INT,
 
                             `anlz_date` DATE,
 

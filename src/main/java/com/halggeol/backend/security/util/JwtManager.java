@@ -40,7 +40,6 @@ public class JwtManager {
     }
 
     // email 추출
-    // try-catch 처리하기
     public String getEmail(String token) {
         return Jwts.parserBuilder()
             .setSigningKey(key)
@@ -51,7 +50,6 @@ public class JwtManager {
     }
 
     // 토큰 유효성 검증
-    // try-catch 처리하기
     public void validateToken(String token) {
         Jws<Claims> claims = Jwts.parserBuilder()
             .setSigningKey(key)

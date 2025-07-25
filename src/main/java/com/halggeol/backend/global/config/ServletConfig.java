@@ -12,9 +12,13 @@ import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.halggeol.backend",
+@ComponentScan(basePackages = {
+    "com.halggeol.backend",
     "com.halggeol.backend.products.controller",
-    "com.halggeol.backend.scrap.controller"})
+    "com.halggeol.backend.scrap.controller",
+    "com.halggeol.backend.user.controller",
+    "com.halggeol.backend.dashboard.controller",
+})
 public class ServletConfig  implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
