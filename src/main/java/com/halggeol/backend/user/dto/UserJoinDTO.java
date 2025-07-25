@@ -41,8 +41,13 @@ public class UserJoinDTO {
 
     // 만 14세 이상
     @NotBlank
-    @Past
-    private LocalDateTime birth;
+    private String birth;
+//    @Past
+//    private LocalDateTime birth;
+
+    public LocalDateTime getBirth() {
+        return LocalDateTime.parse(birth + "T00:00:00");
+    }
 
     public User toVO() {
         return User.builder()
@@ -50,7 +55,7 @@ public class UserJoinDTO {
             .name(name)
             .password(password)
             .phone(phone)
-            .birth(birth)
+            .birth(LocalDateTime.parse(birth + "T00:00:00"))
             .build();
     }
 }
