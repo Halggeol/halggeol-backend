@@ -2,9 +2,7 @@ package com.halggeol.backend.recommend.service;
 
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.mapper.RecommendMapper;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
