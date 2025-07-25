@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DashboardResponseDTO {
 
-    private int avgRegretScore;
+    private Double avgRegretScore;
 //    private List<AssetDTO> assets;
 //    private List<PortfolioDTO> portfolio;
     private List<UnifiedProductRegretRankingResponseDTO> regretRanking;

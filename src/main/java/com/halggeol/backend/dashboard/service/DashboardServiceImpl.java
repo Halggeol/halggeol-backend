@@ -1,6 +1,7 @@
 package com.halggeol.backend.dashboard.service;
 
 import com.halggeol.backend.dashboard.dto.DashboardResponseDTO;
+import com.halggeol.backend.dashboard.mapper.DashboardMapper;
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DashboardServiceImpl implements DashboardService {
 
     private final UserMapper userMapper;
+    private final DashboardMapper dashboardMapper;
 //    private final UserService userService; // 원래 UserService를 호출하고 싶었으나, 에러나서 Mapper 코드로 대체
     private final RecommendService recommendService;
     private final UnifiedProductService unifiedProductService;
@@ -29,9 +31,9 @@ public class DashboardServiceImpl implements DashboardService {
         // 1. 'recommendItems' 데이터 채우기 (기존 RecommendService 활용)
         List<RecommendResponseDTO> recommendedProducts = recommendService.getRecommendProducts(userId);
         dashboardResponse.setRecommendItems(recommendedProducts);
-//
-//        // avgRegretScore
-////        dashboardResponse.setAvgRegretScore(55);
+
+        Double avgRegretScore = dashboardMapper.getAvgRegretScoreByUserId(userId);
+        dashboardResponse.setAvgRegretScore(avgRegretScore);
 //
 ////        // assets (예시: 1년치 더미 데이터 생성)
 ////        List<AssetDTO> assets = new ArrayList<>();

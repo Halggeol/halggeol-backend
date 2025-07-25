@@ -56,6 +56,7 @@
     FROM forex fx
 
   </select>
+<!--  TODO : 현재 period에 대해서 임의 값을 삽입해놨는데, 명확한 기준을 가지고 재수정 해야함 -->
 <select id="selectUnifiedProductsOrderByRegretCnt" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO">
     SELECT
     ranked_products.rank_num AS `rank`,
