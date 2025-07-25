@@ -20,7 +20,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @PropertySource({"classpath:/application.properties"})
-@ComponentScan(basePackages = {"com.halggeol.backend", "com.halggeol.backend.user.service", "com.halggeol.backend.security", "com.halggeol.backend.products.deposit.controller"})
+@ComponentScan(basePackages = {"com.halggeol.backend",
+    "com.halggeol.backend.user.service",
+    "com.halggeol.backend.security",
+    "com.halggeol.backend.products.deposit.controller",
+    "com.halggeol.backend.recommend.service",
+"com.halggeol.backend.dashboard.service"})
 @MapperScan(basePackages  = {"com.halggeol.backend.mapper",
     "com.halggeol.backend.products.mapper",
     "com.halggeol.backend.scrap.mapper",
@@ -31,7 +36,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     "com.halggeol.backend.products.fund.mapper",
     "com.halggeol.backend.products.forex.mapper",
     "com.halggeol.backend.products.pension.mapper",
-    "com.halggeol.backend.products.unified.mapper"})
+    "com.halggeol.backend.products.unified.mapper",
+    "com.halggeol.backend.recommend.mapper",
+    "com.halggeol.backend.dashboard.mapper"})
 @Slf4j
 @EnableTransactionManagement
 public class AppConfig {

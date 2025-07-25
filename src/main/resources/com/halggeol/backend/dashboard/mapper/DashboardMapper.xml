@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.halggeol.backend.dashboard.mapper.DashboardMapper">
+  <select id="getAvgRegretScoreByUserId" resultType="java.lang.Double">
+    SELECT
+      AVG(regret_score_union.score)
+    FROM (
+           SELECT product1_regret_score AS score
+           FROM rec_item
+           WHERE user_id = #{userId} AND product1_regret_score IS NOT NULL
+
+           UNION ALL
+
+           SELECT product2_regret_score AS score
+           FROM rec_item
+           WHERE user_id = #{userId} AND product2_regret_score IS NOT NULL
+
+           UNION ALL
+
+           SELECT product3_regret_score AS score
+           FROM rec_item
+           WHERE user_id = #{userId} AND product3_regret_score IS NOT NULL
+
+           UNION ALL
+
+           SELECT product4_regret_score AS score
+           FROM rec_item
+           WHERE user_id = #{userId} AND product4_regret_score IS NOT NULL
+
+           UNION ALL
+
+           SELECT product5_regret_score AS score
+           FROM rec_item
+           WHERE user_id = #{userId} AND product5_regret_score IS NOT NULL
+         ) AS regret_score_union;
+    </select>
+
+  <select id="getAssetsOneYearByUserId" resultType="com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO">
+    SELECT
+      collect_date AS date,
+      asset
+    FROM mydata
+    WHERE user_id = #{userId}
+      AND collect_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND CURDATE()
+    ORDER BY collect_date ASC;
+  </select>
+  <select id="getPortfolioByUserId" resultType="com.halggeol.backend.dashboard.dto.DashboardPortfolioResponseDTO">
+    WITH LatestMydata AS (
+      SELECT id
+      FROM mydata
+      WHERE user_id = #{userId}
+      ORDER BY collect_date DESC, id DESC
+      LIMIT 1
+      ),
+      TotalAssetForLatestMydata AS (
+    SELECT SUM(mp.amount) AS total_amount
+    FROM myproduct mp
+      JOIN LatestMydata lm ON mp.mydata_id = lm.id
+      ),
+      TypedProductsForLatestMydata AS (
+    SELECT
+      CASE
+      WHEN SUBSTRING(mp.product_id, 1, 1) = 'D' THEN 'deposit'
+      WHEN SUBSTRING(mp.product_id, 1, 1) = 'S' THEN 'savings'
+      WHEN SUBSTRING(mp.product_id, 1, 1) IN ('A', 'C') THEN 'pension'
+      WHEN SUBSTRING(mp.product_id, 1, 1) = 'F' THEN 'fund'
+      WHEN SUBSTRING(mp.product_id, 1, 1) = 'X' THEN 'forex'
+      ELSE 'unknown'
+      END AS product_type,
+      mp.amount
+    FROM myproduct mp
+      JOIN LatestMydata lm ON mp.mydata_id = lm.id
+      )
+    SELECT
+      tp.product_type AS type,
+      -- 오류 해결: ta.total_amount를 MAX()로 감싸 집계 함수로 만듭니다.
+      CAST(SUM(tp.amount) * 1.0 / MAX(ta.total_amount) AS CHAR) AS ratio
+    FROM TypedProductsForLatestMydata tp, TotalAssetForLatestMydata ta
+    GROUP BY tp.product_type
+    ORDER BY tp.product_type ASC;
+    </select>
+</mapper>
