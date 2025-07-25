@@ -22,10 +22,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -89,9 +92,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // 인코딩, 인증 관련 필터
         http.addFilterBefore(encodingFilter(), CorsFilter.class)
-            .addFilterBefore(jwtLoginAuthFilter, JwtLoginAuthFilter.class)
-            .addFilterBefore(jwtAuthFilter, JwtAuthFilter.class)
-            .addFilterBefore(jwtAuthErrorFilter, JwtAuthErrorFilter.class);
+            .addFilterBefore(jwtLoginAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthFilter, JwtLoginAuthFilter.class)
+            .addFilterBefore(jwtAuthErrorFilter, JwtAuthFilter.class);
 
         // 접근 권한 설정
         http.authorizeRequests()
