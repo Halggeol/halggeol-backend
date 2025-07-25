@@ -4,5 +4,11 @@ import com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO;
 import java.util.List;
 
 public interface UnifiedProductService {
-    List<UnifiedProductResponseDTO> getAllProducts();
+    List<UnifiedProductResponseDTO> getFilteredProducts(
+//        String sort,
+//        String keyword,
+        String type,
+        Integer fSector,
+        Integer saveTerm,
+        String minAmount);
 }
