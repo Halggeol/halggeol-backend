@@ -1,6 +1,6 @@
 package com.halggeol.backend.products.unified.controller;
 
-import com.halggeol.backend.products.unified.dto.UnifiedProductDTO;
+import com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO;
 import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class UnifiedProductController {
     private final UnifiedProductService unifiedProductService;
 
     @GetMapping
-    public List<UnifiedProductDTO> getAllProducts() {
+    public List<UnifiedProductResponseDTO> getAllProducts() {
         return unifiedProductService.getAllProducts();
     }
 

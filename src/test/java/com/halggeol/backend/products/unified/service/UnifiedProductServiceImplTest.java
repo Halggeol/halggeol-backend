@@ -5,7 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.halggeol.backend.products.unified.dto.UnifiedProductDTO;
+import com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO;
 import com.halggeol.backend.products.unified.mapper.UnifiedProductMapper;
 import java.util.Arrays;
 import java.util.List;
@@ -33,27 +33,33 @@ class UnifiedProductServiceImplTest {
     @DisplayName("전체 금융 상품 리스트 조회 성공")
     void getAllProducts() {
         // given : Mock 데이터 설정
-        UnifiedProductDTO product1 = UnifiedProductDTO.builder()
+        UnifiedProductResponseDTO product1 = UnifiedProductResponseDTO.builder()
             .productId("D1")
             .name("Deposit A")
             .company("A 은행")
-            .type("D")
-            .rate(4.0)
+            .tag1("12")
+            .tag2("36")
+            .tag3("")
+            .title("3.5")
+            .subTitle("3.2")
             .build();
 
-        UnifiedProductDTO product2 = UnifiedProductDTO.builder()
+        UnifiedProductResponseDTO product2 = UnifiedProductResponseDTO.builder()
             .productId("S1")
             .name("Savings B")
             .company("B 은행")
-            .type("S")
-            .rate(4.0)
+            .tag1("12")
+            .tag2("36")
+            .tag3("")
+            .title("3.5")
+            .subTitle("3.2")
             .build();
 
         when(unifiedProductMapper.selectAllUnifiedProducts()).thenReturn(
             Arrays.asList(product1, product2));
 
         // when : 서비스 호출
-        List<UnifiedProductDTO> result = unifiedProductService.getAllProducts();
+        List<UnifiedProductResponseDTO> result = unifiedProductService.getAllProducts();
 
         // then : 결과 검증
         assertNotNull(result);

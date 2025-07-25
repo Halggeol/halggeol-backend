@@ -1,7 +1,7 @@
 package com.halggeol.backend.products.unified.service;
 
-import com.halggeol.backend.products.unified.dto.UnifiedProductDTO;
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
+import com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO;
 import com.halggeol.backend.products.unified.mapper.UnifiedProductMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ public class UnifiedProductServiceImpl implements UnifiedProductService {
     private final UnifiedProductMapper unifiedProductMapper;
 
     @Override
-    public List<UnifiedProductDTO> getAllProducts() {
+    public List<UnifiedProductResponseDTO> getAllProducts() {
         return unifiedProductMapper.selectAllUnifiedProducts();
     }
 
