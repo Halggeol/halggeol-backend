@@ -65,4 +65,10 @@ public class UserServiceImpl implements UserService {
 
         return HttpStatus.OK;
     }
+
+    @Override
+    public String getNameById(int userId) {
+        // 사용자 ID로 사용자 이름을 조회하는 메서드
+        return userMapper.findNameById(userId);
+    }
 }

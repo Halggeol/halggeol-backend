@@ -10,4 +10,6 @@ public interface UserService {
     HttpStatus requestJoin(@Valid UserJoinDTO user);
 
     HttpStatus join(@Valid UserJoinDTO user, String token);
+
+    String getNameById(int userId);
 }
