@@ -1,5 +1,7 @@
 package com.halggeol.backend.dashboard.service;
 
+import com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO;
+import com.halggeol.backend.dashboard.dto.DashboardPortfolioResponseDTO;
 import com.halggeol.backend.dashboard.dto.DashboardResponseDTO;
 import com.halggeol.backend.dashboard.mapper.DashboardMapper;
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
@@ -7,7 +9,6 @@ import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.user.mapper.UserMapper;
-import com.halggeol.backend.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,9 @@ public class DashboardServiceImpl implements DashboardService {
 
     private final UserMapper userMapper;
     private final DashboardMapper dashboardMapper;
-//    private final UserService userService; // 원래 UserService를 호출하고 싶었으나, 에러나서 Mapper 코드로 대체
+
+    // TODO: 원래 UserService를 호출하고 싶었으나, 에러나서 Mapper 코드로 대체, 추후 순환참조 문제 해결하고 수정할 것
+//    private final UserService userService; 
     private final RecommendService recommendService;
     private final UnifiedProductService unifiedProductService;
 
@@ -28,29 +31,18 @@ public class DashboardServiceImpl implements DashboardService {
     public DashboardResponseDTO getDashboardData(String userId) {
         DashboardResponseDTO dashboardResponse = new DashboardResponseDTO();
 
-        // 1. 'recommendItems' 데이터 채우기 (기존 RecommendService 활용)
         List<RecommendResponseDTO> recommendedProducts = recommendService.getRecommendProducts(userId);
         dashboardResponse.setRecommendItems(recommendedProducts);
 
         Double avgRegretScore = dashboardMapper.getAvgRegretScoreByUserId(userId);
         dashboardResponse.setAvgRegretScore(avgRegretScore);
-//
-////        // assets (예시: 1년치 더미 데이터 생성)
-////        List<AssetDTO> assets = new ArrayList<>();
-////        LocalDate today = LocalDate.now(); // 현재 날짜
-////        LocalDate oneYearAgo = today.minusYears(1); // 1년 전 날짜
-////        for (int i = 0; i <= 365; i++) { // 366일 데이터 (1년 전 날짜 포함 당일까지)
-////            LocalDate currentDate = oneYearAgo.plusDays(i);
-////            assets.add(new AssetDTO(currentDate.toString(), String.valueOf(1000000 + i * 33))); // 임의의 자산 값
-////        }
-////        dashboardResponse.setAssets(assets);
-////
-////        // portfolio
-////        List<PortfolioDTO> portfolio = new ArrayList<>();
-////        portfolio.add(new PortfolioDTO("savings", "0.4"));
-////        portfolio.add(new PortfolioDTO("fund", "0.3"));
-////        dashboardResponse.setPortfolio(portfolio);
-////
+
+        List<DashboardAssetResponseDTO> assets = dashboardMapper.getAssetsOneYearByUserId(userId);
+        dashboardResponse.setAssets(assets);
+
+        List<DashboardPortfolioResponseDTO> portfolio = dashboardMapper.getPortfolioByUserId(userId);
+        dashboardResponse.setPortfolio(portfolio);
+
         List<UnifiedProductRegretRankingResponseDTO> regretRanking = unifiedProductService.getRegretRankingProducts();
         dashboardResponse.setRegretRanking(regretRanking);
 
@@ -58,5 +50,11 @@ public class DashboardServiceImpl implements DashboardService {
         dashboardResponse.setUserName(userName);
 //
         return dashboardResponse;
+    }
+
+    @Override
+    @Transactional
+    public List<DashboardAssetResponseDTO> getAssetsOneYearByUserId(String userId) {
+        return dashboardMapper.getAssetsOneYearByUserId(userId);
     }
 }

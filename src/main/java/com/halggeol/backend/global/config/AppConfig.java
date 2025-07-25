@@ -37,7 +37,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     "com.halggeol.backend.products.forex.mapper",
     "com.halggeol.backend.products.pension.mapper",
     "com.halggeol.backend.products.unified.mapper",
-    "com.halggeol.backend.recommend.mapper"})
+    "com.halggeol.backend.recommend.mapper",
+    "com.halggeol.backend.dashboard.mapper"})
 @Slf4j
 @EnableTransactionManagement
 public class AppConfig {
