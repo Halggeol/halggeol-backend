@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UnifiedProductMapper {
     List<UnifiedProductRegretRankingResponseDTO> selectUnifiedProductsOrderByRegretCnt();
-    List<UnifiedProductResponseDTO> selectAllUnifiedProducts();
 //    List<UnifiedProductResponseDTO> selectAllUnifiedProducts(); -> 필터링 함수 하나로 통합
 
     List<UnifiedProductResponseDTO> selectFilteredProducts(
