@@ -14,8 +14,17 @@ public class UnifiedProductServiceImpl implements UnifiedProductService {
     private final UnifiedProductMapper unifiedProductMapper;
 
     @Override
-    public List<UnifiedProductResponseDTO> getAllProducts() {
-        return unifiedProductMapper.selectAllUnifiedProducts();
+    public List<UnifiedProductResponseDTO> getFilteredProducts(
+//        String sort,
+//        String keyword,
+        String type,
+        Integer fSector,
+        Integer saveTerm,
+        String minAmount
+    ) {
+        return unifiedProductMapper.selectFilteredProducts(
+            type, fSector, saveTerm, minAmount
+        );
     }
 
     @Override

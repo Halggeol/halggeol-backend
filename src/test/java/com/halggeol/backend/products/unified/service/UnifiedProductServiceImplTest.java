@@ -1,6 +1,6 @@
 package com.halggeol.backend.products.unified.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +33,13 @@ class UnifiedProductServiceImplTest {
     @DisplayName("전체 금융 상품 리스트 조회 성공")
     void getAllProducts() {
         // given : Mock 데이터 설정
-        UnifiedProductResponseDTO product1 = UnifiedProductResponseDTO.builder()
+
+        String type = "예금";
+        Integer fSector = 1;
+        Integer saveTerm = 12;
+        String minAmount = "1000000";
+
+        UnifiedProductResponseDTO mockProduct = UnifiedProductResponseDTO.builder()
             .productId("D1")
             .name("Deposit A")
             .company("A 은행")
@@ -42,32 +48,27 @@ class UnifiedProductServiceImplTest {
             .tag3("")
             .title("3.5")
             .subTitle("3.2")
+            .type(type)
+            .fSector(fSector)
+            .saveTerm(saveTerm)
+            .minAmount(minAmount)
             .build();
 
-        UnifiedProductResponseDTO product2 = UnifiedProductResponseDTO.builder()
-            .productId("S1")
-            .name("Savings B")
-            .company("B 은행")
-            .tag1("12")
-            .tag2("36")
-            .tag3("")
-            .title("3.5")
-            .subTitle("3.2")
-            .build();
+        List<UnifiedProductResponseDTO> mockResult = List.of(mockProduct);
 
-        when(unifiedProductMapper.selectAllUnifiedProducts()).thenReturn(
-            Arrays.asList(product1, product2));
+        when(unifiedProductMapper.selectFilteredProducts(type, fSector, saveTerm, minAmount))
+            .thenReturn(mockResult);
 
         // when : 서비스 호출
-        List<UnifiedProductResponseDTO> result = unifiedProductService.getAllProducts();
+        List<UnifiedProductResponseDTO> result = unifiedProductService
+            .getFilteredProducts(type, fSector, saveTerm, minAmount);
 
         // then : 결과 검증
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals("D1", result.get(0).getProductId());
-        assertEquals("Savings B", result.get(1).getName());
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(mockResult.size());
+        assertThat(result.get(0).getProductId()).isEqualTo("D1");
 
         // mapper 호출 여부 검증
-        verify(unifiedProductMapper, times(1)).selectAllUnifiedProducts();
+        verify(unifiedProductMapper, times(1)).selectFilteredProducts(type, fSector, saveTerm, minAmount);
     }
 }

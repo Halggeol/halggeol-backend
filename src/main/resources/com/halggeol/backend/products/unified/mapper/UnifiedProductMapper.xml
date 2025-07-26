@@ -5,139 +5,78 @@
 
 <mapper namespace="com.halggeol.backend.products.unified.mapper.UnifiedProductMapper">
 
-  <!-- 전체 목록 조회 -->
-  <select id="selectAllUnifiedProducts" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO">
-    SELECT
-      d.id AS productId,
-      d.name,
-      d.company,
-      '예금' AS type,
-      d.min_save_term AS tag1,
-      d.max_save_term AS tag2,
-      NULL AS tag3,
-      CAST(d.prime_rate AS CHAR) AS title,
-      CAST(d.rate AS CHAR) AS subTitle
-    FROM deposit d
-
-    UNION ALL
-
-    SELECT
-      s.id AS productId,
-      s.name,
-      s.company,
-      '적금' AS type,
-      s.min_save_term AS tag1,
-      s.max_save_term AS tag2,
-      NULL AS tag3,
-      CAST(s.prime_rate AS CHAR) AS title,
-      CAST(s.rate AS CHAR) AS subTitle
-    FROM savings s
-
-    UNION ALL
-
-    SELECT
-      p.id AS productId,
-      p.name,
-      p.company,
-      '연금' AS type,
-      p.pension_type AS tag1,
-      p.pension_kind AS tag2,
-      p.risk AS tag3,
-      CAST(
-        IF(p.pension_type = TRUE, p.rate, p.last_year_profit_rate) AS CHAR
-      ) AS title,
-      CAST(
-        IF(p.pension_type = TRUE, p.min_guarantee_rate, p.last_year_profit_rate) AS CHAR
-      ) AS subTitle
-    FROM pension p
-
-    UNION ALL
-
-    SELECT
-      f.id AS productId,
-      f.name,
-      f.company,
-      '펀드' AS type,
-      f.category AS tag1,
-      f.theme AS tag2,
-      f.investment_warning_grade AS tag3,
-      CAST(f.rate AS CHAR) AS title,
-      CAST(f.fund_price_movement AS CHAR) AS subTitle
-    FROM fund f
-
-    UNION ALL
-
-    SELECT
-      fx.id AS productId,
-      fx.name,
-      fx.company,
-      '외화' AS type,
-      fx.currency AS tag1,
-      NULL AS tag2,
-      NULL AS tag3,
-      CAST(fx.rate AS CHAR) AS title,
-      CAST(fx.rate_give_way AS CHAR) AS subTitle
-    FROM forex fx;
-
-  </select>
-<!--  TODO : 현재 period에 대해서 임의 값을 삽입해놨는데, 명확한 기준을 가지고 재수정 해야함 -->
-<select id="selectUnifiedProductsOrderByRegretCnt" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO">
-    SELECT
-    ranked_products.rank_num AS `rank`,
-    ranked_products.productId,
-    ranked_products.name AS productName,
-    ranked_products.risk,
-    CASE WHEN ranked_products.rank_num = 1 THEN ranked_products.rate ELSE NULL END AS rate,
-    CASE WHEN ranked_products.rank_num = 1 THEN ranked_products.period ELSE NULL END AS period
+<!--  금융 상품 검색 및 필터링-->
+  <select id="selectFilteredProducts" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO">
+    SELECT *
     FROM (
-    SELECT
-    *,
-    ROW_NUMBER() OVER (ORDER BY regret_cnt DESC) AS rank_num -- regret_cnt 기준으로 순위를 매깁니다.
-    FROM (
-    -- 예금 (deposit) 테이블
     SELECT
     d.id AS productId,
     d.name,
-    d.regret_cnt,
-    d.risk,
-    d.rate,
-    12 AS period -- 예금은 period를 12로 고정
+    d.company,
+    '예금' AS type,
+    d.min_save_term AS tag1,
+    d.max_save_term AS tag2,
+    NULL AS tag3,
+    CAST(d.prime_rate AS CHAR) AS title,
+    CAST(d.rate AS CHAR) AS subTitle,
+    d.f_sector AS fSector,
+    d.save_term AS saveTerm,
+    d.minimum_cost AS minAmount
     FROM deposit d
 
     UNION ALL
 
-    -- 적금 (savings) 테이블
     SELECT
     s.id AS productId,
     s.name,
-    s.regret_cnt,
-    s.risk,
-    s.rate,
-    12 AS period -- 적금은 period를 12로 고정
+    s.company,
+    '적금' AS type,
+    s.min_save_term AS tag1,
+    s.max_save_term AS tag2,
+    NULL AS tag3,
+    CAST(s.prime_rate AS CHAR) AS title,
+    CAST(s.rate AS CHAR) AS subTitle,
+    s.f_sector AS fSector,
+    s.save_term AS saveTerm,
+    NULL AS minAmount
     FROM savings s
 
     UNION ALL
 
-    -- 연금 (pension) 테이블
     SELECT
     p.id AS productId,
     p.name,
-    p.regret_cnt,
-    p.risk,
-    p.rate,
-    3 AS period -- 연금은 period를 3으로 고정
+    p.company,
+    '연금' AS type,
+    p.pension_type AS tag1,
+    p.pension_kind AS tag2,
+    p.risk AS tag3,
+    CAST(
+    IF(p.pension_type = 1, p.rate, p.last_year_profit_rate) AS CHAR
+    ) AS title,
+    CAST(
+    IF(p.pension_type = 1, p.min_guarantee_rate, p.last_year_profit_rate) AS CHAR
+    ) AS subTitle,
+    p.f_sector AS fSector,
+    NULL AS saveTerm,
+    NULL AS minAmount
     FROM pension p
 
     UNION ALL
 
-    -- 펀드 (fund) 테이블
     SELECT
     f.id AS productId,
     f.name,
-    f.regret_cnt,
-    f.risk,
-    f.rate,
-    3 AS period -- 외화는 period를 3으로 고정
+    f.company,
+    '펀드' AS type,
+    f.category AS tag1,
+    f.theme AS tag2,
+    f.investment_warning_grade AS tag3,
+    CAST(f.rate AS CHAR) AS title,
+    CAST(f.fund_price_movement AS CHAR) AS subTitle,
+    f.f_sector AS fSector,
+    NULL AS saveTerm,
+    f.minimum_cost AS minAmount
     FROM fund f
 
     UNION ALL
@@ -145,14 +84,122 @@
     SELECT
     fx.id AS productId,
     fx.name,
-    fx.regret_cnt,
-    fx.risk,
-    fx.rate,
-    3 AS period -- 외화는 period를 3으로 고정
+    fx.company,
+    '외화' AS type,
+    fx.currency AS tag1,
+    NULL AS tag2,
+    NULL AS tag3,
+    CAST(fx.rate AS CHAR) AS title,
+    CAST(fx.rate_give_way AS CHAR) AS subTitle,
+    fx.f_sector AS fSector,
+    NULL AS saveTerm,
+    NULL AS minAmount
     FROM forex fx
-    ) AS combined_unranked_products
-    ) AS ranked_products
+    ) AS unified
+    WHERE 1=1
+<!--    <if test="keyword != null and keyword != ''">-->
+<!--      AND name LIKE CONCAT('%', #{keyword}, '%')-->
+<!--    </if>-->
+    <if test="type != null and type != ''">
+      AND type = #{type}
+    </if>
+    <if test="fSector != null">
+      AND fSector = #{fSector}
+    </if>
+    <if test="saveTerm != null">
+      AND saveTerm = #{saveTerm}
+    </if>
+    <if test="minAmount != null and minAmount != ''">
+      AND CAST(minAmount AS UNSIGNED) &gt;= #{minAmount}
+    </if>
+
+<!--    <choose>-->
+<!--      <when test="sort == 'rateDesc'">-->
+<!--        ORDER BY CAST(title AS DECIMAL(10, 5)) DESC-->
+<!--      </when>-->
+<!--      <when test="sort == 'popularDesc'">-->
+<!--        ORDER BY productId DESC-->
+<!--      </when>-->
+<!--      <otherwise>-->
+<!--        ORDER BY name ASC-->
+<!--      </otherwise>-->
+<!--    </choose>-->
+  </select>
+
+  <!--  TODO : 현재 period에 대해서 임의 값을 삽입해놨는데, 명확한 기준을 가지고 재수정 해야함 -->
+  <select id="selectUnifiedProductsOrderByRegretCnt" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO">
+    SELECT
+      ranked_products.rank_num AS `rank`,
+      ranked_products.productId,
+      ranked_products.name AS productName,
+      ranked_products.risk,
+      CASE WHEN ranked_products.rank_num = 1 THEN ranked_products.rate ELSE NULL END AS rate,
+      CASE WHEN ranked_products.rank_num = 1 THEN ranked_products.period ELSE NULL END AS period
+    FROM (
+           SELECT
+             *,
+             ROW_NUMBER() OVER (ORDER BY regret_cnt DESC) AS rank_num -- regret_cnt 기준으로 순위를 매깁니다.
+           FROM (
+                  -- 예금 (deposit) 테이블
+                  SELECT
+                    d.id AS productId,
+                    d.name,
+                    d.regret_cnt,
+                    d.risk,
+                    d.rate,
+                    12 AS period -- 예금은 period를 12로 고정
+                  FROM deposit d
+
+                  UNION ALL
+
+                  -- 적금 (savings) 테이블
+                  SELECT
+                    s.id AS productId,
+                    s.name,
+                    s.regret_cnt,
+                    s.risk,
+                    s.rate,
+                    12 AS period -- 적금은 period를 12로 고정
+                  FROM savings s
+
+                  UNION ALL
+
+                  -- 연금 (pension) 테이블
+                  SELECT
+                    p.id AS productId,
+                    p.name,
+                    p.regret_cnt,
+                    p.risk,
+                    p.rate,
+                    3 AS period -- 연금은 period를 3으로 고정
+                  FROM pension p
+
+                  UNION ALL
+
+                  -- 펀드 (fund) 테이블
+                  SELECT
+                    f.id AS productId,
+                    f.name,
+                    f.regret_cnt,
+                    f.risk,
+                    f.rate,
+                    3 AS period -- 외화는 period를 3으로 고정
+                  FROM fund f
+
+                  UNION ALL
+
+                  SELECT
+                    fx.id AS productId,
+                    fx.name,
+                    fx.regret_cnt,
+                    fx.risk,
+                    fx.rate,
+                    3 AS period -- 외화는 period를 3으로 고정
+                  FROM forex fx
+                ) AS combined_unranked_products
+         ) AS ranked_products
     WHERE ranked_products.rank_num <![CDATA[<=]]> 5
     ORDER BY ranked_products.rank_num ASC;
-</select>
+  </select>
+
 </mapper>
