@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userToJoin.toVO();
+        user.setEmail(jwtManager.getEmail(token));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
 
