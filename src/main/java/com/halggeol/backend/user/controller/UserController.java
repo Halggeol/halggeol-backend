@@ -22,13 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/signup")
 public class UserController {
     private final UserService userService;
-    private final JwtManager jwtManager;
 
+    // 회원가입 요청 (이메일 본인 인증) API
     @PostMapping("/request")
     public ResponseEntity<Void> requestJoin(@RequestBody UserJoinDTO user) {
         return ResponseEntity.status(userService.requestJoin(user)).build();
     }
 
+    // 회원가입 등록 API
     @PostMapping("")
     public ResponseEntity<Void> join(@RequestBody UserJoinDTO user, @RequestParam String token) {
         return ResponseEntity.status(userService.join(user, token)).build();
