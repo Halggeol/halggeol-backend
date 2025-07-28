@@ -2,8 +2,11 @@ package com.halggeol.backend.scrap.controller;
 
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.service.ScrapService;
+import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,11 +22,11 @@ public class ScrapController {
 
     @PostMapping
     public ResponseEntity<?> addScrapProduct(
-        @RequestParam("userId") int userId, // Todo: 이후 jwt 되면 모든 userId 를 @AuthenticationPrincipal UserDetails userDetails로 변경
+        @AuthenticationPrincipal CustomUser user,
         @RequestBody ScrapRequestDTO requestDto) {
         try {
-            int result = scrapService.addScrapProduct(userId, requestDto);
-            return ResponseEntity.ok(result);
+            scrapService.addScrapProduct(user, requestDto);
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -31,11 +34,11 @@ public class ScrapController {
 
     @DeleteMapping
     public ResponseEntity<?> removeScrapProduct(
-        @RequestParam("userId") int userId, // Todo: 이후 jwt 되면 모든 userId 를 @AuthenticationPrincipal UserDetails userDetails로 변경
+        @AuthenticationPrincipal CustomUser user,
         @RequestBody ScrapRequestDTO requestDto) {
         try {
-            int result = scrapService.removeScrapProduct(userId, requestDto);
-            return ResponseEntity.ok(result);
+            scrapService.removeScrapProduct(user, requestDto);
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

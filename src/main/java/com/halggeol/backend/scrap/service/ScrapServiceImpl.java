@@ -5,9 +5,10 @@ import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByCo
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
-import java.util.function.Consumer;
+import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,30 +20,27 @@ public class ScrapServiceImpl implements ScrapService {
 
     @Override
     @Transactional
-    public int addScrapProduct(int userId, ScrapRequestDTO requestDto) {
+    public void addScrapProduct(@AuthenticationPrincipal CustomUser user, ScrapRequestDTO requestDto) {
 
         String productId = requestDto.getProductId();
 
         incrementProductScrapCountAsync(productId);
 
         Scrap scrap = Scrap.builder()
-            .userId(userId)
+            .userId(user.getUser().getId())
             .productId(productId)
             .build();
 
         scrapMapper.insertUserScrap(scrap);
-
-        return 0;
     }
 
     @Override
     @Transactional
-    public int removeScrapProduct(int userId, ScrapRequestDTO requestDto) {
+    public void removeScrapProduct(@AuthenticationPrincipal CustomUser user, ScrapRequestDTO requestDto) {
         String productId = requestDto.getProductId();
 
         decrementProductScrapCountAsync(productId);
-        scrapMapper.deleteUserScrap(userId, productId);
-        return 0;
+        scrapMapper.deleteUserScrap(user.getUser().getId(), productId);
     }
 
     @Override

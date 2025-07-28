@@ -180,7 +180,7 @@ CREATE TABLE `personalized_description` (
 -- user
 
 CREATE TABLE `users` (
-                         `id`	INT	NOT NULL,
+                         `id`	INT	NOT NULL AUTO_INCREMENT,
                          `email`	VARCHAR(255)	NULL,
                          `name`	VARCHAR(255)	NULL,
                          `password`	VARCHAR(255)	NULL,
@@ -265,7 +265,6 @@ CREATE TABLE `aggressive_pension_track` (
 
 -- 트래킹 끝
 
-drop table `rec_item`;
 CREATE TABLE `rec_item` (
                             `rec_id` INT NOT NULL AUTO_INCREMENT,
                             `user_id` INT NOT NULL,
