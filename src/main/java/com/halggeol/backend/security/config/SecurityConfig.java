@@ -102,10 +102,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 접근 권한 설정
         http.authorizeRequests()
             .antMatchers(
-                "/api/email",
+                "/api/email/find",
                 "/api/login",
-                "/api/password/reset",
-                "/api/signup",
+                "/api/password/reset/*",
+                "/api/signup/*",
                 "/api/survey"
             ).permitAll()                   // 비로그인 접근 허용
             .anyRequest().authenticated();  // 인증된 사용자만 접근 허용
