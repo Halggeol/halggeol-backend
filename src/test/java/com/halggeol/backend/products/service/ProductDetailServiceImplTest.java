@@ -2,6 +2,8 @@ package com.halggeol.backend.products.service;
 
 import com.halggeol.backend.products.dto.*;
 import com.halggeol.backend.products.mapper.ProductDetailMapper;
+import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.security.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,16 +20,24 @@ import static org.mockito.Mockito.*;
 class ProductDetailServiceImplTest {
 
     @Mock
-    private ProductDetailMapper<Object> productDetailMapper; // ProductDetailMapper 목 객체
+    private ProductDetailMapper productDetailMapper;
 
     @InjectMocks
-    private ProductDetailServiceImpl productDetailService; // 테스트 대상 서비스 (목 객체 주입)
+    private ProductDetailServiceImpl productDetailService;
 
+    private CustomUser testUser;
     private String testUserId;
 
     @BeforeEach
     void setUp() {
         testUserId = "1";
+        User user = User.builder()
+                .id(1)
+                .email("test@example.com")
+                .name("테스트 사용자")
+                .password("password")
+                .build();
+        testUser = new CustomUser(user);
     }
 
     // --- getProductDetailById 테스트 ---
@@ -43,7 +53,7 @@ class ProductDetailServiceImplTest {
         doNothing().when(productDetailMapper).incrementDepositViewCount(productId);
 
 
-        Object result = productDetailService.getProductDetailById(productId, testUserId);
+        Object result = productDetailService.getProductDetailById(productId, testUser);
 
         assertThat(result).isEqualTo(expectedDto);
         verify(productDetailMapper, times(1)).selectDepositDetailById(productId, testUserId);
@@ -59,7 +69,7 @@ class ProductDetailServiceImplTest {
         when(productDetailMapper.selectSavingsDetailById(productId, testUserId)).thenReturn(expectedDto);
         doNothing().when(productDetailMapper).incrementSavingsViewCount(productId);
 
-        Object result = productDetailService.getProductDetailById(productId, testUserId);
+        Object result = productDetailService.getProductDetailById(productId, testUser);
 
         assertThat(result).isEqualTo(expectedDto);
         verify(productDetailMapper, times(1)).selectSavingsDetailById(productId, testUserId);
@@ -75,7 +85,7 @@ class ProductDetailServiceImplTest {
         when(productDetailMapper.selectFundDetailById(productId, testUserId)).thenReturn(expectedDto);
         doNothing().when(productDetailMapper).incrementFundViewCount(productId);
 
-        Object result = productDetailService.getProductDetailById(productId, testUserId);
+        Object result = productDetailService.getProductDetailById(productId, testUser);
 
         assertThat(result).isEqualTo(expectedDto);
         verify(productDetailMapper, times(1)).selectFundDetailById(productId, testUserId);
@@ -91,7 +101,7 @@ class ProductDetailServiceImplTest {
         when(productDetailMapper.selectForexDetailById(productId, testUserId)).thenReturn(expectedDto);
         doNothing().when(productDetailMapper).incrementForexViewCount(productId);
 
-        Object result = productDetailService.getProductDetailById(productId, testUserId);
+        Object result = productDetailService.getProductDetailById(productId, testUser);
 
         assertThat(result).isEqualTo(expectedDto);
         verify(productDetailMapper, times(1)).selectForexDetailById(productId, testUserId);
@@ -107,7 +117,7 @@ class ProductDetailServiceImplTest {
         when(productDetailMapper.selectPensionDetailById(productId, testUserId)).thenReturn(expectedDto);
         doNothing().when(productDetailMapper).incrementPensionViewCount(productId);
 
-        Object result = productDetailService.getProductDetailById(productId, testUserId);
+        Object result = productDetailService.getProductDetailById(productId, testUser);
 
         assertThat(result).isEqualTo(expectedDto);
         verify(productDetailMapper, times(1)).selectPensionDetailById(productId, testUserId);
@@ -123,7 +133,7 @@ class ProductDetailServiceImplTest {
         when(productDetailMapper.selectPensionDetailById(productId, testUserId)).thenReturn(expectedDto);
         doNothing().when(productDetailMapper).incrementPensionViewCount(productId);
 
-        Object result = productDetailService.getProductDetailById(productId, testUserId);
+        Object result = productDetailService.getProductDetailById(productId, testUser);
 
         assertThat(result).isEqualTo(expectedDto);
         verify(productDetailMapper, times(1)).selectPensionDetailById(productId, testUserId);
@@ -137,7 +147,7 @@ class ProductDetailServiceImplTest {
 
 
         assertThrows(IllegalArgumentException.class, () -> {
-            productDetailService.getProductDetailById(productId, testUserId);
+            productDetailService.getProductDetailById(productId, testUser);
         });
 
         verify(productDetailMapper, never()).selectDepositDetailById(anyString(), anyString());
@@ -158,7 +168,7 @@ class ProductDetailServiceImplTest {
         String productId = null; // null Product ID
 
         assertThrows(IllegalArgumentException.class, () -> {
-            productDetailService.getProductDetailById(productId, testUserId);
+            productDetailService.getProductDetailById(productId, testUser);
         });
 
         // 예상대로 매퍼 메서드가 호출되지 않았음을 검증
@@ -170,8 +180,8 @@ class ProductDetailServiceImplTest {
     void testGetProductDetailById_EmptyProductId() {
         String productId = ""; // 빈 문자열 Product ID
 
-        assertThrows(IllegalArgumentException.class, () -> { // charAt(0) 때문에 StringIndexOutOfBoundsException 발생
-            productDetailService.getProductDetailById(productId, testUserId);
+        assertThrows(IllegalArgumentException.class, () -> {
+            productDetailService.getProductDetailById(productId, testUser);
         });
 
         verifyNoInteractions(productDetailMapper); // Mock 객체에 대한 어떠한 상호작용도 없었음을 검증
