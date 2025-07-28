@@ -16,9 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UserJoinDTO {
-    // test@example.com
-    @NotBlank
-    @Email // RFC 5322의 간략한 버전으로 검사
     private String email;
 
     // 최소 2자 이상의 한글로 구성
@@ -32,7 +29,7 @@ public class UserJoinDTO {
     private String password;
 
     @NotBlank
-    private String checkPassword;
+    private String confirmPassword;
 
     // 01012345678
     @NotBlank
@@ -47,6 +44,16 @@ public class UserJoinDTO {
 
     public LocalDateTime getBirth() {
         return LocalDateTime.parse(birth + "T00:00:00");
+    }
+
+    public boolean isValidAge() {
+        LocalDateTime convertedBirth = getBirth();
+        return convertedBirth.plusYears(14).isBefore(LocalDateTime.now())
+            || convertedBirth.plusYears(14).isEqual(LocalDateTime.now());
+    }
+
+    public boolean isCorrectPassword() {
+        return password.equals(confirmPassword);
     }
 
     public User toVO() {
