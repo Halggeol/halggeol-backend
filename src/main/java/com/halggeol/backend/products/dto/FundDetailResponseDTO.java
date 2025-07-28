@@ -40,7 +40,7 @@ public class FundDetailResponseDTO {
 
     private Integer risk; // 위험도
 
-    private String regList; // 가입 링크
+    private String regLink; // 가입 링크
 
     private String caution; // 유의 사항
 

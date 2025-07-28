@@ -12,7 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDTO {
-    private String username;
+    private String email;
     private String password;
 
     public static LoginDTO of(HttpServletRequest request) {
@@ -21,7 +21,7 @@ public class LoginDTO {
         try {
             return mapper.readValue(request.getInputStream(), LoginDTO.class);
         } catch (IOException e) {
-            throw new BadCredentialsException("username or password is empty");
+            throw new BadCredentialsException("email or password is empty");
         }
     }
 }

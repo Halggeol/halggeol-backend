@@ -93,6 +93,9 @@ dependencies {
     implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
     implementation("org.springframework.security:spring-security-crypto:${springSecurityVersion}")
 
+    // 암호화
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.70'
+
     // validation
     implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
     implementation 'javax.validation:validation-api:2.0.1.Final'

@@ -27,7 +27,6 @@
     <result property="viewCnt" column="d_view_cnt"/>
     <result property="scrapCnt" column="d_scrap_cnt"/>
     <result property="regretCnt" column="d_regret_cnt"/>
-    <result property="algoCode" column="d_algo_code"/>
 
     <result property="matchScore" column="pd_match_score"/>
     <result property="advantage" column="pd_advantage"/>
@@ -226,7 +225,6 @@
     <result property="viewCnt" column="f_view_cnt"/>
     <result property="scrapCnt" column="f_scrap_cnt"/>
     <result property="regretCnt" column="f_regret_cnt"/>
-    <result property="algoCode" column="f_algo_code"/>
 
     <result property="matchScore" column="pd_match_score"/>
     <result property="advantage" column="pd_advantage"/>

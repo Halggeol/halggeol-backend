@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean findByEmail(String email) {
         User user = userMapper.findByEmail(email);
+        System.out.println("find user: " + user);
         return user != null;
     }
 
@@ -55,11 +56,12 @@ public class UserServiceImpl implements UserService {
         jwtManager.validateToken(token);
 
         if (Validator.isValidAge(userToJoin.getBirth()) == false
-            || Validator.isCorrectPassword(userToJoin.getPassword(), userToJoin.getCheckPassword())) {
+            || Validator.isCorrectPassword(userToJoin.getPassword(), userToJoin.getCheckPassword()) == false) {
             return HttpStatus.BAD_REQUEST;
         }
 
         User user = userToJoin.toVO();
+        user.setEmail(jwtManager.getEmail(token));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
 

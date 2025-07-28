@@ -5,8 +5,8 @@ import com.halggeol.backend.security.filter.JwtAuthFilter;
 import com.halggeol.backend.security.filter.JwtLoginAuthFilter;
 import com.halggeol.backend.security.handler.CustomAccessDeniedHandler;
 import com.halggeol.backend.security.handler.CustomAuthEntryPoint;
-import com.halggeol.backend.security.handler.LoginFailureHandler;
-import com.halggeol.backend.security.handler.LoginSuccessHandler;
+import com.halggeol.backend.security.util.JsonResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mybatis.spring.annotation.MapperScan;
@@ -14,21 +14,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -36,11 +37,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @MapperScan(basePackages = {"com.halggeol.backend.security.mapper"})
 @ComponentScan(basePackages = {"com.halggeol.backend.security"})
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private final UserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
     private final JwtAuthErrorFilter jwtAuthErrorFilter;
-    private final CustomAuthEntryPoint customAuthEntryPoint;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthEntryPoint authEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
     // 순환 참조 문제 해결
@@ -52,8 +54,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authManager() throws Exception {
+        return super.authenticationManager();
     }
 
     @Bean
@@ -65,9 +67,23 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+    @Override
     // 정적 리소스, Swagger, favicon 등 보안 처리 불필요한 경로 추가
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers(
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(
+            "/assets/**",
             "/swagger-ui.html",
             "/webjars/**",
             "/swagger-resources/**",
@@ -75,23 +91,10 @@ public class SecurityConfig {
         );
     }
 
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowCredentials(true);
-//        config.setAllowedOriginPatterns(List.of("*"));
-//        config.setAllowedHeaders(List.of("*"));
-//        config.setAllowedMethods(List.of("*"));
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", config);
-//        return new CorsFilter(source);
-//    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
         // 인코딩, 인증 관련 필터
-        http.addFilterBefore(encodingFilter(), CorsFilter.class)
+        http.addFilterBefore(encodingFilter(), CsrfFilter.class)
             .addFilterBefore(jwtLoginAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthFilter, JwtLoginAuthFilter.class)
             .addFilterBefore(jwtAuthErrorFilter, JwtAuthFilter.class);
@@ -100,7 +103,7 @@ public class SecurityConfig {
         http.authorizeRequests()
             .antMatchers(
                 "/api/email",
-                "/api/login/",
+                "/api/login",
                 "/api/password/reset",
                 "/api/signup",
                 "/api/survey"
@@ -110,20 +113,27 @@ public class SecurityConfig {
         // 기본 인증 / CSRF 비활성화, 세션 stateless 설정
         http.httpBasic().disable()
             .csrf().disable()
+            .cors().and()
             .formLogin().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         // 예외 핸들러 설정
         http.exceptionHandling()
-            .authenticationEntryPoint(customAuthEntryPoint)
-            .accessDeniedHandler(customAccessDeniedHandler);
+            .authenticationEntryPoint(authEntryPoint)
+            .accessDeniedHandler(accessDeniedHandler);
 
         http.logout()
             .logoutUrl("/api/logout")
             .invalidateHttpSession(true)
             .deleteCookies("remember-me", "JSESSIONID")
-            .logoutSuccessUrl("/api/main");
+            .logoutSuccessHandler((request, response, authentication) -> {
+                JsonResponse.send(response, HttpStatus.OK);
+            });
+    }
 
-        return http.build();
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder());
     }
 }

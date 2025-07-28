@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.halggeol.backend.user.mapper.UserProductMapper">
+  <select id="getUserProductsByUserId" resultType="com.halggeol.backend.user.dto.UserProductResponseDTO">
+    WITH LatestMydata AS (
+      SELECT id
+      FROM mydata
+      WHERE user_id = #{userId}
+      ORDER BY collect_date DESC, id DESC
+      LIMIT 1
+      ),
+      UserLatestMyProducts AS (
+    -- 2. 가장 최근 mydata에 연결된 myproduct 기록들을 가져옵니다.
+    -- amount 컬럼을 추가합니다.
+    SELECT mp.product_id, mp.reg_date, mp.end_date, mp.amount
+    FROM myproduct mp
+      JOIN LatestMydata lm ON mp.mydata_id = lm.id
+      )
+
+-- 1. 예금 (Deposit - D)
+    SELECT
+      ulmp.product_id AS productId,
+      dp.company AS company,
+      dp.name AS name,
+      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
+      -- tag1, tag2, tag3
+      CAST(dp.min_save_term AS CHAR) AS tag1,
+      CAST(dp.max_save_term AS CHAR) AS tag2,
+      NULL AS tag3,
+
+      -- title, subTitle
+      CONCAT('최고 ', CAST(dp.prime_rate AS CHAR), '%') AS title,
+      CONCAT('기본 ', CAST(dp.rate AS CHAR), '%') AS subTitle
+    FROM UserLatestMyProducts ulmp
+           JOIN deposit dp ON ulmp.product_id = dp.id
+    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'D'
+
+    UNION ALL
+
+-- 2. 적금 (Savings - S)
+    SELECT
+      ulmp.product_id AS productId,
+      sp.company AS company,
+      sp.name AS name,
+      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
+      -- tag1, tag2, tag3
+      CAST(sp.min_save_term AS CHAR) AS tag1,
+      CAST(sp.max_save_term AS CHAR) AS tag2,
+      NULL AS tag3,
+
+      -- title, subTitle
+      CONCAT('최고 ', CAST(sp.prime_rate AS CHAR), '%') AS title,
+      CONCAT('기본 ', CAST(sp.rate AS CHAR), '%') AS subTitle
+    FROM UserLatestMyProducts ulmp
+           JOIN savings sp ON ulmp.product_id = sp.id
+    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'S'
+
+    UNION ALL
+
+-- 3. 연금 (Pension - A, C)
+    SELECT
+      ulmp.product_id AS productId,
+      pp.company AS company,
+      pp.name AS name,
+      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
+      -- tag1, tag2, tag3
+      pp.pension_kind AS tag1,
+      CAST(pp.risk AS CHAR) AS tag2,
+      NULL AS tag3,
+
+      -- title, subTitle
+      CASE
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN CONCAT('작년수익 ', CAST(pp.last_year_profit_rate AS CHAR), '%')
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('수익률 ', CAST(pp.rate AS CHAR), '%')
+        ELSE NULL
+        END AS title,
+      CASE
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN NULL
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('최저보증 ', CAST(pp.min_guarantee_rate AS CHAR), '%')
+        ELSE NULL
+        END AS subTitle
+    FROM UserLatestMyProducts ulmp
+           JOIN pension pp ON ulmp.product_id = pp.id
+    WHERE SUBSTRING(ulmp.product_id, 1, 1) IN ('A', 'C')
+
+    UNION ALL
+
+-- 4. 펀드 (Fund - F)
+    SELECT
+      ulmp.product_id AS productId,
+      fp.company AS company,
+      fp.name AS name,
+      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
+      -- tag1, tag2, tag3
+      fp.category AS tag1,
+      fp.theme AS tag2,
+      CAST(fp.risk AS CHAR) AS tag3,
+
+      -- title, subTitle
+      CONCAT('수익률 ', CAST(fp.rate AS CHAR), '%') AS title,
+      CONCAT('가격변동 ', CAST(fp.fund_price_movement AS CHAR)) AS subTitle
+    FROM UserLatestMyProducts ulmp
+           JOIN fund fp ON ulmp.product_id = fp.id
+    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'F'
+
+    UNION ALL
+
+-- 5. 외화 (Foreign eXchange - X)
+    SELECT
+      ulmp.product_id AS productId,
+      fxp.company AS company,
+      fxp.name AS name,
+      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
+      -- tag1, tag2, tag3
+      fxp.currency AS tag1,
+      NULL AS tag2,
+      NULL AS tag3,
+
+      -- title, subTitle
+      CONCAT('환율 ', CAST(fxp.rate AS CHAR)) AS title,
+      CONCAT('우대율 ', CAST(fxp.rate_give_way AS CHAR), '%') AS subTitle
+    FROM UserLatestMyProducts ulmp
+           JOIN forex fxp ON ulmp.product_id = fxp.id
+    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'X'
+    ORDER BY productId ASC;
+  </select>
+</mapper>

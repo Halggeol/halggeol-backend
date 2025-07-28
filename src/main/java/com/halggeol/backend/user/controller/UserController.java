@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,12 +25,12 @@ public class UserController {
     private final JwtManager jwtManager;
 
     @PostMapping("/request")
-    public ResponseEntity<Void> requestJoin(UserJoinDTO user) {
+    public ResponseEntity<Void> requestJoin(@RequestBody UserJoinDTO user) {
         return ResponseEntity.status(userService.requestJoin(user)).build();
     }
 
     @PostMapping("")
-    public ResponseEntity<Void> join(UserJoinDTO user, @RequestParam String token) {
+    public ResponseEntity<Void> join(@RequestBody UserJoinDTO user, @RequestParam String token) {
         return ResponseEntity.status(userService.join(user, token)).build();
     }
 }
