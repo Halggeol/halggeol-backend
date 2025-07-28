@@ -120,7 +120,7 @@
       AND saveTerm = #{saveTerm}
     </if>
     <if test="minAmount != null and minAmount != ''">
-      AND CAST(minAmount AS UNSIGNED) &gt;= #{minAmount}
+      AND (CASE WHEN minAmount REGEXP '^[0-9]+$' THEN CAST(minAmount AS UNSIGNED) ELSE NULL END) >= #{minAmount}
     </if>
 
     <choose>

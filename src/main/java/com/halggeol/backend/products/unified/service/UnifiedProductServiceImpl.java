@@ -22,7 +22,7 @@ public class UnifiedProductServiceImpl implements UnifiedProductService {
         Integer saveTerm,
         String minAmount
     ) {
-        if(sort == null || sort.isEmpty()){
+        if (sort == null || sort.isBlank()) {
             sort = "popularDesc"; //기본 정렬 기준 -> 인기순
         }
 
