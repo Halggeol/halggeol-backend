@@ -12,7 +12,7 @@ public interface UnifiedProductMapper {
 //    List<UnifiedProductResponseDTO> selectAllUnifiedProducts(); -> 필터링 함수 하나로 통합
 
     List<UnifiedProductResponseDTO> selectFilteredProducts(
-//        @Param("sort") String sort,
+        @Param("sort") String sort,
 //        @Param("keyword") String keyword,
         @Param("type") String type,
         @Param("fSector") Integer fSector,

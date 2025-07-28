@@ -15,15 +15,19 @@ public class UnifiedProductServiceImpl implements UnifiedProductService {
 
     @Override
     public List<UnifiedProductResponseDTO> getFilteredProducts(
-//        String sort,
+        String sort,
 //        String keyword,
         String type,
         Integer fSector,
         Integer saveTerm,
         String minAmount
     ) {
+        if(sort == null || sort.isEmpty()){
+            sort = "popularDesc"; //기본 정렬 기준 -> 인기순
+        }
+
         return unifiedProductMapper.selectFilteredProducts(
-            type, fSector, saveTerm, minAmount
+            sort, type, fSector, saveTerm, minAmount
         );
     }
 

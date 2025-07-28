@@ -32,5 +32,9 @@ public class UnifiedProductResponseDTO {
     private Integer fSector; // 은행 (1금융권, 2금융권, 자산운용)
     private Integer saveTerm; // 가입 기간 - 예적금만 존재
     private String minAmount; // 가입 금액 - 적금, 펀드만 존재
+    
+    // 정렬
+    private Integer viewCnt; // 조회수
+    private Integer scrapCnt; // 관심상품 수
 
 }

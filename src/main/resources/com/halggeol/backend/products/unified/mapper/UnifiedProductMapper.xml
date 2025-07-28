@@ -21,7 +21,9 @@
     CAST(d.rate AS CHAR) AS subTitle,
     d.f_sector AS fSector,
     d.save_term AS saveTerm,
-    d.minimum_cost AS minAmount
+    d.minimum_cost AS minAmount,
+    d.view_cnt,
+    d.scrap_cnt
     FROM deposit d
 
     UNION ALL
@@ -38,7 +40,9 @@
     CAST(s.rate AS CHAR) AS subTitle,
     s.f_sector AS fSector,
     s.save_term AS saveTerm,
-    NULL AS minAmount
+    NULL AS minAmount,
+    s.view_cnt,
+    s.scrap_cnt
     FROM savings s
 
     UNION ALL
@@ -59,7 +63,9 @@
     ) AS subTitle,
     p.f_sector AS fSector,
     NULL AS saveTerm,
-    NULL AS minAmount
+    NULL AS minAmount,
+    p.view_cnt,
+    p.scrap_cnt
     FROM pension p
 
     UNION ALL
@@ -76,7 +82,9 @@
     CAST(f.fund_price_movement AS CHAR) AS subTitle,
     f.f_sector AS fSector,
     NULL AS saveTerm,
-    f.minimum_cost AS minAmount
+    f.minimum_cost AS minAmount,
+    f.view_cnt,
+    f.scrap_cnt
     FROM fund f
 
     UNION ALL
@@ -93,7 +101,9 @@
     CAST(fx.rate_give_way AS CHAR) AS subTitle,
     fx.f_sector AS fSector,
     NULL AS saveTerm,
-    NULL AS minAmount
+    NULL AS minAmount,
+    fx.view_cnt,
+    fx.scrap_cnt
     FROM forex fx
     ) AS unified
     WHERE 1=1
@@ -113,17 +123,17 @@
       AND CAST(minAmount AS UNSIGNED) &gt;= #{minAmount}
     </if>
 
-<!--    <choose>-->
-<!--      <when test="sort == 'rateDesc'">-->
-<!--        ORDER BY CAST(title AS DECIMAL(10, 5)) DESC-->
-<!--      </when>-->
-<!--      <when test="sort == 'popularDesc'">-->
-<!--        ORDER BY productId DESC-->
-<!--      </when>-->
-<!--      <otherwise>-->
-<!--        ORDER BY name ASC-->
-<!--      </otherwise>-->
-<!--    </choose>-->
+    <choose>
+      <when test="sort == 'rateDesc'">
+        ORDER BY CAST(title AS DECIMAL(10, 5)) DESC
+      </when>
+      <when test="sort == 'popularDesc'">
+        ORDER BY view_cnt + (scrap_cnt * 2) DESC
+      </when>
+      <otherwise>
+        ORDER BY (view_cnt + scrap_cnt * 2) DESC
+      </otherwise>
+    </choose>
   </select>
 
   <!--  TODO : 현재 period에 대해서 임의 값을 삽입해놨는데, 명확한 기준을 가지고 재수정 해야함 -->
