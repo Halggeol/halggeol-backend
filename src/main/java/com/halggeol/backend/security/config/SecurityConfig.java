@@ -104,7 +104,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 "/api/email/find",
                 "/api/login",
+                "/api/password/reset",
                 "/api/password/reset/*",
+                "/api/signup",
                 "/api/signup/*",
                 "/api/survey"
             ).permitAll()                   // 비로그인 접근 허용
