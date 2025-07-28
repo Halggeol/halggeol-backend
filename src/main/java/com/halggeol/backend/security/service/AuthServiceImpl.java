@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
         String newToken = jwtManager.generateReverifyToken(user.getUsername());
 
         Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("accessToken", newToken);
+        responseBody.put("reverifyToken", newToken);
 
         return responseBody;
     }
