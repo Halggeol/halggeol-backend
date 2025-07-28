@@ -1,7 +1,7 @@
 package com.halggeol.backend.user.mapper;
 
 import com.halggeol.backend.security.domain.User;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 public interface UserMapper {
     User findByEmail(String email);
@@ -9,4 +9,6 @@ public interface UserMapper {
     int insert(User user);
 
     String findNameById(int id);
+
+    String findEmailByNameAndPhone(@Param("name") String name, @Param("phone") String phone);
 }

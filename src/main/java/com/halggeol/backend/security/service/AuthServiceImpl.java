@@ -1,6 +1,8 @@
 package com.halggeol.backend.security.service;
 
+import com.halggeol.backend.security.dto.FindEmailDTO;
 import com.halggeol.backend.security.util.JwtManager;
+import com.halggeol.backend.user.mapper.UserMapper;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +14,42 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final JwtManager jwtManager;
+    private final UserMapper userMapper;
 
     @Override
     public Map<String, String> extendLogin(String email) {
         String newToken = jwtManager.generateAccessToken(email);
+
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("accessToken", newToken);
 
         return responseBody;
+    }
+
+    @Override
+    public Map<String, String> findEmail(FindEmailDTO info) {
+        String email = userMapper.findEmailByNameAndPhone(info.getName(), info.getPhone());
+
+        if (email == null) {
+            return null;
+        }
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("email", maskEmail(email));
+
+        return responseBody;
+    }
+
+    public String maskEmail(String email) {
+        int atIndex = email.indexOf("@");
+
+        String prefix = email.substring(0, 1);
+        String masked = "***";
+        String domain = email.substring(atIndex);
+
+        if (atIndex <= 1) {
+            return masked + domain;
+        }
+        return prefix + masked + domain;
     }
 }

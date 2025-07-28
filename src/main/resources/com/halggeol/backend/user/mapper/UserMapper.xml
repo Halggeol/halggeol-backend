@@ -17,4 +17,8 @@
   <select id="findNameById" resultType="java.lang.String">
     SELECT name FROM users WHERE id = #{id}
   </select>
+
+  <select id="findEmailByNameAndPhone" resultType="java.lang.String">
+    SELECT email FROM users WHERE name = #{name} AND phone = #{phone}
+  </select>
 </mapper>
