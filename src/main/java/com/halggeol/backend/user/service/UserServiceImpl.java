@@ -5,7 +5,7 @@ import com.halggeol.backend.security.mail.domain.MailType;
 import com.halggeol.backend.security.mail.dto.MailDTO;
 import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
-import com.halggeol.backend.security.util.Validator;
+import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
 import javax.validation.Valid;
@@ -28,22 +28,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean findByEmail(String email) {
         User user = userMapper.findByEmail(email);
-        System.out.println("find user: " + user);
         return user != null;
     }
 
-    public HttpStatus requestJoin(@Valid UserJoinDTO user) {
+    public HttpStatus requestJoin(@Valid EmailDTO email) {
         // 입력값 유효성 검증은 UserJoinDTO에서 진행
         // 검증 실패 시 MethodArgumentNotValidException 예외 발생
         // 스프링 MVC에서 자동으로 400 Bad Request로 응답함
 
-        if (findByEmail(user.getEmail())) {
+        if (findByEmail(email.getEmail())) {
             return HttpStatus.CONFLICT;
         }
 
         mailService.sendMail(MailDTO.builder()
-                                    .email(user.getEmail())
-                                    .token(jwtManager.generateVerifyToken(user.getEmail()))
+                                    .email(email.getEmail())
+                                    .token(jwtManager.generateVerifyToken(email.getEmail()))
                                     .mailType(MailType.SIGNUP)
                                     .build());
 
@@ -55,8 +54,7 @@ public class UserServiceImpl implements UserService {
     public HttpStatus join(@Valid UserJoinDTO userToJoin, String token) {
         jwtManager.validateToken(token);
 
-        if (Validator.isValidAge(userToJoin.getBirth()) == false
-            || Validator.isCorrectPassword(userToJoin.getPassword(), userToJoin.getCheckPassword()) == false) {
+        if (!userToJoin.isValidAge() || !userToJoin.isCorrectPassword()) {
             return HttpStatus.BAD_REQUEST;
         }
 
