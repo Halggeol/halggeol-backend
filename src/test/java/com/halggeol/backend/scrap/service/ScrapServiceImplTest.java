@@ -3,6 +3,8 @@ package com.halggeol.backend.scrap.service;
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
+import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.security.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,12 +27,20 @@ class ScrapServiceImplTest {
     @Spy
     private ScrapServiceImpl scrapService;
 
+    private CustomUser testUser;
     private int testUserId;
     private ScrapRequestDTO testRequestDto;
 
     @BeforeEach
     void setUp() {
         testUserId = 1;
+        User user = User.builder()
+                .id(1)
+                .email("test@example.com")
+                .name("테스트 사용자")
+                .password("password")
+                .build();
+        testUser = new CustomUser(user);
         testRequestDto = new ScrapRequestDTO();
     }
 
@@ -50,10 +60,9 @@ class ScrapServiceImplTest {
         doNothing().when(scrapMapper).incrementDepositScrapCount(anyString());
 
         // When
-        int result = scrapService.addScrapProduct(testUserId, testRequestDto);
+        scrapService.addScrapProduct(testUser, testRequestDto);
 
         // Then
-        assertThat(result).isEqualTo(0); // 서비스 메서드의 반환 값 확인
 
 
         verify(scrapService, times(1)).incrementProductScrapCountAsync(productId);
@@ -82,10 +91,9 @@ class ScrapServiceImplTest {
         doNothing().when(scrapMapper).incrementFundScrapCount(anyString()); // Fund 증가만 모의
 
         // When
-        int result = scrapService.addScrapProduct(testUserId, testRequestDto);
+        scrapService.addScrapProduct(testUser, testRequestDto);
 
         // Then
-        assertThat(result).isEqualTo(0);
         verify(scrapService, times(1)).incrementProductScrapCountAsync(productId);
         verify(scrapMapper, times(1)).insertUserScrap(eq(expectedScrap));
 
@@ -108,10 +116,9 @@ class ScrapServiceImplTest {
         doNothing().when(scrapMapper).deleteUserScrap(anyInt(), anyString());
 
         // When
-        int result = scrapService.removeScrapProduct(testUserId, testRequestDto);
+        scrapService.removeScrapProduct(testUser, testRequestDto);
 
         // Then
-        assertThat(result).isEqualTo(0);
 
         verify(scrapService, times(1)).decrementProductScrapCountAsync(productId);
 
@@ -135,10 +142,9 @@ class ScrapServiceImplTest {
         doNothing().when(scrapMapper).deleteUserScrap(anyInt(), anyString());
 
         // When
-        int result = scrapService.removeScrapProduct(testUserId, testRequestDto);
+        scrapService.removeScrapProduct(testUser, testRequestDto);
 
         // Then
-        assertThat(result).isEqualTo(0);
         verify(scrapService, times(1)).decrementProductScrapCountAsync(productId);
         verify(scrapMapper, times(1)).deleteUserScrap(testUserId, productId);
 
