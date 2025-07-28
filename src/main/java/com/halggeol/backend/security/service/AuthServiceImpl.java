@@ -48,10 +48,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public HttpStatus resetPasswordWithLogin(CustomUser user, ResetPasswordDTO passwords, String bearerToken) {
         if (!jwtManager.isReverified(jwtManager.parseBearerToken(bearerToken))) {
-            return  HttpStatus.UNAUTHORIZED;
+            return HttpStatus.UNAUTHORIZED;
         }
         if (!passwords.isPasswordConfirmed()) {
-            return  HttpStatus.BAD_REQUEST;
+            return HttpStatus.BAD_REQUEST;
         }
         userMapper.updatePassword(user.getUser().getId(), passwordEncoder.encode(passwords.getNewPassword()));
         return HttpStatus.OK;

@@ -69,10 +69,7 @@ public class JwtManager {
             .getBody()
             .get("passwordReverified", Boolean.class);
 
-        if (passwordReverified != null && passwordReverified) {
-            return true;
-        }
-        return false;
+        return Boolean.TRUE.equals(passwordReverified);
     }
 
     public String parseBearerToken(String bearerToken) {
