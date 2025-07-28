@@ -3,6 +3,7 @@ package com.halggeol.backend.security.service;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.security.dto.FindEmailDTO;
 import com.halggeol.backend.security.dto.ResetPasswordDTO;
+import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
 import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.mapper.UserMapper;
 import java.util.HashMap;
@@ -55,6 +56,20 @@ public class AuthServiceImpl implements AuthService {
         }
         userMapper.updatePassword(user.getUser().getId(), passwordEncoder.encode(passwords.getNewPassword()));
         return HttpStatus.OK;
+    }
+
+    @Override
+    public Map<String, String> reverifyPassword(CustomUser user, ReverifyPasswordDTO password) {
+        log.error(passwordEncoder.matches(password.getConfirmPassword(), user.getPassword()));
+        if (!passwordEncoder.matches(password.getConfirmPassword(), user.getPassword())) {
+            return null;
+        }
+        String newToken = jwtManager.generateReverifyToken(user.getUsername());
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("accessToken", newToken);
+
+        return responseBody;
     }
 
     private String maskEmail(String email) {

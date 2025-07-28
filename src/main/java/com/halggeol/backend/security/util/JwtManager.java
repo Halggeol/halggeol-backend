@@ -8,11 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,6 +32,17 @@ public class JwtManager {
     public String generateVerifyToken(String email) {
         return Jwts.builder()
             .setSubject(email)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(new Date().getTime() + VERIFY_TOKEN_VALID_MILISECOND))
+            .signWith(key)
+            .compact();
+    }
+
+    // 비밀번호 재확인 토큰 생성
+    public String generateReverifyToken(String email) {
+        return Jwts.builder()
+            .setSubject(email)
+            .claim("passwordReverified", true)
             .setIssuedAt(new Date())
             .setExpiration(new Date(new Date().getTime() + VERIFY_TOKEN_VALID_MILISECOND))
             .signWith(key)

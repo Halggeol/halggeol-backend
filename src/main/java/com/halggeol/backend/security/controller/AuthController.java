@@ -3,6 +3,7 @@ package com.halggeol.backend.security.controller;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.security.dto.FindEmailDTO;
 import com.halggeol.backend.security.dto.ResetPasswordDTO;
+import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
 import com.halggeol.backend.security.service.AuthService;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,13 +42,21 @@ public class AuthController {
         if (responseBody == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(authService.findEmail(info));
+        return ResponseEntity.ok(responseBody);
     }
 
-//    // 로그인 상태 비밀번호 재확인 API
-//    @PatchMapping("/password/reverify")
-//    public ResponseEntity<Void> reverifyPassword() {
-//    }
+    // 로그인 상태 비밀번호 재확인 API
+    @PostMapping("/password/reverify")
+    public ResponseEntity<Map<String, String>> reverifyPassword(
+        @AuthenticationPrincipal CustomUser user,
+        @RequestBody ReverifyPasswordDTO password
+    ) {
+        Map<String, String> responseBody = authService.reverifyPassword(user, password);
+        if (responseBody == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(responseBody);
+    }
 
     // 로그인 상태 비밀번호 재설정 API
     @PatchMapping("/password/reset")
