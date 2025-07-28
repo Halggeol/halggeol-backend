@@ -8,9 +8,11 @@ import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResp
 import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendService;
+import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.user.mapper.UserMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +30,10 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    public DashboardResponseDTO getDashboardData(String userId) {
+    public DashboardResponseDTO getDashboardData(@AuthenticationPrincipal CustomUser user) {
         DashboardResponseDTO dashboardResponse = new DashboardResponseDTO();
+
+        String userId = String.valueOf(user.getUser().getId());
 
         List<RecommendResponseDTO> recommendedProducts = recommendService.getRecommendProducts(userId);
         dashboardResponse.setRecommendItems(recommendedProducts);

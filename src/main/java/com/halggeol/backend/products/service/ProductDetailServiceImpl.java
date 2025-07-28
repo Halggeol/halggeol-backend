@@ -4,9 +4,10 @@ import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByBi
 import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByConsumer;
 
 import com.halggeol.backend.products.mapper.ProductDetailMapper;
-import java.util.function.Consumer;
+import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +19,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
     @Override
     @Transactional
-    public Object getProductDetailById(String productId, String userId) {
+    public Object getProductDetailById(String productId, @AuthenticationPrincipal CustomUser user) {
 
+        String userId = String.valueOf(user.getUser().getId());
         // 조회수 증가 로직 먼저 호출 --> 비동기적으로 처리
         incrementProductViewCountAsync(productId);
 

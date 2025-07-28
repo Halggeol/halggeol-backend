@@ -1,9 +1,11 @@
 package com.halggeol.backend.products.controller;
 
 import com.halggeol.backend.products.service.ProductDetailService;
+import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +24,9 @@ public class ProductDetailController {
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductDetailById( // 반환 타입이 달라질 수 있으므로 와일드카드 사용
         @PathVariable String productId,
-        @RequestParam("userId") String userId) {
+        @AuthenticationPrincipal CustomUser user) {
         try {
-            Object response = productDetailService.getProductDetailById(productId, userId);
+            Object response = productDetailService.getProductDetailById(productId, user);
             if (response == null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
