@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-// Todo: 이후 jwt 되면 모든 userId 를 @AuthenticationPrincipal UserDetails userDetails로 변경
-// Todo: 프론트 페이지에서 그래프에 필요한 바디값을 찾아서 mapper 코드에 추가해야됨
-
 @RestController
 @RequestMapping("/api/products/detail")
 @RequiredArgsConstructor
