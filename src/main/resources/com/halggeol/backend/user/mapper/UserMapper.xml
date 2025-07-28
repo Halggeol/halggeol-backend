@@ -21,4 +21,9 @@
   <select id="findEmailByNameAndPhone" resultType="java.lang.String">
     SELECT email FROM users WHERE name = #{name} AND phone = #{phone}
   </select>
+
+  <update id="updatePassword">
+    UPDATE users SET password = #{newPassword} WHERE id = #{id}
+  </update>
+
 </mapper>
