@@ -8,7 +8,7 @@ import java.util.List;
 public interface UnifiedProductService {
     List<UnifiedProductResponseDTO> getFilteredProducts(
         String sort,
-//        String keyword,
+        String keyword,
         String type,
         Integer fSector,
         Integer saveTerm,

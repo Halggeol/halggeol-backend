@@ -13,7 +13,7 @@ public interface UnifiedProductMapper {
 
     List<UnifiedProductResponseDTO> selectFilteredProducts(
         @Param("sort") String sort,
-//        @Param("keyword") String keyword,
+        @Param("keyword") String keyword,
         @Param("type") String type,
         @Param("fSector") Integer fSector,
         @Param("saveTerm") Integer saveTerm,

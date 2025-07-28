@@ -16,7 +16,7 @@ public class UnifiedProductServiceImpl implements UnifiedProductService {
     @Override
     public List<UnifiedProductResponseDTO> getFilteredProducts(
         String sort,
-//        String keyword,
+        String keyword,
         String type,
         Integer fSector,
         Integer saveTerm,
@@ -27,7 +27,7 @@ public class UnifiedProductServiceImpl implements UnifiedProductService {
         }
 
         return unifiedProductMapper.selectFilteredProducts(
-            sort, type, fSector, saveTerm, minAmount
+            sort, keyword, type, fSector, saveTerm, minAmount
         );
     }
 

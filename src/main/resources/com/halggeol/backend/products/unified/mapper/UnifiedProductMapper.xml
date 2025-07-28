@@ -107,9 +107,9 @@
     FROM forex fx
     ) AS unified
     WHERE 1=1
-<!--    <if test="keyword != null and keyword != ''">-->
-<!--      AND name LIKE CONCAT('%', #{keyword}, '%')-->
-<!--    </if>-->
+    <if test="keyword != null and keyword != ''">
+      AND name LIKE CONCAT('%', #{keyword}, '%')
+    </if>
     <if test="type != null and type != ''">
       AND type = #{type}
     </if>
