@@ -7,6 +7,7 @@ import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
 import com.halggeol.backend.security.service.AuthService;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,9 @@ public class AuthController {
 
     // 아이디 찾기 API
     @PostMapping("/email/find")
-    public ResponseEntity<Map<String, String>> findEmail(@RequestBody FindEmailDTO info) {
+    public ResponseEntity<Map<String, String>> findEmail(
+        @Valid @RequestBody FindEmailDTO info
+    ) {
         Map<String, String> responseBody = authService.findEmail(info);
         if (responseBody == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -49,7 +52,7 @@ public class AuthController {
     @PostMapping("/password/reverify")
     public ResponseEntity<Map<String, String>> reverifyPassword(
         @AuthenticationPrincipal CustomUser user,
-        @RequestBody ReverifyPasswordDTO password
+        @Valid @RequestBody ReverifyPasswordDTO password
     ) {
         Map<String, String> responseBody = authService.reverifyPassword(user, password);
         if (responseBody == null) {
@@ -62,7 +65,7 @@ public class AuthController {
     @PatchMapping("/password/reset")
     public ResponseEntity<Void> resetPasswordWithLogin(
         @AuthenticationPrincipal CustomUser user,
-        @RequestBody ResetPasswordDTO passwords,
+        @Valid @RequestBody ResetPasswordDTO passwords,
         @RequestHeader("Authorization") String bearerToken
     ) {
         return ResponseEntity.status(authService.resetPasswordWithLogin(user, passwords, bearerToken)).build();

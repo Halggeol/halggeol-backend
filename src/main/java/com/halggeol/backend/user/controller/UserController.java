@@ -26,13 +26,18 @@ public class UserController {
 
     // 회원가입 요청 (이메일 본인 인증) API
     @PostMapping("/request")
-    public ResponseEntity<Void> requestJoin(@RequestBody EmailDTO email) {
+    public ResponseEntity<Void> requestJoin(
+        @Valid @RequestBody EmailDTO email
+    ) {
         return ResponseEntity.status(userService.requestJoin(email)).build();
     }
 
     // 회원가입 등록 API
     @PostMapping("")
-    public ResponseEntity<Void> join(@RequestBody UserJoinDTO user, @RequestParam String token) {
+    public ResponseEntity<Void> join(
+        @Valid @RequestBody UserJoinDTO user,
+        @RequestParam String token
+    ) {
         return ResponseEntity.status(userService.join(user, token)).build();
     }
 }
