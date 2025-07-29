@@ -12,17 +12,27 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
 @EnableScheduling
 @PropertySource({"classpath:/application.properties"})
 @MapperScan("com.halggeol.backend.**.mapper")
+@ComponentScan(
+    basePackages = "com.halggeol.backend",
+    excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
+        @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class)
+    }
+)
 @Slf4j
 @EnableTransactionManagement
 public class AppConfig {
