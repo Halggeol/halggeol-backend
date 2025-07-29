@@ -28,4 +28,9 @@ public class User {
     private LocalDateTime klgRenewDate; // 금융 이해도 검사일
     private LocalDateTime riskRenewDate; // 위험도/투자 성향 검사일
     private LocalDateTime docuRenewDate; // 개인정보 동의일자
+    private Double yieldScore; // 수익성 점수
+    private Double riskScore; // 위험성 점수
+    private Double costScore; // 비용 점수
+    private Double liquidityScore; // 유동성 점수
+    private Double complexityScore; // 복잡성 점수
 }

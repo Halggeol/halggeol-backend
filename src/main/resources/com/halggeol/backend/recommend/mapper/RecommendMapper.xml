@@ -4,74 +4,383 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.halggeol.backend.recommend.mapper.RecommendMapper">
-  <select id="selectRecommendProducts" resultType="com.halggeol.backend.recommend.dto.RecommendResponseDTO">
+  <resultMap id="DepositAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.DepositAlgorithmResponseDTO">
+    <id property="id" column="productId"/>
+    <result property="name" column="name"/>
+    <result property="rate" column="rate"/>
+    <result property="primeRate" column="prime_rate"/>
+    <result property="maxLimit" column="max_limit"/>
+    <result property="joinDeny" column="join_deny"/>
+    <result property="minimumCost" column="minimum_cost"/>
+    <result property="minSaveTerm" column="min_save_term"/>
+    <result property="maxSaveTerm" column="max_save_term"/>
+  </resultMap>
+
+  <select id="getDepositAlgorithmDetail" resultMap="DepositAlgorithmResponseDTOMap">
     SELECT
-      t.product_id AS productId,
-      COALESCE(
-        dp.name,      -- 예금 상품명 (D)
-        sp.name,      -- 적금 상품명 (S)
-        pp.name,      -- 연금 상품명 (A, C)
-        fp.name,      -- 펀드 상품명 (F)
-        fxp.name      -- 외화 상품명 (X)
-      ) AS name,
-      t.match_score AS matchScore
-    FROM (
-           -- rec_item 테이블에서 각 상품별 ID와 매치 스코어를 UNION ALL로 추출합니다.
-           SELECT
-             product1_id AS product_id,
-             product1_match_score AS match_score,
-             user_id
-           FROM rec_item
-           WHERE product1_id IS NOT NULL
+      d.id as productId,
+      d.name,
+      d.rate,
+      d.prime_rate,
+      d.max_limit,
+      d.join_deny,
+      d.minimum_cost,
+      d.min_save_term,
+      d.max_save_term
+    FROM deposit d
+  </select>
 
-           UNION ALL
+  <update id="updateDepositAlgoCodeById">
+    UPDATE deposit
+    SET
+        deposit.algo_code = #{algoCode},
+        deposit.yieldScore = #{yieldScore},
+        deposit.risk_score = #{riskScore},
+        deposit.liquidity_score = #{liquidityScore},
+        deposit.complexity_score = #{complexityScore},
+        deposit.cost_score = #{costScore}
+    WHERE deposit.id = #{pid}
+  </update>
 
-           SELECT
-             product2_id AS product_id,
-             product2_match_score AS match_score,
-             user_id
-           FROM rec_item
-           WHERE product2_id IS NOT NULL
+  <resultMap id="SavingsAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.SavingsAlgorithmResponseDTO">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="rate" column="rate"/>
+    <result property="primeRate" column="prime_rate"/>
+    <result property="maxLimit" column="max_limit"/>
+    <result property="joinDeny" column="join_deny"/>
+    <result property="minSaveTerm" column="min_save_term"/>
+    <result property="maxSaveTerm" column="max_save_term"/>
+  </resultMap>
 
-           UNION ALL
+  <select id="getSavingsAlgorithmDetail" resultMap="SavingsAlgorithmResponseDTOMap">
+    SELECT
+      s.id as id,
+      s.name,
+      s.rate,
+      s.prime_rate,
+      s.max_limit,
+      s.join_deny,
+      s.min_save_term,
+      s.max_save_term
+    FROM savings s
+    </select>
 
-           SELECT
-             product3_id AS product_id,
-             product3_match_score AS match_score,
-             user_id
-           FROM rec_item
-           WHERE product3_id IS NOT NULL
+  <update id="updateSavingsAlgoCodeById">
+    UPDATE savings
+    SET
+        savings.algo_code = #{algoCode}
+        ,savings.yieldScore = #{yieldScore}
+        ,savings.risk_score = #{riskScore}
+        ,savings.cost_score = #{costScore}
+        ,savings.liquidity_score = #{liquidityScore}
+        ,savings.complexity_score = #{complexityScore}
+    WHERE savings.id = #{pid}
+  </update>
 
-           UNION ALL
+  <resultMap id="FundAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.FundAlgorithmResponseDTO">
+    <id property="id" column="Id"/>
+    <result property="name" column="name"/>
+    <result property="rate" column="rate"/>
+    <result property="fundPrice" column="fund_price"/>
+    <result property="fundPriceMovement" column="fund_price_movement"/>
+    <result property="investmentType" column="investment_type"/>
+    <result property="investmentWarningGrade" column="investment_warning_grade"/>
+    <result property="managementFee" column="management_fee"/>
+    <result property="TER" column="TER"/>
+    <result property="upfrontFee" column="upfront_fee"/>
+    <result property="minimumCost" column="minimum_cost"/>
+    <result property="theme" column="theme"/>
+  </resultMap>
 
-           SELECT
-             product4_id AS product_id,
-             product4_match_score AS match_score,
-             user_id
-           FROM rec_item
-           WHERE product4_id IS NOT NULL
+  <select id="getFundAlgorithmDetail" resultMap="FundAlgorithmResponseDTOMap">
+    SELECT
+      f.id as Id,
+      f.name,
+      f.rate,
+      f.fund_price,
+      f.fund_price_movement,
+      f.investment_type,
+      f.investment_warning_grade,
+      f.management_fee,
+      f.TER,
+      f.upfront_fee,
+      f.minimum_cost,
+      f.theme
+    FROM fund f</select>
+  
+  <update id="updateFundAlgoCodeById">
+    UPDATE fund
+    SET fund.algo_code = #{algoCode},
+    fund.yieldScore = #{yieldScore},
+    fund.risk_score = #{riskScore},
+    fund.cost_score = #{costScore},
+    fund.liquidity_score = #{liquidityScore},
+    fund.complexity_score = #{complexityScore}
+    WHERE fund.id = #{pid}</update>
+  <resultMap id="PensionAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.PensionAlgorithmResponseDTO">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="rate" column="rate"/>
+    <result property="lastYearProfit" column="last_year_profit_rate"/>
+    <result property="minGuaranteeRate" column="min_guarantee_rate"/>
+    <result property="pensionKind" column="pension_kind"/>
+    <result property="pensionType" column="pension_type"/>
+    <result property="risk" column="risk"/>
+  </resultMap>
 
-           UNION ALL
+  <select id="getPensionAlgorithmDetail" resultMap="PensionAlgorithmResponseDTOMap">
+    SELECT
+      p.id as id,
+      p.name,
+      p.rate,
+      p.last_year_profit_rate,
+      p.min_guarantee_rate,
+      p.pension_kind,
+      p.pension_type,
+      p.risk
+    FROM pension p
+    </select>
 
-           SELECT
-             product5_id AS product_id,
-             product5_match_score AS match_score,
-             user_id
-           FROM rec_item
-           WHERE product5_id IS NOT NULL
-         ) AS t
+  <update id="updatePensionAlgoCodeById">
+    UPDATE pension
+    SET pension.algo_code = #{algoCode}
+    ,pension.yieldScore = #{yieldScore}
+    ,pension.risk_score = #{riskScore}
+    ,pension.cost_score = #{costScore}
+    ,pension.liquidity_score = #{liquidityScore}
+    ,pension.complexity_score = #{complexityScore}
+    WHERE pension.id = #{pid}</update>
 
-           LEFT JOIN deposit dp
-                     ON t.product_id = dp.id AND t.product_id LIKE 'D%'
-           LEFT JOIN savings sp
-                     ON t.product_id = sp.id AND t.product_id LIKE 'S%'
-           LEFT JOIN pension pp
-                     ON t.product_id = pp.id AND (t.product_id LIKE 'A%' OR t.product_id LIKE 'C%')
-           LEFT JOIN fund fp
-                     ON t.product_id = fp.id AND t.product_id LIKE 'F%'
-           LEFT JOIN forex fxp
-                     ON t.product_id = fxp.id AND t.product_id LIKE 'X%'
-    WHERE t.user_id = #{userId}
+  <resultMap id="ForexAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.ForexAlgorithmResponseDTO">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="rate" column="rate"/>
+    <result property="currency" column="currency"/>
+    <result property="protect" column="protect"/>
+    <result property="regFund" column="reg_fund"/>
+    <result property="taxRefund" column="tax_refund"/>
+    <result property="autoRenew" column="auto_renew"/>
+    <result property="extraDeposit" column="extra_deposit"/>
+  </resultMap>
 
+  <select id="getForexAlgorithmDetail" resultMap="ForexAlgorithmResponseDTOMap">
+    SELECT
+      fx.id as id,
+      fx.name,
+      fx.rate,
+      fx.currency,
+      fx.protect,
+      fx.reg_fund,
+      fx.tax_refund,
+      fx.auto_renew,
+      fx.extra_deposit
+    FROM forex fx
+  </select>
+
+  <update id="updateForexAlgoCodeById">
+    UPDATE forex
+    SET forex.algo_code = #{algoCode}
+    ,forex.yieldScore = #{yieldScore}
+    ,forex.risk_score = #{riskScore}
+    ,forex.cost_score = #{costScore}
+    ,forex.liquidity_score = #{liquidityScore}
+    ,forex.complexity_score = #{complexityScore}
+    WHERE forex.id = #{pid}</update>
+  
+  <resultMap id="ProductVectorResponseDTOMap" type="com.halggeol.backend.recommend.dto.ProductVectorResponseDTO">
+    <id property="id" column="id"/>
+    <result property="yieldScore" column="yieldScore"/>
+    <result property="riskScore" column="risk_score"/>
+    <result property="costScore" column="cost_score"/>
+    <result property="liquidityScore" column="liquidity_score"/>
+    <result property="complexityScore" column="complexity_score"/>
+  </resultMap>
+  
+  <select id="getProductVectors" resultMap="ProductVectorResponseDTOMap">
+    SELECT
+      id,
+      yieldScore,
+      risk_score,
+      cost_score,
+      liquidity_score,
+      complexity_score
+    FROM deposit
+    union all
+    SELECT
+      id,
+      yieldScore,
+      risk_score,
+      cost_score,
+      liquidity_score,
+      complexity_score
+    FROM savings
+    union all
+    SELECT
+      id,
+      yieldScore,
+      risk_score,
+      cost_score,
+      liquidity_score,
+      complexity_score
+    FROM fund
+    union all
+    SELECT
+      id,
+      yieldScore,
+      risk_score,
+      cost_score,
+      liquidity_score,
+      complexity_score
+    FROM pension
+    union all
+    SELECT
+      id,
+      yieldScore,
+      risk_score,
+      cost_score,
+      liquidity_score,
+      complexity_score
+    FROM forex
+  </select>
+
+  <resultMap id="UserVectorResponseDTOMap" type="com.halggeol.backend.recommend.dto.UserVectorResponseDTO">
+    <id property="id" column="id"/>
+    <result property="yieldScore" column="yieldScore"/>
+    <result property="riskScore" column="risk_score"/>
+    <result property="costScore" column="cost_score"/>
+    <result property="liquidityScore" column="liquidity_score"/>
+    <result property="complexityScore" column="complexity_score"/>
+  </resultMap>
+
+  <select id="getUserVectors" resultMap="UserVectorResponseDTOMap">
+    SELECT
+      id,
+      yieldScore,
+      risk_score,
+      cost_score,
+      liquidity_score,
+      complexity_score
+    FROM users
+    </select>
+
+
+  <insert id="saveRecommendations" parameterType="map">
+    INSERT INTO rec_item (
+          user_id,
+         rec_date,
+      product1_id,
+      product2_id,
+      product3_id,
+      product4_id,
+      product5_id
+    ) VALUES (
+          #{userId},
+              NOW(),
+      #{product1Id},
+      #{product2Id},
+      #{product3Id},
+      #{product4Id},
+      #{product5Id}
+    )
+  </insert>
+
+  <select id="getUserById" resultType="com.halggeol.backend.security.domain.User">
+    SELECT * FROM users WHERE id = #{id}
+  </select>
+
+  <select id="getProductVectorById" resultMap="ProductVectorResponseDTOMap">
+  SELECT
+  id,
+  yieldScore,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM deposit WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yieldScore,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM savings WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yieldScore,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM fund WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yieldScore,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM pension WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yieldScore,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM forex WHERE id = #{id}
+  </select>
+
+  <resultMap id="RecommendResponseDTOMap" type="com.halggeol.backend.recommend.dto.RecommendResponseDTO">
+    <result property="productId" column="product_id"/>
+    <result property="name" column="product_name"/>
+    <result property="matchScore" column="match_score"/>
+  </resultMap>
+
+  <select id="getRecommendationsByUserId" resultMap="RecommendResponseDTOMap">
+    SELECT
+      ri.product1_id AS product_id,
+      d.name AS product_name,
+      ri.product1_id * 0.1 + d.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN deposit d ON ri.product1_id = d.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product2_id AS product_id,
+      s.name AS product_name,
+      ri.product2_id * 0.1 + s.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN savings s ON ri.product2_id = s.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product3_id AS product_id,
+      f.name AS product_name,
+      ri.product3_id * 0.1 + f.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN fund f ON ri.product3_id = f.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product4_id AS product_id,
+      p.name AS product_name,
+      ri.product4_id * 0.1 + p.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN pension p ON ri.product4_id = p.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product5_id AS product_id,
+      fx.name AS product_name,
+      ri.product5_id * 0.1 + fx.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN forex fx ON ri.product5_id = fx.id
+    WHERE ri.user_id = #{userId}
   </select>
 </mapper>

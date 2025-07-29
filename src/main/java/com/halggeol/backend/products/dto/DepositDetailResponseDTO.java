@@ -3,10 +3,8 @@ package com.halggeol.backend.products.dto;
 import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
-import lombok.Setter;
 
 @Data
-@Setter // Setter를 사용하여 Lombok이 setter 메서드를 생성하도록 함 (테스트 코드를 위해서)
 public class DepositDetailResponseDTO {
 
     private String id;
@@ -48,5 +46,7 @@ public class DepositDetailResponseDTO {
     private String matchScore;      // ENUM('상','중','하')
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
-    
+
+    private Integer maxSaveTerm; // 최대 저축 기간
+    private Integer minSaveTerm; // 최소 저축 기간
 }
