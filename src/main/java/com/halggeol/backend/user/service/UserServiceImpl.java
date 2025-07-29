@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
         return user != null;
     }
 
+    @Override
     public Map<String, String> requestJoin(EmailDTO email) {
         // 입력값 유효성 검증은 UserJoinDTO에서 진행
         // 검증 실패 시 MethodArgumentNotValidException 예외 발생
