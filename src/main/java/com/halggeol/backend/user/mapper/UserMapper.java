@@ -19,4 +19,6 @@ public interface UserMapper {
         @Param("id") int id,
         @Param("newPassword") String newPassword
     );
+
+    User findById(int id);
 }
