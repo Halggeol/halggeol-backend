@@ -13,9 +13,11 @@ public interface AuthService {
 
     Map<String, Object> findEmail(FindEmailDTO info);
 
-    Map<String, String> resetPasswordWithLogin(CustomUser user, ResetPasswordDTO passwords, String bearerToken);
-
     Map<String, String> reverifyPassword(CustomUser user, ReverifyPasswordDTO password);
 
+    Map<String, String> resetPasswordWithLogin(CustomUser user, ResetPasswordDTO passwords, String bearerToken);
+
     Map<String, String> requestResetPassword(EmailDTO email);
+
+    Map<String, String> resetPasswordWithoutLogin(ResetPasswordDTO passwords, String token);
 }

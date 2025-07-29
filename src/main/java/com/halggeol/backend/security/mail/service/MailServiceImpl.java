@@ -67,7 +67,7 @@ public class MailServiceImpl implements MailService {
 
             case PASSWORD_RESET:
                 subject = "Password Reset for Halggeol";
-                body = "";
+                body = "/api/password/reset?token=";
                 break;
 
             default:

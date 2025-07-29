@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
@@ -72,8 +73,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.requestResetPassword(email));
     }
 
-//    // 비로그인 상태 비밀번호 재설정 변경 API
-//    @PostMapping("/password/reset")
-//    public ResponseEntity<Void> resetPasswordWithoutLogin() {
-//    }
+    // 비로그인 상태 비밀번호 재설정 변경 API
+    @PostMapping("/password/reset")
+    public ResponseEntity<Map<String, String>> resetPasswordWithoutLogin(
+        @Valid @RequestBody ResetPasswordDTO passwords,
+        @RequestParam String token
+    ) {
+        return ResponseEntity.ok(authService.resetPasswordWithoutLogin(passwords, token));
+    }
 }

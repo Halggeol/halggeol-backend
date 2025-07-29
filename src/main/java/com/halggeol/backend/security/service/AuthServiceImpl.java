@@ -81,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
-        userMapper.updatePassword(user.getUser().getId(), passwordEncoder.encode(passwords.getNewPassword()));
+        userMapper.updatePassword(user.getUsername(), passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("Message", "비밀번호가 변경되었습니다.");
     }
 
@@ -91,11 +91,20 @@ public class AuthServiceImpl implements AuthService {
             mailService.sendMail(MailDTO.builder()
                                         .email(email.getEmail())
                                         .token(jwtManager.generateVerifyToken(email.getEmail()))
-                                        .mailType(MailType.SIGNUP)
+                                        .mailType(MailType.PASSWORD_RESET)
                                         .build());
         }
 
         return Map.of("Message", "비밀번호 변경 이메일이 전송되었습니다.");
+    }
+
+    @Override
+    public Map<String, String> resetPasswordWithoutLogin(ResetPasswordDTO passwords, String token) {
+        if (!passwords.isPasswordConfirmed()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+        }
+        userMapper.updatePassword(jwtManager.getEmail(token), passwordEncoder.encode(passwords.getNewPassword()));
+        return Map.of("Message", "비밀번호가 변경되었습니다.");
     }
 
     private String maskEmail(String email) {
