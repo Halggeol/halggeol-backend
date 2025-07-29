@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,12 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         HttpServletResponse response,
         AuthenticationException exception
     ) throws IOException, ServletException {
-        JsonResponse.sendError(response, HttpStatus.UNAUTHORIZED, exception.getMessage());
+        String message = "인증에 실패했습니다.";
+
+        if (exception instanceof BadCredentialsException) {
+            message = "아이디 또는 비밀번호가 올바르지 않습니다.";
+        }
+
+        JsonResponse.sendError(response, HttpStatus.UNAUTHORIZED, message);
     }
 }
