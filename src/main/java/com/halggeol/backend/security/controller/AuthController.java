@@ -5,6 +5,7 @@ import com.halggeol.backend.security.dto.FindEmailDTO;
 import com.halggeol.backend.security.dto.ResetPasswordDTO;
 import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
 import com.halggeol.backend.security.service.AuthService;
+import com.halggeol.backend.user.dto.EmailDTO;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.Valid;
@@ -63,11 +64,14 @@ public class AuthController {
         return ResponseEntity.ok(authService.resetPasswordWithLogin(user, passwords, bearerToken));
     }
 
-//    // 비로그인 상태 비밀번호 재설정 요청 API
-//    @PostMapping("/password/reset/request")
-//    public ResponseEntity<Void> requestResetPassword() {
-//    }
-//
+    // 비로그인 상태 비밀번호 재설정 요청 API
+    @PostMapping("/password/reset/request")
+    public ResponseEntity<Map<String, String>> requestResetPassword(
+        @Valid @RequestBody EmailDTO email
+    ) {
+        return ResponseEntity.ok(authService.requestResetPassword(email));
+    }
+
 //    // 비로그인 상태 비밀번호 재설정 변경 API
 //    @PostMapping("/password/reset")
 //    public ResponseEntity<Void> resetPasswordWithoutLogin() {

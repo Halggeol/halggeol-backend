@@ -4,13 +4,17 @@ import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.security.dto.FindEmailDTO;
 import com.halggeol.backend.security.dto.ResetPasswordDTO;
 import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
+import com.halggeol.backend.security.mail.domain.MailType;
+import com.halggeol.backend.security.mail.dto.MailDTO;
+import com.halggeol.backend.security.mail.service.MailService;
+import com.halggeol.backend.security.mail.service.MailServiceImpl;
 import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
-import java.util.HashMap;
+import com.halggeol.backend.user.service.UserService;
+import com.halggeol.backend.user.service.UserServiceImpl;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtManager jwtManager;
     private final UserMapper userMapper;
     private final Argon2PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final MailService mailService;
 
     @Override
     public Map<String, String> extendLogin(String email) {
@@ -77,6 +83,21 @@ public class AuthServiceImpl implements AuthService {
         }
         userMapper.updatePassword(user.getUser().getId(), passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("Message", "비밀번호가 변경되었습니다.");
+    }
+
+    @Override
+    public Map<String, String> requestResetPassword(EmailDTO email) {
+        if (!userService.findByEmail(email.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+        }
+
+        mailService.sendMail(MailDTO.builder()
+                                    .email(email.getEmail())
+                                    .token(jwtManager.generateVerifyToken(email.getEmail()))
+                                    .mailType(MailType.SIGNUP)
+                                    .build());
+
+        return Map.of("Message", "비밀번호 변경 이메일이 전송되었습니다.");
     }
 
     private String maskEmail(String email) {
