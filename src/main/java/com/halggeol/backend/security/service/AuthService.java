@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 public interface AuthService {
     Map<String, String> extendLogin(String email);
 
-    Map<String, String> findEmail(FindEmailDTO info);
+    Map<String, Object> findEmail(FindEmailDTO info);
 
-    HttpStatus resetPasswordWithLogin(CustomUser user, ResetPasswordDTO passwords, String bearerToken);
+    Map<String, String> resetPasswordWithLogin(CustomUser user, ResetPasswordDTO passwords, String bearerToken);
 
     Map<String, String> reverifyPassword(CustomUser user, ReverifyPasswordDTO password);
 }

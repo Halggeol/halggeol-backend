@@ -38,14 +38,10 @@ public class AuthController {
 
     // 아이디 찾기 API
     @PostMapping("/email/find")
-    public ResponseEntity<Map<String, String>> findEmail(
+    public ResponseEntity<Map<String, Object>> findEmail(
         @Valid @RequestBody FindEmailDTO info
     ) {
-        Map<String, String> responseBody = authService.findEmail(info);
-        if (responseBody == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(responseBody);
+        return ResponseEntity.ok(authService.findEmail(info));
     }
 
     // 로그인 상태 비밀번호 재확인 API
@@ -54,21 +50,17 @@ public class AuthController {
         @AuthenticationPrincipal CustomUser user,
         @Valid @RequestBody ReverifyPasswordDTO password
     ) {
-        Map<String, String> responseBody = authService.reverifyPassword(user, password);
-        if (responseBody == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        return ResponseEntity.ok(responseBody);
+        return ResponseEntity.ok(authService.reverifyPassword(user, password));
     }
 
     // 로그인 상태 비밀번호 재설정 API
     @PatchMapping("/password/reset")
-    public ResponseEntity<Void> resetPasswordWithLogin(
+    public ResponseEntity<Map<String, String>> resetPasswordWithLogin(
         @AuthenticationPrincipal CustomUser user,
         @Valid @RequestBody ResetPasswordDTO passwords,
         @RequestHeader("Authorization") String bearerToken
     ) {
-        return ResponseEntity.status(authService.resetPasswordWithLogin(user, passwords, bearerToken)).build();
+        return ResponseEntity.ok(authService.resetPasswordWithLogin(user, passwords, bearerToken));
     }
 
 //    // 비로그인 상태 비밀번호 재설정 요청 API

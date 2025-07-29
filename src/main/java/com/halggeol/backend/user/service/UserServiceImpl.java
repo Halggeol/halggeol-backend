@@ -8,13 +8,17 @@ import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
+import java.util.HashMap;
+import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Log4j2
 @Service
@@ -31,13 +35,13 @@ public class UserServiceImpl implements UserService {
         return user != null;
     }
 
-    public HttpStatus requestJoin(EmailDTO email) {
+    public Map<String, String> requestJoin(EmailDTO email) {
         // 입력값 유효성 검증은 UserJoinDTO에서 진행
         // 검증 실패 시 MethodArgumentNotValidException 예외 발생
         // 스프링 MVC에서 자동으로 400 Bad Request로 응답함
 
         if (findByEmail(email.getEmail())) {
-            return HttpStatus.CONFLICT;
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
         }
 
         mailService.sendMail(MailDTO.builder()
@@ -46,16 +50,19 @@ public class UserServiceImpl implements UserService {
                                     .mailType(MailType.SIGNUP)
                                     .build());
 
-        return HttpStatus.OK;
+        return Map.of("Message", "본인 인증 이메일이 전송되었습니다.");
     }
 
     @Transactional
     @Override
-    public HttpStatus join(UserJoinDTO userToJoin, String token) {
+    public Map<String, String> join(UserJoinDTO userToJoin, String token) {
         jwtManager.validateToken(token);
 
-        if (!userToJoin.isValidAge() || !userToJoin.isCorrectPassword()) {
-            return HttpStatus.BAD_REQUEST;
+        if (!userToJoin.isValidAge()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "만 14세 이상 가입 가능합니다.");
+        }
+        if (!userToJoin.isCorrectPassword()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
 
         User user = userToJoin.toVO();
@@ -63,7 +70,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
 
-        return HttpStatus.OK;
+        return Map.of("Message", "회원가입이 완료되었습니다.");
     }
 
     @Override
