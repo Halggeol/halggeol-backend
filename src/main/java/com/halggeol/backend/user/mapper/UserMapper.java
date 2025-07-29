@@ -16,7 +16,7 @@ public interface UserMapper {
     List<String> findEmailByNameAndPhone(@Param("name") String name, @Param("phone") String phone);
 
     int updatePassword(
-        @Param("id") int id,
+        @Param("email") String email,
         @Param("newPassword") String newPassword
     );
 
