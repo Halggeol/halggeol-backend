@@ -31,6 +31,7 @@
     <result property="matchScore" column="pd_match_score"/>
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
+    <result property="isScraped" column="is_scraped"/>
   </resultMap>
 
   <select id="selectDepositDetailById" resultMap="depositDetailResponseDTOMap">
@@ -59,13 +60,16 @@
 
       pd.match_score AS pd_match_score,
       pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage
+      pd.disadvantage AS pd_disadvantage,
+      CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       deposit d
         JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND d.id = pd.product_id
+        LEFT JOIN
+      scrap s ON u.id = s.user_id AND d.id = s.product_id
     WHERE
       d.id = #{depositId} AND d.id LIKE 'D%'
   </select>
@@ -96,6 +100,7 @@
     <result property="matchScore" column="pd_match_score"/>
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
+    <result property="isScraped" column="is_scraped"/>
   </resultMap>
   <select id="selectSavingsDetailById" resultMap="savingsDetailResponseDTOMap">
     SELECT
@@ -123,13 +128,16 @@
 
       pd.match_score AS pd_match_score,
       pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage
+      pd.disadvantage AS pd_disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       savings s
         JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND s.id = pd.product_id
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND s.id = sc.product_id
 
     WHERE
       s.id = #{savingsId} AND s.id LIKE 'S%'
@@ -163,6 +171,7 @@
     <result property="matchScore" column="pd_match_score"/>
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
+    <result property="isScraped" column="is_scraped"/>
   </resultMap>
 
   <select id="selectFundDetailById" resultMap="fundDetailResponseDTOMap">
@@ -192,13 +201,16 @@
 
       pd.match_score AS pd_match_score,
       pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage
+      pd.disadvantage AS pd_disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       fund f
         JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND f.id = pd.product_id
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND f.id = sc.product_id
     WHERE
       f.id = #{fundId} AND f.id LIKE 'F%'
   </select>
@@ -229,6 +241,7 @@
     <result property="matchScore" column="pd_match_score"/>
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
+    <result property="isScraped" column="is_scraped"/>
   </resultMap>
   <select id="selectForexDetailById" resultMap="forexDetailResponseDTOMap">
     SELECT
@@ -255,13 +268,16 @@
 
       pd.match_score AS pd_match_score,
       pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage
+      pd.disadvantage AS pd_disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       forex fx
         JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND fx.id = pd.product_id
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND fx.id = sc.product_id
     WHERE
       fx.id = #{forexId} AND fx.id LIKE 'X%'
   </select>
@@ -287,6 +303,7 @@
     <result property="matchScore" column="pd_match_score"/>
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
+    <result property="isScraped" column="is_scraped"/>
   </resultMap>
 
   <select id="selectPensionDetailById" resultMap="pensionDetailResponseDTOMap">
@@ -310,13 +327,16 @@
 
       pd.match_score AS pd_match_score,
       pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage
+      pd.disadvantage AS pd_disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       pension pn
         JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND pn.id = pd.product_id
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND pn.id = sc.product_id
     WHERE
       pn.id = #{pensionId}
   </select>
