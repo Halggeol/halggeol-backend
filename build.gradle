@@ -102,8 +102,9 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
     // 이메일 전송
-    implementation 'org.springframework:spring-context-support:5.3.37'
-    implementation 'com.sun.mail:javax.mail:1.6.2'
+//    implementation 'org.springframework:spring-context-support:5.3.37'
+//    implementation 'com.sun.mail:javax.mail:1.6.2'
+    implementation 'com.mashape.unirest:unirest-java:1.4.9'
 
     // https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core
     implementation("org.springframework.batch:spring-batch-core:4.3.10")
@@ -112,6 +113,9 @@ dependencies {
     //mongoDB
     implementation 'org.mongodb:mongodb-driver-sync:4.11.0'
     implementation 'org.springframework.data:spring-data-mongodb:3.4.9'
+
+    //http
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 }
 
 

@@ -1,8 +1,10 @@
 package com.halggeol.backend.user.mapper;
 
 import com.halggeol.backend.security.domain.User;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface UserMapper {
     User findByEmail(String email);
 

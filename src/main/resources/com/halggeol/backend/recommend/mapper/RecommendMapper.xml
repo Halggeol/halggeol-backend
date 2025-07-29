@@ -285,7 +285,7 @@
     )
   </insert>
 
-  <select id="getUserById" resultType="UserVO">
+  <select id="getUserById" resultType="com.halggeol.backend.security.domain.User">
     SELECT * FROM users WHERE id = #{id}
   </select>
 
@@ -334,5 +334,53 @@
   liquidity_score,
   complexity_score
   FROM forex WHERE id = #{id}
+  </select>
+
+  <resultMap id="RecommendResponseDTOMap" type="com.halggeol.backend.recommend.dto.RecommendResponseDTO">
+    <result property="productId" column="product_id"/>
+    <result property="name" column="product_name"/>
+    <result property="matchScore" column="match_score"/>
+  </resultMap>
+
+  <select id="getRecommendationsByUserId" resultMap="RecommendResponseDTOMap">
+    SELECT
+      ri.product1_id AS product_id,
+      d.name AS product_name,
+      ri.product1_id * 0.1 + d.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN deposit d ON ri.product1_id = d.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product2_id AS product_id,
+      s.name AS product_name,
+      ri.product2_id * 0.1 + s.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN savings s ON ri.product2_id = s.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product3_id AS product_id,
+      f.name AS product_name,
+      ri.product3_id * 0.1 + f.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN fund f ON ri.product3_id = f.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product4_id AS product_id,
+      p.name AS product_name,
+      ri.product4_id * 0.1 + p.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN pension p ON ri.product4_id = p.id
+    WHERE ri.user_id = #{userId}
+    UNION ALL
+    SELECT
+      ri.product5_id AS product_id,
+      fx.name AS product_name,
+      ri.product5_id * 0.1 + fx.rate * 0.9 AS match_score
+    FROM rec_item ri
+    JOIN forex fx ON ri.product5_id = fx.id
+    WHERE ri.user_id = #{userId}
   </select>
 </mapper>

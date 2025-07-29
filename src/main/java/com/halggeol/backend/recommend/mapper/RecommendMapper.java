@@ -1,5 +1,6 @@
 package com.halggeol.backend.recommend.mapper;
 
+import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.security.domain.User;
 import com.halggeol.backend.recommend.dto.DepositAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.ForexAlgorithmResponseDTO;
@@ -72,4 +73,5 @@ public interface RecommendMapper {
         @Param("product5Id") String product5Id);
 
 
+    List<RecommendResponseDTO> getRecommendationsByUserId(String userId);
 }
