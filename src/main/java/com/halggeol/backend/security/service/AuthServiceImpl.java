@@ -79,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
-        userMapper.updatePassword(user.getUsername(), passwordEncoder.encode(passwords.getNewPassword()));
+        userMapper.updatePasswordByEmail(user.getUsername(), passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("Message", "비밀번호가 변경되었습니다.");
     }
 
@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
-        userMapper.updatePassword(jwtManager.getEmail(token), passwordEncoder.encode(passwords.getNewPassword()));
+        userMapper.updatePasswordByEmail(jwtManager.getEmail(token), passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("Message", "비밀번호가 변경되었습니다.");
     }
 

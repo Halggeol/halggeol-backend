@@ -9,25 +9,29 @@
     SELECT * FROM users WHERE email = #{email}
   </select>
 
-  <insert id="insert">
-    INSERT INTO users (email, name, password, phone, birth, reg_date, klg_renew_date, risk_renew_date, docu_renew_date)
-    VALUES(#{email}, #{name}, #{password}, #{phone}, #{birth}, now(), now(), now(), now())
-  </insert>
-
   <select id="findNameById" resultType="java.lang.String">
     SELECT name FROM users WHERE id = #{id}
+  </select>
+
+  <select id="findById" resultType="com.halggeol.backend.security.domain.User">
+    SELECT * FROM users WHERE id = #{id}
   </select>
 
   <select id="findEmailByNameAndPhone" resultType="java.lang.String">
     SELECT email FROM users WHERE name = #{name} AND phone = #{phone}
   </select>
 
-  <update id="updatePassword">
+  <insert id="insert">
+    INSERT INTO users (email, name, password, phone, birth, reg_date, klg_renew_date, risk_renew_date, docu_renew_date)
+    VALUES(#{email}, #{name}, #{password}, #{phone}, #{birth}, now(), now(), now(), now())
+  </insert>
+
+  <update id="updatePasswordByEmail">
     UPDATE users SET password = #{newPassword} WHERE email = #{email}
   </update>
 
-  <select id="findById" resultType="com.halggeol.backend.security.domain.User">
-    SELECT * FROM users WHERE id = #{id}
-  </select>
+  <update id="updateProfileById">
+    UPDATE users SET phone = #{phone} WHERE id = #{id}
+  </update>
 
 </mapper>

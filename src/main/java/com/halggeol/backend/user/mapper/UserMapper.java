@@ -9,16 +9,21 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
     User findByEmail(String email);
 
-    int insert(User user);
-
     String findNameById(int id);
+
+    User findById(int id);
 
     List<String> findEmailByNameAndPhone(@Param("name") String name, @Param("phone") String phone);
 
-    int updatePassword(
+    int insert(User user);
+
+    int updatePasswordByEmail(
         @Param("email") String email,
         @Param("newPassword") String newPassword
     );
 
-    User findById(int id);
+    int updateProfileById(
+        @Param("id") int id,
+        @Param("phone") String phone
+    );
 }
