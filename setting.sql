@@ -1193,4 +1193,3 @@ INSERT INTO mydata (id, collect_date, asset, user_id) VALUES (362, '2025-07-20',
 INSERT INTO mydata (id, collect_date, asset, user_id) VALUES (363, '2025-07-21', 19664009, 1);
 INSERT INTO mydata (id, collect_date, asset, user_id) VALUES (364, '2025-07-22', 16052566, 1);
 INSERT INTO mydata (id, collect_date, asset, user_id) VALUES (365, '2025-07-23', 17083077, 1);
-
