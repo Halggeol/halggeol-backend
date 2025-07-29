@@ -5,6 +5,7 @@ import com.halggeol.backend.security.dto.FindEmailDTO;
 import com.halggeol.backend.security.dto.ResetPasswordDTO;
 import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
 import com.halggeol.backend.security.util.JwtManager;
+import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         List<String> maskedEmail = email.stream()
-            .map(String::toLowerCase)
+            .map(this::maskEmail)
             .toList();
 
         return Map.of(
