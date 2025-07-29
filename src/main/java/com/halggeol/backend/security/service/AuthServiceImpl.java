@@ -7,12 +7,10 @@ import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
 import com.halggeol.backend.security.mail.domain.MailType;
 import com.halggeol.backend.security.mail.dto.MailDTO;
 import com.halggeol.backend.security.mail.service.MailService;
-import com.halggeol.backend.security.mail.service.MailServiceImpl;
 import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
 import com.halggeol.backend.user.service.UserService;
-import com.halggeol.backend.user.service.UserServiceImpl;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -100,6 +98,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, String> resetPasswordWithoutLogin(ResetPasswordDTO passwords, String token) {
+        if (!jwtManager.validateToken(token)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰이 유효하지 않습니다.");
+        }
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }

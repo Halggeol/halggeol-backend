@@ -66,11 +66,16 @@ public class JwtManager {
     }
 
     // 토큰 유효성 검증
-    public void validateToken(String token) {
-        Jws<Claims> claims = Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token);
+    public boolean validateToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     // 비밀번호 재확인 플래그 확인
