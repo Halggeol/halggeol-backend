@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         return user != null;
     }
 
-    public HttpStatus requestJoin(@Valid EmailDTO email) {
+    public HttpStatus requestJoin(EmailDTO email) {
         // 입력값 유효성 검증은 UserJoinDTO에서 진행
         // 검증 실패 시 MethodArgumentNotValidException 예외 발생
         // 스프링 MVC에서 자동으로 400 Bad Request로 응답함
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public HttpStatus join(@Valid UserJoinDTO userToJoin, String token) {
+    public HttpStatus join(UserJoinDTO userToJoin, String token) {
         jwtManager.validateToken(token);
 
         if (!userToJoin.isValidAge() || !userToJoin.isCorrectPassword()) {

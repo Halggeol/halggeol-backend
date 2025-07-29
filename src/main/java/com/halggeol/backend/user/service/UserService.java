@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 public interface UserService {
     boolean findByEmail(String email);
 
-    HttpStatus requestJoin(@Valid EmailDTO email);
+    HttpStatus requestJoin(EmailDTO email);
 
-    HttpStatus join(@Valid UserJoinDTO user, String token);
+    HttpStatus join(UserJoinDTO user, String token);
 
     String getNameById(int userId);
 }
