@@ -15,13 +15,14 @@ public class JsonResponse {
         out.flush();
     }
 
-    public static void sendError(HttpServletResponse response,
+    public static <T> void sendError(HttpServletResponse response,
                                     HttpStatus status,
-                                    String message) throws IOException {
+                                    T result ) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
         response.setStatus(status.value());
         response.setContentType("application/json;charset=UTF-8");
         Writer out = response.getWriter();
-        out.write(message);
+        out.write(mapper.writeValueAsString(result));
         out.flush();
     }
 }

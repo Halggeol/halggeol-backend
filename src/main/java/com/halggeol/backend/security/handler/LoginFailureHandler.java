@@ -2,6 +2,7 @@ package com.halggeol.backend.security.handler;
 
 import com.halggeol.backend.security.util.JsonResponse;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
             message = "아이디 또는 비밀번호가 올바르지 않습니다.";
         }
 
-        JsonResponse.sendError(response, HttpStatus.UNAUTHORIZED, message);
+        JsonResponse.sendError(response, HttpStatus.UNAUTHORIZED, Map.of("message", message));
     }
 }
