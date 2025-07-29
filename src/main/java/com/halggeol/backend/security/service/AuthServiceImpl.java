@@ -60,7 +60,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, String> reverifyPassword(CustomUser user, ReverifyPasswordDTO password) {
-        log.error(passwordEncoder.matches(password.getConfirmPassword(), user.getPassword()));
         if (!passwordEncoder.matches(password.getConfirmPassword(), user.getPassword())) {
             return null;
         }
