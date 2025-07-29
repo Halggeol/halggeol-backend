@@ -87,15 +87,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, String> requestResetPassword(EmailDTO email) {
-        if (!userService.findByEmail(email.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+        if (userService.findByEmail(email.getEmail())) {
+            mailService.sendMail(MailDTO.builder()
+                                        .email(email.getEmail())
+                                        .token(jwtManager.generateVerifyToken(email.getEmail()))
+                                        .mailType(MailType.SIGNUP)
+                                        .build());
         }
-
-        mailService.sendMail(MailDTO.builder()
-                                    .email(email.getEmail())
-                                    .token(jwtManager.generateVerifyToken(email.getEmail()))
-                                    .mailType(MailType.SIGNUP)
-                                    .build());
 
         return Map.of("Message", "비밀번호 변경 이메일이 전송되었습니다.");
     }
