@@ -88,7 +88,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetailMapper::incrementPensionViewCount);
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     @Override
     public String checkRecommendProductStatus(@AuthenticationPrincipal CustomUser user,
         String productId) {
