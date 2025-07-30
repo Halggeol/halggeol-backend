@@ -55,6 +55,5 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
             new MediaType("text", "html", StandardCharsets.UTF_8)   // HTML 텍스트 응답
         ));
         converters.add(stringConverter);
-
     }
 }
