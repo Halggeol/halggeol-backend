@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
     private final MailService mailService;
     private final JwtManager jwtManager;
     private final Argon2PasswordEncoder passwordEncoder;
-    private final UserProductService userProductService;
 
     @Override
     public boolean findByEmail(String email) {
@@ -87,32 +86,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String, Object> viewProfile(CustomUser user, String scope) {
-        Map<String, Object> result = new HashMap<>();
-        List<UserProductResponseDTO> products = userProductService.getUserProductsByUserId(user);
         UserProfileResponseDTO profile = userMapper.getUserProfileByUserId(user.getUser().getId());
-
-        if (scope == null || scope.isEmpty()) {
-            scope = "all";
-        }
-
-        switch (scope) {
-            case "products":
-                result.put("products", products);
-                break;
-            case "status":
-                result = profile.toMap();
-                break;
-            case "all":
-                result = profile.toMap();
-                result.put("products", products);
-                break;
-            default:
-                throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "잘못된 scope 값입니다. (status 또는 products, 미입력 시 모든 정보)"
-                );
-        }
-        return result;
+        return Map.of(
+            "Message", "유저 정보 조회에 성공했습니다.",
+            "profile", profile.toMap()
+        );
     }
 
     @Override
