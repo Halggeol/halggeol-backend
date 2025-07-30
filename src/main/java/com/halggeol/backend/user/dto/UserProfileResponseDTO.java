@@ -1,7 +1,6 @@
 package com.halggeol.backend.user.dto;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -31,14 +30,18 @@ public class UserProfileResponseDTO {
         map.put("email", email);
         map.put("name", name);
         map.put("phone", phone);
-        map.put("birth", birth.toLocalDate().toString());
+        map.put("birth", dateToString(birth));
         map.put("risk", risk);
         map.put("userKlg", userKlg);
-        map.put("regDate", regDate.toLocalDate().toString());
-        map.put("klgRenewDate", klgRenewDate.toLocalDate().toString());
-        map.put("riskRenewDate", riskRenewDate.toLocalDate().toString());
-        map.put("docuRenewDate", docuRenewDate.toLocalDate().toString());
+        map.put("regDate", dateToString(regDate));
+        map.put("klgRenewDate", dateToString(klgRenewDate));
+        map.put("riskRenewDate", dateToString(riskRenewDate));
+        map.put("docuRenewDate", dateToString(docuRenewDate));
 
         return map;
+    }
+
+    private String dateToString(LocalDateTime date) {
+        return date != null ? date.toLocalDate().toString() : "";
     }
 }
