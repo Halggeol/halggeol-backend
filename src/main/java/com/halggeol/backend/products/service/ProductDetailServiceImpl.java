@@ -93,8 +93,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     public String checkRecommendProductStatus(@AuthenticationPrincipal CustomUser user,
         String productId) {
 
-        String result = productDetailMapper.selectProductStatus(user.getUser().getId(),  productId);
-        return result;
+        return productDetailMapper.selectProductStatus(user.getUser().getId(), productId);
     }
     @Transactional
     @Override
