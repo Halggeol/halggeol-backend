@@ -26,4 +26,6 @@ public interface UserMapper {
         @Param("id") int id,
         @Param("phone") String phone
     );
+
+    int deleteUserById(int id);
 }

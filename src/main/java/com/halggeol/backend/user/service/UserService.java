@@ -19,4 +19,6 @@ public interface UserService {
     String getNameById(int userId);
 
     Map<String, String> editProfile(CustomUser user, EditProfileDTO info);
+
+    Map<String, String> deleteUser(CustomUser user, String bearerToken);
 }
