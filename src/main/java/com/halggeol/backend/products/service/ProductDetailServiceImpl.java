@@ -3,7 +3,6 @@ package com.halggeol.backend.products.service;
 import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByBiFunction;
 import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByConsumer;
 
-import com.halggeol.backend.common.service.GeminiService;
 import com.halggeol.backend.products.mapper.ProductDetailMapper;
 import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductDetailServiceImpl implements ProductDetailService {
 
     private final ProductDetailMapper productDetailMapper;
-    private final GeminiService geminiService;
 
     @Override
     @Transactional
@@ -40,9 +38,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetailMapper::selectFundDetailById,
             productDetailMapper::selectForexDetailById,
             productDetailMapper::selectPensionDetailById);
-
-        // advantage와 disadvantage가 null인 경우 Gemini를 활용해서 생성
-        geminiService.setAdvantageDisadvantageUsingGemini(result, user.getUser());
 
         return result;
     }

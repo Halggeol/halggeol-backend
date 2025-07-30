@@ -16,10 +16,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class GeminiService {
+
+    private static final long CACHE_TTL_HOURS = 12;
+    private static final String CACHE_KEY_SEPARATOR = "_";
 
     @Value("${gemini.api.key}")
     private String apiKey;
@@ -29,9 +35,36 @@ public class GeminiService {
 
     private final UserMapper userMapper;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ConcurrentHashMap<String, CacheEntry> analysisCache = new ConcurrentHashMap<>();
+
+    private static class CacheEntry {
+        final String value;
+        final LocalDateTime createdAt;
+        
+        CacheEntry(String value) {
+            this.value = value;
+            this.createdAt = LocalDateTime.now();
+        }
+        
+        boolean isExpired() {
+            return LocalDateTime.now().isAfter(createdAt.plusHours(CACHE_TTL_HOURS));
+        }
+    }
 
     public String generateAdvantageDisadvantage(String productData, String userData) {
+        String cacheKey = createCacheKey(productData, userData);
+        
+        CacheEntry cachedEntry = analysisCache.get(cacheKey);
+        if (cachedEntry != null && !cachedEntry.isExpired()) {
+            log.info("캐시에서 Gemini 분석 결과 반환: {}", cacheKey.substring(0, Math.min(cacheKey.length(), 20)) + "...");
+            return cachedEntry.value;
+        } else if (cachedEntry != null) {
+            analysisCache.remove(cacheKey);
+            log.info("만료된 캐시 제거: {}", cacheKey.substring(0, Math.min(cacheKey.length(), 20)) + "...");
+        }
+
         try {
+            log.info("Gemini API 호출 시작 - 새로운 분석 요청");
             String prompt = createPrompt(productData, userData);
             
             String requestBody = String.format("""
@@ -51,7 +84,12 @@ public class GeminiService {
                     .asString();
 
             if (response.getStatus() == 200) {
-                return parseGeminiResponse(response.getBody());
+                String result = parseGeminiResponse(response.getBody());
+                if (result != null) {
+                    analysisCache.put(cacheKey, new CacheEntry(result));
+                    log.info("Gemini 분석 결과를 캐시에 저장: {}", cacheKey.substring(0, Math.min(cacheKey.length(), 20)) + "...");
+                }
+                return result;
             } else {
                 log.error("Gemini API 호출 실패: Status {}, Body: {}", response.getStatus(), response.getBody());
                 return null;
@@ -82,6 +120,7 @@ public class GeminiService {
             liquidity_score (유동성 선호)
             complexity_score (복잡성 수용/이해도)
             
+            [요청 사항]
             
             위 정보를 바탕으로 이 사용자가 이 금융상품을 사용할 때 느낄 수 있는 개인화된 장점과 단점을 분석해주세요.
             
@@ -282,4 +321,16 @@ public class GeminiService {
             }
         }
     }
+
+    private String createCacheKey(String productData, String userData) {
+        try {
+            int productHash = productData.hashCode();
+            int userHash = userData.hashCode();
+            return productHash + CACHE_KEY_SEPARATOR + userHash;
+        } catch (Exception e) {
+            log.error("캐시 키 생성 중 오류", e);
+            return "default_key";
+        }
+    }
+
 }
