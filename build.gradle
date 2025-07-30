@@ -36,6 +36,10 @@ dependencies {
     runtimeOnly 'org.aspectj:aspectjrt:1.9.20'
     runtimeOnly 'org.aspectj:aspectjweaver:1.9.20'
 
+    // Caching
+    implementation 'org.springframework:spring-context-support:5.3.37'
+    implementation 'net.sf.ehcache:ehcache:2.10.9.2'
+
     // JSP, SERVLET, JSTL
     implementation('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly 'javax.servlet.jsp:jsp-api:2.1'

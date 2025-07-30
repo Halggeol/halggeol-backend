@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -124,6 +125,7 @@ public class RecommendServiceImpl implements RecommendService{
             .toList();
     }
 
+    @Cacheable(value = "userRecommendCache", key = "#userId")
     public List<RecommendResponseDTO> getRecommendProducts(String userId) {
         //유저 ID로 추천 상품을 가져오는 로직
         List<RecommendResponseDTO> recommendations = mapper.getRecommendationsByUserId(userId);

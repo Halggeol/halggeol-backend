@@ -5,6 +5,7 @@ import com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO;
 import com.halggeol.backend.products.unified.mapper.UnifiedProductMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +33,7 @@ public class UnifiedProductServiceImpl implements UnifiedProductService {
     }
 
     @Override
+    @Cacheable(value = "regretRankingCache")
     public List<UnifiedProductRegretRankingResponseDTO> getRegretRankingProducts() {
         return unifiedProductMapper.selectUnifiedProductsOrderByRegretCnt();
     }
