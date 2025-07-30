@@ -48,7 +48,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        for (HttpMessageConverter<?> converter: converters) {
+        for (HttpMessageConverter<?> converter : converters) {
             if (converter instanceof StringHttpMessageConverter) {
                 ((StringHttpMessageConverter)converter)
                     .setDefaultCharset(StandardCharsets.UTF_8);
