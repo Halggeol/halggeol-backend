@@ -36,6 +36,18 @@ public class ProductDetailController {
         }
     }
 
+    @GetMapping("/{productId}/status")
+    public ResponseEntity<?> checkRecommendProductStatus(
+        @AuthenticationPrincipal CustomUser user,
+        @PathVariable String productId) {
+        try {
+            Object response = productDetailService.checkRecommendProductStatus(user, productId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     // TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.
     @PatchMapping("")
     public ResponseEntity<Void> updateProductToRegret(

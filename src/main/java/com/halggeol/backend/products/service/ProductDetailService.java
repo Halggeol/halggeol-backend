@@ -11,6 +11,9 @@ public interface ProductDetailService {
 
     void incrementProductViewCountAsync(String productId);
 
+    // 추천 상품 productX_status 확인
+    String checkRecommendProductStatus(@AuthenticationPrincipal CustomUser user, String productId);
+
     // TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.
     void updateProductToRegret(@AuthenticationPrincipal CustomUser user, String productId);
 }

@@ -408,4 +408,30 @@
       product5_id = #{productId}
       );
   </update>
+
+  <select id="selectProductStatus" resultType="java.lang.String">
+  SELECT
+    CASE
+      WHEN T.product1_id = #{productId} THEN T.product1_status
+      WHEN T.product2_id = #{productId} THEN T.product2_status
+      WHEN T.product3_id = #{productId} THEN T.product3_status
+      WHEN T.product4_id = #{productId} THEN T.product4_status
+      WHEN T.product5_id = #{productId} THEN T.product5_status
+      ELSE NULL
+      END AS product_status
+  FROM
+    rec_item T
+  WHERE
+    T.user_id = #{userId}
+    AND (
+    T.product1_id = #{productId} OR
+    T.product2_id = #{productId} OR
+    T.product3_id = #{productId} OR
+    T.product4_id = #{productId} OR
+    T.product5_id = #{productId}
+    )
+  ORDER BY
+    T.rec_date DESC, T.rec_id DESC
+    LIMIT 1
+</select>
 </mapper>

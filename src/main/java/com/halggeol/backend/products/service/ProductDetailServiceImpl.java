@@ -88,6 +88,15 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetailMapper::incrementPensionViewCount);
     }
 
+    @Transactional
+    @Override
+    public String checkRecommendProductStatus(@AuthenticationPrincipal CustomUser user,
+        String productId) {
+
+        String result = productDetailMapper.selectProductStatus(user.getUser().getId(),  productId);
+        return result;
+    }
+
     // TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.
     @Transactional
     @Override

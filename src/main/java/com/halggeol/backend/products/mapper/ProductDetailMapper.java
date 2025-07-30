@@ -35,4 +35,6 @@ public interface ProductDetailMapper<T> {
         @Param("userId") Integer userId,
         @Param("productId") String productId
     );
+
+    String selectProductStatus(@Param("userId") Integer userId, @Param("productId") String productId);
 }
