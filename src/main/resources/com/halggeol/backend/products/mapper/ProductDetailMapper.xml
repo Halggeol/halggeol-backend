@@ -356,4 +356,56 @@
   <update id="incrementPensionViewCount">
     UPDATE pension SET view_cnt = view_cnt + 1 WHERE id = #{productId}
   </update>
+
+<!--  TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.-->
+  <update id="updateProductStatusToRegretLatest">
+    UPDATE rec_item
+    SET
+      product1_status = CASE
+                          WHEN product1_id = #{productId} THEN '회고'
+                          ELSE product1_status
+        END,
+      product2_status = CASE
+                          WHEN product2_id = #{productId} THEN '회고'
+                          ELSE product2_status
+        END,
+      product3_status = CASE
+                          WHEN product3_id = #{productId} THEN '회고'
+                          ELSE product3_status
+        END,
+      product4_status = CASE
+                          WHEN product4_id = #{productId} THEN '회고'
+                          ELSE product4_status
+        END,
+      product5_status = CASE
+                          WHEN product5_id = #{productId} THEN '회고'
+                          ELSE product5_status
+        END
+    WHERE
+      user_id = #{userId}
+      AND rec_id = (
+      SELECT sub.rec_id
+      FROM (
+             SELECT rec_id
+             FROM rec_item
+             WHERE user_id = #{userId}
+               AND (
+               product1_id = #{productId} OR
+               product2_id = #{productId} OR
+               product3_id = #{productId} OR
+               product4_id = #{productId} OR
+               product5_id = #{productId}
+               )
+             ORDER BY rec_date DESC, rec_id DESC -- rec_date가 같을 경우 rec_id로 최종 최신 레코드 식별
+               LIMIT 1
+           ) AS sub
+    )
+      AND (
+      product1_id = #{productId} OR
+      product2_id = #{productId} OR
+      product3_id = #{productId} OR
+      product4_id = #{productId} OR
+      product5_id = #{productId}
+      );
+  </update>
 </mapper>

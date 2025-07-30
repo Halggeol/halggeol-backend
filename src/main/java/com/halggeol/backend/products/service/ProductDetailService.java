@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ProductDetailService {
 
-    @Transactional
     Object getProductDetailById(String productId, @AuthenticationPrincipal CustomUser user);
 
     void incrementProductViewCountAsync(String productId);
+
+    // TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.
+    void updateProductToRegret(@AuthenticationPrincipal CustomUser user, String productId);
 }

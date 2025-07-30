@@ -30,4 +30,9 @@ public interface ProductDetailMapper<T> {
     void incrementForexViewCount(@Param("productId") String productId);
     void incrementPensionViewCount(@Param("productId") String productId);
 
+    // TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.
+    void updateProductStatusToRegretLatest(
+        @Param("userId") Integer userId,
+        @Param("productId") String productId
+    );
 }
