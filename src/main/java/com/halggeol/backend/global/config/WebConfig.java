@@ -36,7 +36,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
     }
 
     // POST body 문자 인코딩 필터 설정 - UTF-8 설정
-   @Override
+    @Override
     protected Filter[] getServletFilters() {
         CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
 
