@@ -33,5 +33,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         }
 
         JsonResponse.sendError(response, status, Map.of("message", message));
+        log.error(exception.getMessage());
     }
 }

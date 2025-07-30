@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,20 +31,34 @@ public class JwtAuthErrorFilter extends OncePerRequestFilter {
 
         try {
             super.doFilter(request, response, chain);
-        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException |
-                 ExpiredJwtException | SecurityException | IllegalArgumentException e) {
+        } catch (ExpiredJwtException exception) {
+            message = "토큰이 만료되었습니다.";
+            status = HttpStatus.UNAUTHORIZED;
+            log.error(exception.getMessage());
+        } catch (SignatureException exception) {
+            message = "토큰 서명이 유효하지 않습니다.";
+            status = HttpStatus.UNAUTHORIZED;
+            log.error(exception.getMessage());
+        } catch (SecurityException | IllegalArgumentException exception) {
             message = "유효하지 않은 토큰입니다.";
             status = HttpStatus.UNAUTHORIZED;
-        } catch (ServletException e) {
+            log.error(exception.getMessage());
+        } catch (ServletException exception) {
             message = "인증에 실패했습니다.";
             status = HttpStatus.UNAUTHORIZED;
-        } catch (UsernameNotFoundException e) {
-            message = "존재하지 않는 사용자입니다.";
-            status = HttpStatus.NOT_FOUND;
-        } catch (Exception e) {
+            log.error(exception.getMessage());
+        } catch (MalformedJwtException exception) {
+            message = "토큰 형식이 잘못되었습니다.";
+            status = HttpStatus.BAD_REQUEST;
+            log.error(exception.getMessage());
+        } catch (UnsupportedJwtException exception) {
+            message = "지원되지 않는 토큰입니다.";
+            status = HttpStatus.BAD_REQUEST;
+            log.error(exception.getMessage());
+        } catch (Exception exception) {
             message = "서버 내부 오류가 발생했습니다.";
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            log.error(e);
+            log.error(exception.getMessage());
         }
 
         if (message != null) {
