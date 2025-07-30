@@ -47,14 +47,13 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
     }
 
     @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        // StringHttpMessageConverter 설정: String 반환 시 UTF-8 강제
-        StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
-        stringConverter.setSupportedMediaTypes(Arrays.asList(
-            new MediaType("text", "plain", StandardCharsets.UTF_8), // 일반 텍스트 응답
-            new MediaType("text", "html", StandardCharsets.UTF_8)   // HTML 텍스트 응답
-        ));
-        converters.add(stringConverter);
-
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        for (HttpMessageConverter<?> converter: converters) {
+            if (converter instanceof StringHttpMessageConverter) {
+                ((StringHttpMessageConverter)converter)
+                    .setDefaultCharset(StandardCharsets.UTF_8);
+                // SupportedMediaTypes 수정도 가능
+            }
+        }
     }
 }
