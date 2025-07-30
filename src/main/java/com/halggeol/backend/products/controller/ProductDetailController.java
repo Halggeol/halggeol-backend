@@ -40,7 +40,7 @@ public class ProductDetailController {
         @AuthenticationPrincipal CustomUser user,
         @PathVariable String productId) {
         try {
-            Object response = productDetailService.checkRecommendProductStatus(user, productId);
+            String response = productDetailService.checkRecommendProductStatus(user, productId);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
