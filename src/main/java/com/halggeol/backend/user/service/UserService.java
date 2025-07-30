@@ -18,6 +18,8 @@ public interface UserService {
 
     String getNameById(int userId);
 
+    Map<String, Object> viewProfile(CustomUser user, String scope);
+
     Map<String, String> editProfile(CustomUser user, EditProfileDTO info);
 
     Map<String, String> deleteUser(CustomUser user, String bearerToken);

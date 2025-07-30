@@ -1,6 +1,7 @@
 package com.halggeol.backend.user.mapper;
 
 import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.user.dto.UserProfileResponseDTO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,6 +15,8 @@ public interface UserMapper {
     User findById(int id);
 
     List<String> findEmailByNameAndPhone(@Param("name") String name, @Param("phone") String phone);
+
+    UserProfileResponseDTO getUserProfileByUserId(int id);
 
     int insert(User user);
 
