@@ -96,11 +96,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         String result = productDetailMapper.selectProductStatus(user.getUser().getId(),  productId);
         return result;
     }
-
-    // TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.
     @Transactional
     @Override
-    public void updateProductToRegret(@AuthenticationPrincipal CustomUser user, String productId) {
-        productDetailMapper.updateProductStatusToRegretLatest(user.getUser().getId(), productId);
+    public void updateProductStatus(@AuthenticationPrincipal CustomUser user, String productId, String productStatus) {
+        productDetailMapper.updateProductStatus(user.getUser().getId(), productId, productStatus);
     }
 }

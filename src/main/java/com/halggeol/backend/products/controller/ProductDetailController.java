@@ -1,6 +1,6 @@
 package com.halggeol.backend.products.controller;
 
-import com.halggeol.backend.products.dto.ProductIdRequestDTO;
+import com.halggeol.backend.products.dto.ProductStatusRequestDTO;
 import com.halggeol.backend.products.service.ProductDetailService;
 import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,13 +47,12 @@ public class ProductDetailController {
         }
     }
 
-    // TODO: Insight 충돌이 무서워 일단 ProductDetail에서 구현합니다.
     @PatchMapping("")
-    public ResponseEntity<Void> updateProductToRegret(
+    public ResponseEntity<Void> updateProductStatus(
         @AuthenticationPrincipal CustomUser user,
-        @RequestBody ProductIdRequestDTO productIdRequestDTO) {
+        @RequestBody ProductStatusRequestDTO productStatusRequestDTO) {
         try {
-            productDetailService.updateProductToRegret(user, productIdRequestDTO.getId());
+            productDetailService.updateProductStatus(user, productStatusRequestDTO.getId(), productStatusRequestDTO.getStatus());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
