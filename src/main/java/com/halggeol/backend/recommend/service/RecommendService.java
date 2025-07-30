@@ -16,4 +16,6 @@ public interface RecommendService {
 //    public List<Recommendation> recommendProducts(String userId);
 
     public List<RecommendResponseDTO> getRecommendProducts(String userId);
+
+    Double getProductMatchScore(String productId, String userId);
 }

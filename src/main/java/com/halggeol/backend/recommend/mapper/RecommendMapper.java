@@ -25,7 +25,7 @@ public interface RecommendMapper {
     List<ProductVectorResponseDTO> getProductVectors();
     List<UserVectorResponseDTO> getUserVectors();
 
-    ProductVectorResponseDTO getProductVectorById(@Param("productId") String productId);
+    ProductVectorResponseDTO getProductVectorById(@Param("id") String productId);
     User getUserById(@Param("userId") Integer userId);
 
     int updateDepositAlgoCodeById(@Param("pid") String productId,
