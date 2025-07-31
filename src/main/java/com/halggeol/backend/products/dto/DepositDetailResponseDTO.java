@@ -23,9 +23,9 @@ public class DepositDetailResponseDTO {
 
     private String bonusCondition; // 우대 조건
 
-    private Long saveTerm; // 저축 기간
+    private String rateType;
 
-    private Long minimumCost; // 최소 가입금액
+    private Long minLimit; // 최소 가입금액
 
     private String company; // 운용 회사
 
@@ -43,7 +43,8 @@ public class DepositDetailResponseDTO {
 
     private Long regretCnt; // 후회수
 
-    private String matchScore;      // ENUM('상','중','하')
+    private String description;
+
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
     private Boolean isScraped;      // 스크랩 여부

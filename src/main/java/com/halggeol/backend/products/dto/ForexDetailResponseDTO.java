@@ -16,8 +16,6 @@ public class ForexDetailResponseDTO {
 
     private String currency; // 거래 가능 통화
 
-    private Long regFund; // 가입 가능 금액
-
     private Date regLimitDate; // 가입 가능 기간
 
     private String autoRenew; // 자동 연장
@@ -46,7 +44,11 @@ public class ForexDetailResponseDTO {
 
     private Integer regretCnt; // 후회수
 
-    private String matchScore;      // ENUM('상','중','하')
+    private String rateType; // 금리 유형
+
+    private Integer maxSaveTerm; // 최대 저축 기간
+    private Integer minSaveTerm; // 최소 저축 기간
+
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
     private Boolean isScraped;      // 스크랩 여부
