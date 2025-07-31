@@ -134,8 +134,10 @@ dependencies {
     implementation "org.elasticsearch.client:elasticsearch-rest-client:7.17.13"
     implementation "org.springframework.data:spring-data-elasticsearch:4.4.15"
     implementation "co.elastic.clients:elasticsearch-java:8.12.2" // 선택사항
-}
 
+    // 환율 api - JSONParser,JSONArray 위해서 사용.
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+}
 
 test {
     useJUnitPlatform()
