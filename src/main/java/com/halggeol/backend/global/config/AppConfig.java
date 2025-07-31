@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PropertySource({"classpath:/application.properties"})
 @MapperScan("com.halggeol.backend.**.mapper")
 @ComponentScan(
-    basePackages = "com.halggeol.backend",
+        basePackages = {"com.halggeol.backend", "com.halggeol.backend.user.service", "com.halggeol.backend.security", "com.halggeol.backend.products.deposit.controller","com.halggeol.backend.insight"},
     excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
         @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class)
