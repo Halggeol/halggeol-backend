@@ -1,9 +1,8 @@
-package com.halggeol.backend.user.dto;
+package com.halggeol.backend.survey.dto;
 
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -21,6 +20,6 @@ public class TendencySurveyRequestDTO {
 
     @NotNull
     @Valid
-    @Size(min = 11, max = 11)
+    @Size(min = 10, max = 10)
     List<TendencyAnswerDTO> answers;
 }

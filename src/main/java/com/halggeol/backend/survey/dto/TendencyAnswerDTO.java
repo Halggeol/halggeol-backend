@@ -1,4 +1,4 @@
-package com.halggeol.backend.user.dto;
+package com.halggeol.backend.survey.dto;
 
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,15 +11,16 @@ import org.hibernate.validator.constraints.Range;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KnowledgeAnswerDTO {
+public class TendencyAnswerDTO {
     @NotNull
     @Range(min = 1, max = 10)
     private Integer number; // 문항 번호
 
     @NotNull
-    @Range(min = 1, max = 3)
-    private Integer score; // 배점
+    @Range(min = 1, max = 5)
+    private Integer option; // 선택한 번호
 
     @NotNull
-    private Boolean correct; // 정답 여부
+    @Range(min = 0, max = 6)
+    private Integer score; // 배점
 }
