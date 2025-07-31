@@ -39,8 +39,19 @@
     UPDATE users SET phone = #{phone} WHERE id = #{id}
   </update>
 
-  <update id="updateKnowledgeById">
-    UPDATE users SET userKlg = #{userKlg} WHERE id = #{id}
+  <update id="updateKnowledgeByEmail">
+    UPDATE users SET user_klg = #{userKlg} WHERE email = #{email}
+  </update>
+
+  <update id="updateTendencyByEmail">
+    UPDATE users
+    SET risk = #{risk}
+      yield_score = #{yieldScore}
+      risk_score = #{riskScore}
+      cost_score = #{costScore}
+      liquidity_score = #{liquidityScore}
+      complexity_score = #{complexityScore}
+    WHERE email = #{email}
   </update>
 
   <delete id="deleteUserById">
