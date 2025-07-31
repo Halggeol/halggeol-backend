@@ -30,5 +30,10 @@ public interface UserMapper {
         @Param("phone") String phone
     );
 
+    int updateKnowledgeById(
+        @Param("id") int id,
+        @Param("userKlg") int userKlg
+    );
+
     int deleteUserById(int id);
 }

@@ -8,6 +8,7 @@ import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.dto.EditProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
+import com.halggeol.backend.user.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.dto.UserProductResponseDTO;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
@@ -106,5 +107,12 @@ public class UserServiceImpl implements UserService {
         }
         userMapper.deleteUserById(user.getUser().getId());
         return Map.of("Message", "회원탈퇴가 완료되었습니다.");
+    }
+
+    @Override
+    public Map<String, String> updateKnowledge(CustomUser user, KnowledgeSurveyRequestDTO surveyResult) {
+        int userKlg = 0; // surveyResult로 점수 내기
+        userMapper.updateKnowledgeById(user.getUser().getId(), userKlg);
+        return Map.of("Message", "금융 이해도 갱신이 완료되었습니다.");
     }
 }
