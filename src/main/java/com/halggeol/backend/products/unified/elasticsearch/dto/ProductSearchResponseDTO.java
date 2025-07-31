@@ -17,6 +17,8 @@ public class ProductSearchResponseDTO {
     private String subTitle;
     private Integer fSector;
     private Integer saveTerm;
+    private Integer minSaveTerm;
+    private Integer maxSaveTerm;
     private Integer minAmount;
     private Integer viewCnt;
     private Integer scrapCnt;

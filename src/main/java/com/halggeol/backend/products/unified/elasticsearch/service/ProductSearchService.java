@@ -54,9 +54,28 @@ public class ProductSearchService {
         }
 
         // 가입 기간 필터링
-        if(saveTerm!=null){
-            boolQuery.filter(QueryBuilders.termQuery("saveterm", saveTerm));
+        if (saveTerm != null) {
+            String saveTermJson = String.format("""
+    {
+      "bool": {
+        "should": [
+          { "term": { "saveterm": %d } },
+          {
+            "bool": {
+              "must": [
+                { "range": { "min_save_term": { "lte": %d } } },
+                { "range": { "max_save_term": { "gte": %d } } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+    """, saveTerm, saveTerm, saveTerm);
+
+            boolQuery.filter(QueryBuilders.wrapperQuery(saveTermJson));
         }
+
 
         // 최소 가입 금액 필터링
         if(minAmount!=null&&!minAmount.isBlank()){
@@ -119,6 +138,8 @@ public class ProductSearchService {
             .type(doc.getType())
             .fSector(doc.getFSector())
             .saveTerm(doc.getSaveTerm())
+            .minSaveTerm(doc.getMinSaveTerm())
+            .maxSaveTerm(doc.getMaxSaveTerm())
             .minAmount(doc.getMinAmount())
             .viewCnt(doc.getViewCnt())
             .scrapCnt(doc.getScrapCnt())

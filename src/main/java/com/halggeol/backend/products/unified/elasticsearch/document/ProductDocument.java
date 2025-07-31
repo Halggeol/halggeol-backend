@@ -1,5 +1,6 @@
 package com.halggeol.backend.products.unified.elasticsearch.document;
 
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,6 +49,12 @@ public class ProductDocument { // Elasticsearch의 인덱스
     @Field(name = "saveterm", type = FieldType.Integer)
     private Integer saveTerm;
 
+    @Field(name = "min_save_term", type = FieldType.Integer)
+    private Integer minSaveTerm;
+
+    @Field(name = "max_save_term", type = FieldType.Integer)
+    private Integer maxSaveTerm;
+
     @Field(name = "minamount", type = FieldType.Integer)
     private Integer minAmount;
 
@@ -64,6 +71,6 @@ public class ProductDocument { // Elasticsearch의 인덱스
     private String subTitle;
 
     @Field(type = FieldType.Date)
-    private String timestamp;
+    private LocalDateTime timestamp;
 
 }
