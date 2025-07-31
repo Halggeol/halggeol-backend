@@ -170,6 +170,42 @@ public class GeminiService {
         return null;
     }
 
+    public Object analyzeProductWithGemini(Object inputData, User user) {
+        if (inputData == null) return null;
+
+        String defaultAdvantage = "이 상품의 장점을 분석 중입니다.";
+        String defaultDisadvantage = "이 상품의 단점을 분석 중입니다.";
+        String defaultDescription = "상품 설명을 생성 중입니다.";
+
+        try {
+            // 입력 데이터를 JSON 문자열로 변환
+            String productData = objectMapper.writeValueAsString(inputData);
+            
+            // 사용자 정보를 JSON 문자열로 생성
+            User fullUser = userMapper.findById(user.getId());
+            String userData = createUserDataString(fullUser);
+
+            // 항상 Gemini 호출 (새로운 분석 요청)
+            String geminiResponse = generateAdvantageDisadvantage(productData, userData);
+            
+            if (geminiResponse != null) {
+                JsonNode jsonNode = objectMapper.readTree(geminiResponse);
+                String generatedAdvantage = jsonNode.path("advantage").asText(defaultAdvantage);
+                String generatedDisadvantage = jsonNode.path("disadvantage").asText(defaultDisadvantage);
+                String generatedDescription = jsonNode.path("description").asText(defaultDescription);
+                
+                // 분석 결과만 담은 객체 생성
+                return createAnalysisResult(generatedAdvantage, generatedDisadvantage, generatedDescription);
+            } else {
+                return createAnalysisResult(defaultAdvantage, defaultDisadvantage, defaultDescription);
+            }
+
+        } catch (Exception e) {
+            log.error("Gemini API 호출 중 오류 발생", e);
+            return createAnalysisResult(defaultAdvantage, defaultDisadvantage, defaultDescription);
+        }
+    }
+
     public Object setAdvantageDisadvantageUsingGemini(Object result, User user) {
         if (result == null) return null;
 
@@ -368,6 +404,30 @@ public class GeminiService {
             log.error("캐시 키 생성 중 오류", e);
             return "default_key";
         }
+    }
+
+    private Object createAnalysisResult(String advantage, String disadvantage, String description) {
+        return new AnalysisResult(advantage, disadvantage, description);
+    }
+
+    public static class AnalysisResult {
+        private String advantage;
+        private String disadvantage;
+        private String description;
+
+        public AnalysisResult(String advantage, String disadvantage, String description) {
+            this.advantage = advantage;
+            this.disadvantage = disadvantage;
+            this.description = description;
+        }
+
+        public String getAdvantage() { return advantage; }
+        public String getDisadvantage() { return disadvantage; }
+        public String getDescription() { return description; }
+
+        public void setAdvantage(String advantage) { this.advantage = advantage; }
+        public void setDisadvantage(String disadvantage) { this.disadvantage = disadvantage; }
+        public void setDescription(String description) { this.description = description; }
     }
 
 }
