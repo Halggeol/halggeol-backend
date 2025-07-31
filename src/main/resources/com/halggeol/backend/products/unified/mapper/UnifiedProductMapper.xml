@@ -7,8 +7,6 @@
 
 <!--  금융 상품 검색 및 필터링-->
   <select id="selectFilteredProducts" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO">
-    SELECT *
-    FROM (
     SELECT
     d.id AS productId,
     d.name,
@@ -55,12 +53,11 @@
     p.pension_type AS tag1,
     p.pension_kind AS tag2,
     p.risk AS tag3,
+    CAST(p.rate AS CHAR) AS title, -- pension_type에 관계없이 항상 rate
     CAST(
-    IF(p.pension_type = 1, p.rate, p.last_year_profit_rate) AS CHAR
-    ) AS title,
-    CAST(
-    IF(p.pension_type = 1, p.min_guarantee_rate, p.last_year_profit_rate) AS CHAR
-    ) AS subTitle,
+    IF(p.pension_type = 1, p.min_guarantee_rate, p.last_year_profit_rate)
+    AS CHAR
+    ) AS subTitle, -- pension_type이 true면 min_guarantee_rate, false면 last_year_profit_rate
     p.f_sector AS fSector,
     NULL AS saveTerm,
     NULL AS minAmount,
