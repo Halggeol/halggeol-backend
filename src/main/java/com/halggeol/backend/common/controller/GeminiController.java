@@ -16,14 +16,14 @@ public class GeminiController {
 
     private final GeminiService geminiService;
 
-    @PostMapping("/{productId}")
+    @GetMapping("")
     public ResponseEntity<?> analyzeProduct(
             @RequestBody Object productDetail,
             @AuthenticationPrincipal CustomUser user) {
         try {
-            // advantage와 disadvantage 분석 수행
-            geminiService.setAdvantageDisadvantageUsingGemini(productDetail, user.getUser());
-            return ResponseEntity.ok(productDetail);
+            // advantage, disadvantage, description 분석 수행
+            Object analyzedProduct = geminiService.setAdvantageDisadvantageUsingGemini(productDetail, user.getUser());
+            return ResponseEntity.ok(analyzedProduct);
         } catch (Exception e) {
             log.error("Gemini 분석 중 오류 발생", e);
             return ResponseEntity.internalServerError()
