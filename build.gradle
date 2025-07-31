@@ -36,6 +36,10 @@ dependencies {
     runtimeOnly 'org.aspectj:aspectjrt:1.9.20'
     runtimeOnly 'org.aspectj:aspectjweaver:1.9.20'
 
+    // Caching
+    implementation 'org.springframework:spring-context-support:5.3.37'
+    implementation 'net.sf.ehcache:ehcache:2.10.9.2'
+
     // JSP, SERVLET, JSTL
     implementation('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly 'javax.servlet.jsp:jsp-api:2.1'
@@ -56,6 +60,7 @@ dependencies {
 
     // Jackson - Json 처리
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.10'
 
     // 데이터베이스
     implementation 'com.mysql:mysql-connector-j:8.1.0'
@@ -75,6 +80,9 @@ dependencies {
     // redis
     implementation 'org.springframework.data:spring-data-redis:2.7.6'
 
+//    implementation 'io.lettuce.core:lettuce-core:6.1.5'
+
+
     // 테스트
     testImplementation "org.springframework:spring-test:${springVersion}"
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -83,18 +91,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
-    testImplementation 'org.mockito:mockito-core:5.12.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.12.0'
-    testImplementation 'org.assertj:assertj-core:3.25.3'
-
     // Spring Security
     implementation("org.springframework.security:spring-security-core:${springSecurityVersion}")
     implementation("org.springframework.security:spring-security-web:${springSecurityVersion}")
     implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
     implementation("org.springframework.security:spring-security-crypto:${springSecurityVersion}")
-
-    // 암호화
-    implementation 'org.bouncycastle:bcprov-jdk15to18:1.70'
 
     // validation
     implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
@@ -106,12 +107,22 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
     // 이메일 전송
-//  implementation 'org.springframework:spring-context-support:5.3.37'
-//  implementation 'com.sun.mail:javax.mail:1.6.2'
+//    implementation 'org.springframework:spring-context-support:5.3.37'
+//    implementation 'com.sun.mail:javax.mail:1.6.2'
     implementation 'com.mashape.unirest:unirest-java:1.4.9'
+
+    // https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core
+    implementation("org.springframework.batch:spring-batch-core:4.3.10")
+    implementation("org.springframework.batch:spring-batch-infrastructure:4.3.10")
+
+    //mongoDB
+    implementation 'org.mongodb:mongodb-driver-sync:4.11.0'
+    implementation 'org.springframework.data:spring-data-mongodb:3.4.9'
 
     // http
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.70'
 
     // Elasticsearch
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13"
@@ -120,6 +131,7 @@ dependencies {
     implementation "org.springframework.data:spring-data-elasticsearch:4.4.15"
     implementation "co.elastic.clients:elasticsearch-java:8.12.2" // 선택사항
 }
+
 
 test {
     useJUnitPlatform()

@@ -21,7 +21,7 @@ public class LoginDTO {
         try {
             return mapper.readValue(request.getInputStream(), LoginDTO.class);
         } catch (IOException e) {
-            throw new BadCredentialsException("email or password is empty");
+            throw new BadCredentialsException("");
         }
     }
 }

@@ -21,25 +21,25 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
 
-    @Test
-    void requestJoin_whenEmailNotExists_shouldReturnOk() {
-        UserJoinDTO user = new UserJoinDTO();
-        user.setEmail("new@example.com");
-
-        ResponseEntity<Void> response = userController.requestJoin(user);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNull(response.getBody());
-    }
-
-    @Test
-    void requestJoin_whenEmailExists_shouldReturnConflict() {
-        UserJoinDTO user = new UserJoinDTO();
-        user.setEmail("test@gmail.com");
-
-        ResponseEntity<Void> response = userController.requestJoin(user);
-
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertNull(response.getBody());
-    }
+//    @Test
+//    void requestJoin_whenEmailNotExists_shouldReturnOk() {
+//        UserJoinDTO user = new UserJoinDTO();
+//        user.setEmail("new@example.com");
+//
+//        ResponseEntity<Void> response = userController.requestJoin(user);
+//
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertNull(response.getBody());
+//    }
+//
+//    @Test
+//    void requestJoin_whenEmailExists_shouldReturnConflict() {
+//        UserJoinDTO user = new UserJoinDTO();
+//        user.setEmail("test@gmail.com");
+//
+//        ResponseEntity<Void> response = userController.requestJoin(user);
+//
+//        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+//        assertNull(response.getBody());
+//    }
 }

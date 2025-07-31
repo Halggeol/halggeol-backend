@@ -2,7 +2,6 @@ package com.halggeol.backend.products.unified.mapper;
 
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO;
-import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

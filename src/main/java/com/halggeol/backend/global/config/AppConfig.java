@@ -12,33 +12,27 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.RestController;
 
 @Configuration
+@EnableScheduling
 @PropertySource({"classpath:/application.properties"})
-@ComponentScan(basePackages = {"com.halggeol.backend",
-    "com.halggeol.backend.user.service",
-    "com.halggeol.backend.security",
-    "com.halggeol.backend.products.deposit.controller",
-    "com.halggeol.backend.recommend.service",
-"com.halggeol.backend.dashboard.service"})
-@MapperScan(basePackages  = {"com.halggeol.backend.mapper",
-    "com.halggeol.backend.products.mapper",
-    "com.halggeol.backend.scrap.mapper",
-    "com.halggeol.backend.user.mapper",
-    "com.halggeol.backend.security.mapper",
-    "com.halggeol.backend.products.deposit.mapper",
-    "com.halggeol.backend.products.savings.mapper",
-    "com.halggeol.backend.products.fund.mapper",
-    "com.halggeol.backend.products.forex.mapper",
-    "com.halggeol.backend.products.pension.mapper",
-    "com.halggeol.backend.products.unified.mapper",
-    "com.halggeol.backend.recommend.mapper",
-    "com.halggeol.backend.dashboard.mapper"})
+@MapperScan("com.halggeol.backend.**.mapper")
+@ComponentScan(
+    basePackages = "com.halggeol.backend",
+    excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
+        @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class)
+    }
+)
 @Slf4j
 @EnableTransactionManagement
 public class AppConfig {

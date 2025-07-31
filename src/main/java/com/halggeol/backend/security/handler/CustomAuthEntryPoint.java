@@ -2,6 +2,7 @@ package com.halggeol.backend.security.handler;
 
 import com.halggeol.backend.security.util.JsonResponse;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,13 +14,18 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
+// Spring Security가 인증 실패를 감지했을 경우 호출
 public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(
         HttpServletRequest request,
         HttpServletResponse response,
-        AuthenticationException e
+        AuthenticationException exception
     ) throws IOException, ServletException {
-        JsonResponse.sendError(response, HttpStatus.UNAUTHORIZED, e.getMessage());
+        String message = "인증에 실패했습니다.";
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        JsonResponse.sendError(response, status, Map.of("message", message));
+        log.error(exception.getMessage());
     }
 }

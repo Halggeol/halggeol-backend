@@ -1,23 +1,28 @@
 package com.halggeol.backend.security.util;
 
-import com.halggeol.backend.global.config.AppConfig;
-import com.halggeol.backend.user.dto.UserJoinDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class JwtManager {
-    static private final long ACCESS_TOKEN_VALID_MILISECOND = 1000L * 60 * 30;
-    static private final long VERIFY_TOKEN_VALID_MILISECOND = 1000L * 60 * 5;
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final long ACCESS_TOKEN_VALID_MILISECOND = 1000L * 60 * 30;
+    private static final long VERIFY_TOKEN_VALID_MILISECOND = 1000L * 60 * 5;
+    public static final String BEARER_PREFIX = "Bearer ";
+
+    private final Key key;
+
+    public JwtManager(@Value("${jwt.secretKey}") String secretKey) {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
 
     // 액세스 토큰 생성
     public String generateAccessToken(String email) {
@@ -39,6 +44,17 @@ public class JwtManager {
             .compact();
     }
 
+    // 비밀번호 재확인 토큰 생성
+    public String generateReverifyToken(String email) {
+        return Jwts.builder()
+            .setSubject(email)
+            .claim("passwordReverified", true)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(new Date().getTime() + VERIFY_TOKEN_VALID_MILISECOND))
+            .signWith(key)
+            .compact();
+    }
+
     // email 추출
     public String getEmail(String token) {
         return Jwts.parserBuilder()
@@ -50,10 +66,34 @@ public class JwtManager {
     }
 
     // 토큰 유효성 검증
-    public void validateToken(String token) {
-        Jws<Claims> claims = Jwts.parserBuilder()
+    public boolean validateToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    // 비밀번호 재확인 플래그 확인
+    public boolean isReverified(String token) {
+        Boolean passwordReverified = Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
-            .parseClaimsJws(token);
+            .parseClaimsJws(token)
+            .getBody()
+            .get("passwordReverified", Boolean.class);
+
+        return Boolean.TRUE.equals(passwordReverified);
+    }
+
+    public String parseBearerToken(String bearerToken) {
+        if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(BEARER_PREFIX.length());
+        }
+        return null;
     }
 }

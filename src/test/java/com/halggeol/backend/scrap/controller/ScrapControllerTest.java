@@ -2,6 +2,8 @@ package com.halggeol.backend.scrap.controller;
 
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.service.ScrapService;
+import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.security.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,12 +27,20 @@ class ScrapControllerTest {
     @InjectMocks
     private ScrapController scrapController;
 
+    private CustomUser testUser;
     private int testUserId;
     private ScrapRequestDTO testRequestDto;
 
     @BeforeEach
     void setUp() {
         testUserId = 1;
+        User user = User.builder()
+                .id(1)
+                .email("test@example.com")
+                .name("테스트 사용자")
+                .password("password")
+                .build();
+        testUser = new CustomUser(user);
         testRequestDto = new ScrapRequestDTO();
         testRequestDto.setProductId("D123");
     }
@@ -41,21 +51,17 @@ class ScrapControllerTest {
     @DisplayName("스크랩 추가: 성공 응답 확인")
     void addScrapProduct_Success() {
         // Given
-        // scrapService.addScrapProduct 호출 시 0을 반환하도록 설정
-        when(scrapService.addScrapProduct(eq(testUserId), any(ScrapRequestDTO.class)))
-            .thenReturn(0);
+        doNothing().when(scrapService).addScrapProduct(eq(testUser), any(ScrapRequestDTO.class));
 
         // When
         // 컨트롤러 메서드를 직접 호출 (HTTP 요청 시뮬레이션 아님)
-        ResponseEntity<?> response = scrapController.addScrapProduct(testUserId, testRequestDto);
+        ResponseEntity<?> response = scrapController.addScrapProduct(testUser, testRequestDto);
 
         // Then
-        // HTTP 상태 코드와 응답 본문 검증
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(0);
 
         // scrapService.addScrapProduct가 올바른 인자로 1번 호출되었는지 검증
-        verify(scrapService, times(1)).addScrapProduct(eq(testUserId), eq(testRequestDto));
+        verify(scrapService, times(1)).addScrapProduct(eq(testUser), eq(testRequestDto));
     }
 
     @Test
@@ -63,19 +69,18 @@ class ScrapControllerTest {
     void addScrapProduct_Failure_IllegalArgumentException() {
         // Given
         String errorMessage = "유효하지 않은 상품 ID입니다.";
-        // scrapService.addScrapProduct 호출 시 예외를 던지도록 설정
-        when(scrapService.addScrapProduct(eq(testUserId), any(ScrapRequestDTO.class)))
-            .thenThrow(new IllegalArgumentException(errorMessage));
+        doThrow(new IllegalArgumentException(errorMessage))
+            .when(scrapService).addScrapProduct(eq(testUser), any(ScrapRequestDTO.class));
 
         // When
-        ResponseEntity<?> response = scrapController.addScrapProduct(testUserId, testRequestDto);
+        ResponseEntity<?> response = scrapController.addScrapProduct(testUser, testRequestDto);
 
         // Then
         // HTTP 상태 코드와 응답 본문(에러 메시지) 검증
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isEqualTo(errorMessage);
 
-        verify(scrapService, times(1)).addScrapProduct(eq(testUserId), eq(testRequestDto));
+        verify(scrapService, times(1)).addScrapProduct(eq(testUser), eq(testRequestDto));
     }
 
     // --- 스크랩 삭제 테스트 ---
@@ -84,19 +89,16 @@ class ScrapControllerTest {
     @DisplayName("스크랩 삭제: 성공 응답 확인")
     void removeScrapProduct_Success() {
         // Given
-        // scrapService.removeScrapProduct 호출 시 0을 반환하도록 설정
-        when(scrapService.removeScrapProduct(eq(testUserId), any(ScrapRequestDTO.class)))
-            .thenReturn(0);
+        doNothing().when(scrapService).removeScrapProduct(eq(testUser), any(ScrapRequestDTO.class));
 
         // When
         // 컨트롤러 메서드를 직접 호출
-        ResponseEntity<?> response = scrapController.removeScrapProduct(testUserId, testRequestDto);
+        ResponseEntity<?> response = scrapController.removeScrapProduct(testUser, testRequestDto);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(0);
 
-        verify(scrapService, times(1)).removeScrapProduct(eq(testUserId), eq(testRequestDto));
+        verify(scrapService, times(1)).removeScrapProduct(eq(testUser), eq(testRequestDto));
     }
 
     @Test
@@ -104,17 +106,16 @@ class ScrapControllerTest {
     void removeScrapProduct_Failure_IllegalArgumentException() {
         // Given
         String errorMessage = "삭제할 스크랩을 찾을 수 없습니다.";
-        // scrapService.removeScrapProduct 호출 시 예외를 던지도록 설정
-        when(scrapService.removeScrapProduct(eq(testUserId), any(ScrapRequestDTO.class)))
-            .thenThrow(new IllegalArgumentException(errorMessage));
+        doThrow(new IllegalArgumentException(errorMessage))
+            .when(scrapService).removeScrapProduct(eq(testUser), any(ScrapRequestDTO.class));
 
         // When
-        ResponseEntity<?> response = scrapController.removeScrapProduct(testUserId, testRequestDto);
+        ResponseEntity<?> response = scrapController.removeScrapProduct(testUser, testRequestDto);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isEqualTo(errorMessage);
 
-        verify(scrapService, times(1)).removeScrapProduct(eq(testUserId), eq(testRequestDto));
+        verify(scrapService, times(1)).removeScrapProduct(eq(testUser), eq(testRequestDto));
     }
 }

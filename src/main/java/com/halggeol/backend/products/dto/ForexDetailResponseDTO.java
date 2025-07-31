@@ -49,4 +49,5 @@ public class ForexDetailResponseDTO {
     private String matchScore;      // ENUM('상','중','하')
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
+    private Boolean isScraped;      // 스크랩 여부
 }
