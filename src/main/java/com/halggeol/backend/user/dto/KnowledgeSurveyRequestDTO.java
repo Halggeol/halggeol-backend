@@ -1,7 +1,6 @@
 package com.halggeol.backend.user.dto;
 
 import java.util.List;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
