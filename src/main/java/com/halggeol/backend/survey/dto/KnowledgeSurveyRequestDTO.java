@@ -21,5 +21,5 @@ public class KnowledgeSurveyRequestDTO {
     @NotNull
     @Valid
     @Size(min = 10, max = 10)
-    private List<KnowledgeAnswerDTO> answers;
+    private List<KnowledgeSurveyItemDTO> answers;
 }

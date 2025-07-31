@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Range;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class KnowledgeAnswerDTO {
+public class KnowledgeSurveyItemDTO {
     @NotNull
     @Range(min = 1, max = 10)
     private Integer number; // 문항 번호

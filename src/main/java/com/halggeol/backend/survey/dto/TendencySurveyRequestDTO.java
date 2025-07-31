@@ -21,5 +21,5 @@ public class TendencySurveyRequestDTO {
     @NotNull
     @Valid
     @Size(min = 10, max = 10)
-    List<TendencyAnswerDTO> answers;
+    List<TendencySurveyItemDTO> answers;
 }
