@@ -9,7 +9,11 @@ import com.halggeol.backend.user.dto.UserJoinDTO;
 import java.util.Map;
 
 public interface SurveyService {
-    Map<String, String> updateKnowledge(KnowledgeSurveyRequestDTO surveyResult);
+    Map<String, String> initKnowledge(KnowledgeSurveyRequestDTO surveyResult);
 
-    Map<String, String> updateTendency(TendencySurveyRequestDTO surveyResult);
+    Map<String, String> updateKnowledge(CustomUser user, KnowledgeSurveyRequestDTO surveyResult);
+
+    Map<String, String> initTendency(TendencySurveyRequestDTO surveyResult);
+
+    Map<String, String> updateTendency(CustomUser user, TendencySurveyRequestDTO surveyResult);
 }

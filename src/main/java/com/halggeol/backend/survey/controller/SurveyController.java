@@ -26,8 +26,8 @@ public class SurveyController {
     public ResponseEntity<Map<String, String>> initKnowledge(
         @Valid @RequestBody KnowledgeSurveyRequestDTO surveyResult
     ) {
-        // 최초 금융 이해도 설문조사
-        return ResponseEntity.ok(surveyService.updateKnowledge(surveyResult));
+        // 최초 금융 이해도 설문
+        return ResponseEntity.ok(surveyService.initKnowledge(surveyResult));
     }
 
     @PatchMapping("/knowledge")
@@ -36,23 +36,23 @@ public class SurveyController {
         @Valid @RequestBody KnowledgeSurveyRequestDTO surveyResult
     ) {
         // 금융 이해도 갱신
-        return ResponseEntity.ok(surveyService.updateKnowledge(surveyResult));
+        return ResponseEntity.ok(surveyService.updateKnowledge(user, surveyResult));
     }
 
     @PatchMapping("/tendency/init")
     public ResponseEntity<Map<String, String>> initTendency(
-        @AuthenticationPrincipal CustomUser user,
         @Valid @RequestBody TendencySurveyRequestDTO surveyResult
     ) {
-        // 최초 투자 성향 설문조사
-        return ResponseEntity.ok(surveyService.updateTendency(surveyResult));
+        // 최초 투자 성향 설문
+        return ResponseEntity.ok(surveyService.initTendency(surveyResult));
     }
 
     @PatchMapping("/tendency")
     public ResponseEntity<Map<String, String>> updateTendency(
+        @AuthenticationPrincipal CustomUser user,
         @Valid @RequestBody TendencySurveyRequestDTO surveyResult
     ) {
         // 투자 성향 갱신
-        return ResponseEntity.ok(surveyService.updateTendency(surveyResult));
+        return ResponseEntity.ok(surveyService.updateTendency(user, surveyResult));
     }
 }
