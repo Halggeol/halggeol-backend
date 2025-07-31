@@ -109,7 +109,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/password/reset/*",
                 "/api/signup",
                 "/api/signup/*",
-                "/api/survey",
+                "/api/survey/knowledge",
+                "/api/survey/tendency",
                 "/api/main",
                 "/api/products",
                 "/api/products/basic"
