@@ -4,6 +4,7 @@ import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.user.dto.EditProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.KnowledgeSurveyRequestDTO;
+import com.halggeol.backend.user.dto.TendencySurveyRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import java.util.Map;
 import javax.validation.Valid;
@@ -25,5 +26,7 @@ public interface UserService {
 
     Map<String, String> deleteUser(CustomUser user, String bearerToken);
 
-    Map<String, String> updateKnowledge(CustomUser user, KnowledgeSurveyRequestDTO surveyResult);
+    Map<String, String> updateKnowledge(KnowledgeSurveyRequestDTO surveyResult);
+
+    Map<String, String> updateTendency(TendencySurveyRequestDTO surveyResult);
 }

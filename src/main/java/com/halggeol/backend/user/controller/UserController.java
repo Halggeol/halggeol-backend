@@ -4,6 +4,7 @@ import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.user.dto.EditProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.KnowledgeSurveyRequestDTO;
+import com.halggeol.backend.user.dto.TendencySurveyRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.service.UserService;
 import java.util.Map;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,9 +75,15 @@ public class UserController {
 
     @PatchMapping("/survey/knowledge")
     public ResponseEntity<Map<String, String>> updateKnowledge(
-        @AuthenticationPrincipal CustomUser user,
         @Valid @RequestBody KnowledgeSurveyRequestDTO surveyResult
     ) {
-        return ResponseEntity.ok(userService.updateKnowledge(user, surveyResult));
+        return ResponseEntity.ok(userService.updateKnowledge(surveyResult));
+    }
+
+    @PatchMapping("/survey/tendency")
+    public ResponseEntity<Map<String, String>> updateTendency(
+        @Valid @RequestBody TendencySurveyRequestDTO surveyResult
+    ) {
+        return ResponseEntity.ok(userService.updateTendency(surveyResult));
     }
 }
