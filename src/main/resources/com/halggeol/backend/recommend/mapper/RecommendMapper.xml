@@ -5,36 +5,42 @@
 
 <mapper namespace="com.halggeol.backend.recommend.mapper.RecommendMapper">
   <resultMap id="DepositAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.DepositAlgorithmResponseDTO">
-    <id property="id" column="productId"/>
+    <id property="id" column="id"/>
     <result property="name" column="name"/>
-    <result property="rate" column="rate"/>
     <result property="primeRate" column="prime_rate"/>
-    <result property="maxLimit" column="max_limit"/>
-    <result property="joinDeny" column="join_deny"/>
-    <result property="minimumCost" column="minimum_cost"/>
-    <result property="minSaveTerm" column="min_save_term"/>
+    <result property="extraDeposit" column="extra_deposit"/>
+    <result property="rate" column="rate"/>
     <result property="maxSaveTerm" column="max_save_term"/>
+    <result property="minSaveTerm" column="min_save_term"/>
+    <result property="joinDeny" column="join_deny"/>
+    <result property="maxLimit" column="max_limit"/>
+    <result property="minLimit" column="min_limit"/>
+    <result property="fSector" column="f_sector"/>
+    <result property="rateType" column="rate_type"/>
   </resultMap>
 
   <select id="getDepositAlgorithmDetail" resultMap="DepositAlgorithmResponseDTOMap">
     SELECT
-      d.id as productId,
-      d.name,
-      d.rate,
-      d.prime_rate,
-      d.max_limit,
-      d.join_deny,
-      d.minimum_cost,
-      d.min_save_term,
-      d.max_save_term
-    FROM deposit d
+        id,
+        name,
+        prime_rate,
+        extra_deposit,
+        rate,
+        max_save_term,
+        min_save_term,
+        join_deny,
+        max_limit,
+        min_limit,
+        f_sector,
+        rate_type
+    FROM deposit
   </select>
 
   <update id="updateDepositAlgoCodeById">
     UPDATE deposit
     SET
         deposit.algo_code = #{algoCode},
-        deposit.yieldScore = #{yieldScore},
+        deposit.yield_score = #{yieldScore},
         deposit.risk_score = #{riskScore},
         deposit.liquidity_score = #{liquidityScore},
         deposit.complexity_score = #{complexityScore},
@@ -44,25 +50,31 @@
 
   <resultMap id="SavingsAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.SavingsAlgorithmResponseDTO">
     <id property="id" column="id"/>
-    <result property="name" column="name"/>
+    <result property="rateType" column="rate_type"/>
     <result property="rate" column="rate"/>
-    <result property="primeRate" column="prime_rate"/>
+    <result property="fSector" column="f_sector"/>
     <result property="maxLimit" column="max_limit"/>
     <result property="joinDeny" column="join_deny"/>
     <result property="minSaveTerm" column="min_save_term"/>
     <result property="maxSaveTerm" column="max_save_term"/>
+    <result property="primeRate" column="prime_rate"/>
+    <result property="name" column="name"/>
+    <result property="minLimit" column="min_limit"/>
   </resultMap>
 
   <select id="getSavingsAlgorithmDetail" resultMap="SavingsAlgorithmResponseDTOMap">
     SELECT
       s.id as id,
-      s.name,
-      s.rate,
-      s.prime_rate,
-      s.max_limit,
-      s.join_deny,
-      s.min_save_term,
-      s.max_save_term
+      s.rate_type as rate_type,
+      s.rate as rate,
+      s.f_sector as f_sector,
+      s.max_limit as max_limit,
+      s.join_deny as join_deny,
+      s.min_save_term as min_save_term,
+      s.max_save_term as max_save_term,
+      s.prime_rate as prime_rate,
+      s.name as name,
+      s.min_limit as min_limit
     FROM savings s
     </select>
 
@@ -70,7 +82,7 @@
     UPDATE savings
     SET
         savings.algo_code = #{algoCode}
-        ,savings.yieldScore = #{yieldScore}
+        ,savings.yield_score = #{yieldScore}
         ,savings.risk_score = #{riskScore}
         ,savings.cost_score = #{costScore}
         ,savings.liquidity_score = #{liquidityScore}
@@ -89,8 +101,9 @@
     <result property="managementFee" column="management_fee"/>
     <result property="TER" column="TER"/>
     <result property="upfrontFee" column="upfront_fee"/>
-    <result property="minimumCost" column="minimum_cost"/>
-    <result property="theme" column="theme"/>
+    <result property="category" column="category"/>
+    <result property="minLimit" column="min_limit"/>
+    <result property="risk" column="risk"/>
   </resultMap>
 
   <select id="getFundAlgorithmDetail" resultMap="FundAlgorithmResponseDTOMap">
@@ -105,14 +118,15 @@
       f.management_fee,
       f.TER,
       f.upfront_fee,
-      f.minimum_cost,
-      f.theme
+      f.min_limit,
+      f.category,
+      f.risk
     FROM fund f</select>
   
   <update id="updateFundAlgoCodeById">
     UPDATE fund
     SET fund.algo_code = #{algoCode},
-    fund.yieldScore = #{yieldScore},
+    fund.yield_score = #{yieldScore},
     fund.risk_score = #{riskScore},
     fund.cost_score = #{costScore},
     fund.liquidity_score = #{liquidityScore},
@@ -121,31 +135,41 @@
   <resultMap id="PensionAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.PensionAlgorithmResponseDTO">
     <id property="id" column="id"/>
     <result property="name" column="name"/>
+    <result property="minLimit" column="min_limit"/>
+    <result property="maxLimit" column="max_limit"/>
+    <result property="fSector" column="f_sector"/>
+    <result property="rateType" column="rate_type"/>
     <result property="rate" column="rate"/>
-    <result property="lastYearProfit" column="last_year_profit_rate"/>
-    <result property="minGuaranteeRate" column="min_guarantee_rate"/>
-    <result property="pensionKind" column="pension_kind"/>
-    <result property="pensionType" column="pension_type"/>
     <result property="risk" column="risk"/>
+    <result property="pensionType" column="pension_type"/>
+    <result property="pensionKind" column="pension_kind"/>
+    <result property="minGuaranteeRate" column="min_guarantee_rate"/>
+    <result property="TER" column="TER"/>
+    <result property="saveTerm" column="save_term"/>
   </resultMap>
 
   <select id="getPensionAlgorithmDetail" resultMap="PensionAlgorithmResponseDTOMap">
     SELECT
       p.id as id,
       p.name,
-      p.rate,
-      p.last_year_profit_rate,
-      p.min_guarantee_rate,
-      p.pension_kind,
-      p.pension_type,
-      p.risk
+      p.min_limit as min_limit,
+      p.max_limit as max_limit,
+      p.f_sector as f_sector,
+      p.rate_type as rate_type,
+      p.rate as rate,
+      p.risk as risk,
+      p.pension_type as pension_type,
+      p.pension_kind as pension_kind,
+      p.min_guarantee_rate as min_guarantee_rate,
+      p.TER as TER,
+      p.save_term as save_term
     FROM pension p
     </select>
 
   <update id="updatePensionAlgoCodeById">
     UPDATE pension
     SET pension.algo_code = #{algoCode}
-    ,pension.yieldScore = #{yieldScore}
+    ,pension.yield_score = #{yieldScore}
     ,pension.risk_score = #{riskScore}
     ,pension.cost_score = #{costScore}
     ,pension.liquidity_score = #{liquidityScore}
@@ -156,12 +180,16 @@
     <id property="id" column="id"/>
     <result property="name" column="name"/>
     <result property="rate" column="rate"/>
-    <result property="currency" column="currency"/>
-    <result property="protect" column="protect"/>
-    <result property="regFund" column="reg_fund"/>
-    <result property="taxRefund" column="tax_refund"/>
-    <result property="autoRenew" column="auto_renew"/>
+    <result property="maxLimit" column="max_limit"/>
+    <result property="minLimit" column="min_limit"/>
+    <result property="maxSaveTerm" column="max_save_term"/>
+    <result property="minSaveTerm" column="min_save_term"/>
     <result property="extraDeposit" column="extra_deposit"/>
+    <result property="autoRenew" column="auto_renew"/>
+    <result property="taxRefund" column="tax_refund"/>
+    <result property="protect" column="protect"/>
+    <result property="currency" column="currency"/>
+    <result property="risk" column="risk"/>
   </resultMap>
 
   <select id="getForexAlgorithmDetail" resultMap="ForexAlgorithmResponseDTOMap">
@@ -169,19 +197,23 @@
       fx.id as id,
       fx.name,
       fx.rate,
-      fx.currency,
-      fx.protect,
-      fx.reg_fund,
-      fx.tax_refund,
-      fx.auto_renew,
-      fx.extra_deposit
+      fx.max_limit as max_limit,
+      fx.min_limit as min_limit,
+      fx.max_save_term as max_save_term,
+      fx.min_save_term as min_save_term,
+      fx.extra_deposit as extra_deposit,
+      fx.auto_renew as auto_renew,
+      fx.tax_refund as tax_refund,
+      fx.protect as protect,
+      fx.currency as currency,
+      fx.risk as risk
     FROM forex fx
   </select>
 
   <update id="updateForexAlgoCodeById">
     UPDATE forex
     SET forex.algo_code = #{algoCode}
-    ,forex.yieldScore = #{yieldScore}
+    ,forex.yield_score = #{yieldScore}
     ,forex.risk_score = #{riskScore}
     ,forex.cost_score = #{costScore}
     ,forex.liquidity_score = #{liquidityScore}
@@ -200,7 +232,7 @@
   <select id="getProductVectors" resultMap="ProductVectorResponseDTOMap">
     SELECT
       id,
-      yieldScore,
+      yield_score,
       risk_score,
       cost_score,
       liquidity_score,
@@ -209,7 +241,7 @@
     union all
     SELECT
       id,
-      yieldScore,
+      yield_score,
       risk_score,
       cost_score,
       liquidity_score,
@@ -218,7 +250,7 @@
     union all
     SELECT
       id,
-      yieldScore,
+      fund.yield_score,
       risk_score,
       cost_score,
       liquidity_score,
@@ -227,7 +259,7 @@
     union all
     SELECT
       id,
-      yieldScore,
+      yield_score,
       risk_score,
       cost_score,
       liquidity_score,
@@ -236,7 +268,7 @@
     union all
     SELECT
       id,
-      yieldScore,
+      yield_score,
       risk_score,
       cost_score,
       liquidity_score,
@@ -256,7 +288,7 @@
   <select id="getUserVectors" resultMap="UserVectorResponseDTOMap">
     SELECT
       id,
-      yieldScore,
+      yield_score,
       risk_score,
       cost_score,
       liquidity_score,
@@ -292,7 +324,7 @@
   <select id="getProductVectorById" resultMap="ProductVectorResponseDTOMap">
   SELECT
   id,
-  yieldScore,
+  yield_score,
   risk_score,
   cost_score,
   liquidity_score,
@@ -301,7 +333,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score,
   risk_score,
   cost_score,
   liquidity_score,
@@ -310,7 +342,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score,
   risk_score,
   cost_score,
   liquidity_score,
@@ -319,7 +351,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score,
   risk_score,
   cost_score,
   liquidity_score,
@@ -328,7 +360,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score,
   risk_score,
   cost_score,
   liquidity_score,
@@ -382,5 +414,63 @@
     FROM rec_item ri
     JOIN forex fx ON ri.product5_id = fx.id
     WHERE ri.user_id = #{userId}
+  </select>
+
+  <select id="getMaxRate" resultType="double">
+    SELECT MAX(rate) FROM (
+      SELECT rate FROM deposit
+      UNION ALL
+      SELECT rate FROM savings
+      UNION ALL
+      SELECT rate FROM fund
+      UNION ALL
+      SELECT rate FROM pension
+      UNION ALL
+      SELECT rate FROM forex
+    ) AS combined_rates
+  </select>
+
+  <select id="getMinRate" resultType="double">
+    SELECT MIN(rate) FROM (
+        SELECT rate FROM deposit
+        UNION ALL
+        SELECT rate FROM savings
+        UNION ALL
+        SELECT rate FROM fund
+        UNION ALL
+        SELECT rate FROM pension
+        UNION ALL
+        SELECT rate FROM forex
+    ) AS combined_rates
+  </select>
+
+  <select id="getMaxSaveTerm" resultType="int">
+  SELECT MAX(max_save_term) FROM (
+  SELECT max_save_term FROM deposit
+  UNION ALL
+  SELECT max_save_term FROM savings
+  ) AS combined_terms
+  </select>
+
+  <select id="getMinSaveTerm" resultType="int">
+  SELECT MIN(min_save_term) FROM (
+  SELECT min_save_term FROM deposit
+  UNION ALL
+  SELECT min_save_term FROM savings
+  ) AS combined_terms
+  </select>
+
+  <select id="getMaxFundPriceMovement" resultType="double">
+  SELECT MAX(fund_price_movement) FROM fund
+  </select>
+
+  <select id="getMinFundPriceMovement" resultType="double">
+  SELECT MIN(fund_price_movement) FROM fund
+  </select>
+  <select id="getMaxFundTER" resultType="double">
+  SELECT MAX(TER) FROM fund
+  </select>
+  <select id="getMinFundTER" resultType="double">
+  SELECT MIN(TER) FROM fund
   </select>
 </mapper>

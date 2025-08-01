@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.halggeol.backend.products.mapper.ProductFeedbackMapper">
+
+    <update id="createFeedback">
+# rec_item에서 param에서 오는 product_id가 product1_id와 일치하는지 product2_id와 일치하는지 producrt3_id와 일치하는지 product4_id와 일치하는지 product5_id와 일치하는지 확인 후
+# 해당 product_id에 맞는 필드의 product#_survey필드를 수정하는 쿼리
+        UPDATE rec_item
+        SET product1_survey = #{reason}
+        WHERE product1_id = #{pid} AND anlz_date = #{anlzDate} AND user_id = #{userId};
+        UPDATE rec_item
+        SET product2_survey = NULL
+        WHERE product2_id = #{pid} AND anlz_date = #{anlzDate} AND user_id = #{userId};
+        UPDATE rec_item
+        SET product3_survey = NULL
+        WHERE product3_id = #{pid} AND anlz_date = #{anlzDate} AND user_id = #{userId};
+        UPDATE rec_item
+        SET product4_survey = NULL
+        WHERE product4_id = #{pid} AND anlz_date = #{anlzDate} AND user_id = #{userId};
+        UPDATE rec_item
+        SET product5_survey = NULL
+        WHERE product5_id = #{pid} AND anlz_date = #{anlzDate} AND user_id = #{userId};
+    </update>
+</mapper>

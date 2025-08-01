@@ -15,13 +15,13 @@ import org.apache.ibatis.type.Alias;
 @AllArgsConstructor
 @Builder
 public class User {
-    private int id;
-    private String email;
+    private int id; // 유저 id 자동생성 1부터 시작
+    private String email; // 유저 이메일
     private String name; // 유저 실제이름
-    private String password;
+    private String password; // 비밀번호 security 암호화되어있음
     private String phone; // 전화번호
     private LocalDateTime birth; // 생일
-    private int risk; // 위험도
+    private int risk; // 위험도(1~6) 높을수록 안정적인 상품 선호
     private int userKlg; // 금융 이해도
     private float algoCode; // 알고리즘 분류값
     private LocalDateTime regDate; // 가입일자

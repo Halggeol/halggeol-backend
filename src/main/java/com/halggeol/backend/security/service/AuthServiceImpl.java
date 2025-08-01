@@ -5,6 +5,7 @@ import com.halggeol.backend.security.dto.FindEmailDTO;
 import com.halggeol.backend.security.dto.ResetPasswordDTO;
 import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.mapper.UserMapper;
+import com.halggeol.backend.user.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtManager jwtManager;
     private final UserMapper userMapper;
     private final Argon2PasswordEncoder passwordEncoder;
+    private final UserService userService;
 
     @Override
     public Map<String, String> extendLogin(String email) {

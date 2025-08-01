@@ -27,10 +27,23 @@ public class RecommendServiceImpl implements RecommendService{
 
     private final RecommendMapper mapper;
 
+    private void updateStaticValues() {
+        //ScoreCalculator의 static 변수를 초기화하는 메서드
+        ScoreCalculator.MAX_RATE = mapper.getMaxRate();
+        ScoreCalculator.MIN_RATE = mapper.getMinRate();
+        ScoreCalculator.MAX_SAVE_TERM = mapper.getMaxSaveTerm();
+        ScoreCalculator.MIN_SAVE_TERM = mapper.getMinSaveTerm();
+        ScoreCalculator.MAX_FUND_PRICE_MOVEMENT = mapper.getMaxFundPriceMovement();
+        ScoreCalculator.MIN_FUND_PRICE_MOVEMENT = mapper.getMinFundPriceMovement();
+        ScoreCalculator.MAX_FUND_TER = mapper.getMaxFundTER();
+        ScoreCalculator.MIN_FUND_TER = mapper.getMinFundTER();
+    }
+
     @Override
-    @Scheduled(cron = "0 0 0 * * *") // 매 분 실행
+    @Scheduled(cron = "0 0 0 1 * *")
     public void updateAlgoCode() {
         System.out.println("Updating algorithm codes for all products...");
+        updateStaticValues(); //최대/최소 금리를 업데이트
         List<DepositAlgorithmResponseDTO> depositList = mapper.getDepositAlgorithmDetail();
         for( DepositAlgorithmResponseDTO deposit : depositList) {
             Map<String, Double> scores = ScoreCalculator.calculateDepositScore(deposit);
@@ -77,7 +90,7 @@ public class RecommendServiceImpl implements RecommendService{
     }
 
     @Override
-    @Scheduled(cron = "15 0 0 * * *") //
+    @Scheduled(cron = "15 0 0 * * *")
     public void updateRecommendation() {
         System.out.println("Updating recommendations for all users...");
         List<UserVectorResponseDTO> userVectors = mapper.getUserVectors(); //유저 벡터 리스트를 가져옴
@@ -99,6 +112,35 @@ public class RecommendServiceImpl implements RecommendService{
         }
     }
 
+    @Override
+    public void updateRecommendationByUserId(String userId) {
+        //특정 유저의 추천 상품을 업데이트하는 로직
+        List<UserVectorResponseDTO> userVectors = mapper.getUserVectors();
+        //유저 벡터를 가져옴
+        UserVectorResponseDTO userVector = null;
+        for (UserVectorResponseDTO vector : userVectors) {
+            if (vector.getId().equals(userId)) {
+                userVector = vector;
+                break;
+            }
+        }
+        if (userVector == null) {
+            System.out.println("User vector not found for user ID: " + userId);
+            return; //유저 벡터가 없는 경우
+        }
+        List<Double> userVectorList = List.of(userVector.getYieldScore(), userVector.getRiskScore(),
+            userVector.getCostScore(), userVector.getLiquidityScore(), userVector.getComplexityScore());
+
+        List<ProductVectorResponseDTO> productVectors = mapper.getProductVectors();
+        List<Recommendation> recommendations = recommendTop5(productVectors, userVectorList);
+        System.out.println("Top 5 Recommendations for User ID: " + userId);
+        for (Recommendation recommendation : recommendations) {
+            System.out.println("Product: " + recommendation.dto().getId() + ", Score: " + recommendation.score());
+        }
+        mapper.saveRecommendations(Integer.parseInt(userId), recommendations.get(0).dto.getId(),recommendations.get(1).dto.getId(),
+            recommendations.get(2).dto.getId(), recommendations.get(3).dto.getId(), recommendations.get(4).dto.getId());
+    }
+
 
     private List<Recommendation> recommendTop5(List<ProductVectorResponseDTO> productVectors, List<Double> userVector) {
         //유저 성향 벡터와 가장 유사한 상품 벡터를 찾는 로직
@@ -111,11 +153,13 @@ public class RecommendServiceImpl implements RecommendService{
             .toList();
     }
 
-    public List<Recommendation> similarProducts(ProductVectorResponseDTO productVector, List<ProductVectorResponseDTO> productVectors) {
+    @Override
+    public List<Recommendation> getSimilarProducts(String productId) {
         //상품 벡터와 유사한 상품을 찾는 로직
+        ProductVectorResponseDTO productVector = mapper.getProductVectorById(productId);
         List<Double> productVectorList = List.of(productVector.getYieldScore(), productVector.getRiskScore(),
             productVector.getCostScore(), productVector.getLiquidityScore(), productVector.getComplexityScore());
-
+        List<ProductVectorResponseDTO> productVectors = mapper.getProductVectors();
         return productVectors.stream()
             .map(dto -> new Recommendation(dto, cosineSimilarity(List.of(dto.getYieldScore(),dto.getRiskScore(),dto.getCostScore(),
                 dto.getLiquidityScore(),dto.getComplexityScore()), productVectorList)))
@@ -124,6 +168,7 @@ public class RecommendServiceImpl implements RecommendService{
             .toList();
     }
 
+    @Override
     public List<RecommendResponseDTO> getRecommendProducts(String userId) {
         //유저 ID로 추천 상품을 가져오는 로직
         List<RecommendResponseDTO> recommendations = mapper.getRecommendationsByUserId(userId);
@@ -132,6 +177,8 @@ public class RecommendServiceImpl implements RecommendService{
         }
         return recommendations;
     }
+
+
 
 
     public record Recommendation(ProductVectorResponseDTO dto, double score){}

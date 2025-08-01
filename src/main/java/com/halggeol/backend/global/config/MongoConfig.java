@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = {"com.halggeol.backend.*.repository"})
+@EnableMongoRepositories(basePackageClasses = {com.halggeol.backend.logs.repository.UserActionLogRepository.class})
 public class MongoConfig {
 
     @Value("${spring.data.mongodb.uri}")
