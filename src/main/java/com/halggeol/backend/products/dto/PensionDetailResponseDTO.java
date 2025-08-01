@@ -45,6 +45,9 @@ public class PensionDetailResponseDTO {
 
     private String description;
 
+    private Long minLimit; // 최소 비용
+    private Long maxLimit; // 최소 비용
+
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
     private Boolean isScraped;      // 스크랩 여부

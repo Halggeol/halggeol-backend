@@ -184,9 +184,6 @@
     <result property="scrapCnt" column="f_scrap_cnt"/>
     <result property="regretCnt" column="f_regret_cnt"/>
 
-    <result property="minSaveTerm" column="f_min_save_term"/>
-    <result property="maxSaveTerm" column="f_max_save_term"/>
-
     <result property="description" column="f_description"/>
 
     <result property="advantage" column="pd_advantage"/>
@@ -219,9 +216,6 @@
       f.scrap_cnt AS f_scrap_cnt,
       f.regret_cnt AS f_regret_cnt,
 
-      f.min_save_term AS f_min_save_term,
-      f.max_save_term AS f_max_save_term,
-
       f.description AS f_description,
 
       pd.advantage AS pd_advantage,
@@ -241,33 +235,33 @@
 
   <!-- 외화 -->
   <resultMap id="forexDetailResponseDTOMap" type="com.halggeol.backend.products.dto.ForexDetailResponseDTO">
-    <id property="id" column="f_id"/>
-    <result property="name" column="f_name"/>
-    <result property="rate" column="f_rate"/>
-    <result property="description" column="f_description"/>
-    <result property="currency" column="f_currency"/>
+    <id property="id" column="fx_id"/>
+    <result property="name" column="fx_name"/>
+    <result property="rate" column="fx_rate"/>
+    <result property="description" column="fx_description"/>
+    <result property="currency" column="fx_currency"/>
 
-    <result property="minLimit" column="f_min_limit"/>
-    <result property="maxLimit" column="f_max_limit"/>
+    <result property="minLimit" column="fx_min_limit"/>
+    <result property="maxLimit" column="fx_max_limit"/>
 
-    <result property="regLimitDate" column="f_reg_limit_date"/>
-    <result property="autoRenew" column="f_auto_renew"/>
-    <result property="extraDeposit" column="f_extra_deposit"/>
-    <result property="rateGiveWay" column="f_rate_give_way"/>
-    <result property="taxRefund" column="f_tax_refund"/>
-    <result property="protect" column="f_protect"/>
-    <result property="company" column="f_company"/>
-    <result property="score" column="f_score"/>
-    <result property="risk" column="f_risk"/>
-    <result property="regLink" column="f_reg_link"/>
-    <result property="caution" column="f_caution"/>
-    <result property="viewCnt" column="f_view_cnt"/>
-    <result property="scrapCnt" column="f_scrap_cnt"/>
-    <result property="regretCnt" column="f_regret_cnt"/>
+    <result property="regLimitDate" column="fx_reg_limit_date"/>
+    <result property="autoRenew" column="fx_auto_renew"/>
+    <result property="extraDeposit" column="fx_extra_deposit"/>
+    <result property="rateGiveWay" column="fx_rate_give_way"/>
+    <result property="taxRefund" column="fx_tax_refund"/>
+    <result property="protect" column="fx_protect"/>
+    <result property="company" column="fx_company"/>
+    <result property="score" column="fx_score"/>
+    <result property="risk" column="fx_risk"/>
+    <result property="regLink" column="fx_reg_link"/>
+    <result property="caution" column="fx_caution"/>
+    <result property="viewCnt" column="fx_view_cnt"/>
+    <result property="scrapCnt" column="fx_scrap_cnt"/>
+    <result property="regretCnt" column="fx_regret_cnt"/>
 
-    <result property="rateType" column="f_rate_type"/>
-    <result property="minSaveTerm" column="f_min_save_term"/>
-    <result property="maxSaveTerm" column="f_max_save_term"/>
+    <result property="rateType" column="fx_rate_type"/>
+    <result property="minSaveTerm" column="fx_min_save_term"/>
+    <result property="maxSaveTerm" column="fx_max_save_term"/>
 
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
@@ -275,34 +269,34 @@
   </resultMap>
   <select id="selectForexDetailById" resultMap="forexDetailResponseDTOMap">
     SELECT
-      fx.id AS f_id,
-      fx.name AS f_name,
-      fx.rate AS f_rate,
+      fx.id AS fx_id,
+      fx.name AS fx_name,
+      fx.rate AS fx_rate,
 
-      fx.currency AS f_currency,
+      fx.currency AS fx_currency,
 
-      fx.min_limit AS f_min_limit,
-      fx.max_limit AS f_max_limit,
+      fx.min_limit AS fx_min_limit,
+      fx.max_limit AS fx_max_limit,
 
-      fx.reg_limit_date AS f_reg_limit_date,
-      fx.auto_renew AS f_auto_renew,
-      fx.extra_deposit AS f_extra_deposit,
-      fx.rate_give_way AS f_rate_give_way,
-      fx.tax_refund AS f_tax_refund,
-      fx.protect AS f_protect,
-      fx.company AS f_company,
-      fx.score AS f_score,
-      fx.risk AS f_risk,
-      fx.reg_link AS f_reg_link,
-      fx.caution AS f_caution,
-      fx.view_cnt AS f_view_cnt,
-      fx.scrap_cnt AS f_scrap_cnt,
-      fx.regret_cnt AS f_regret_cnt,
+      fx.reg_limit_date AS fx_reg_limit_date,
+      fx.auto_renew AS fx_auto_renew,
+      fx.extra_deposit AS fx_extra_deposit,
+      fx.rate_give_way AS fx_rate_give_way,
+      fx.tax_refund AS fx_tax_refund,
+      fx.protect AS fx_protect,
+      fx.company AS fx_company,
+      fx.score AS fx_score,
+      fx.risk AS fx_risk,
+      fx.reg_link AS fx_reg_link,
+      fx.caution AS fx_caution,
+      fx.view_cnt AS fx_view_cnt,
+      fx.scrap_cnt AS fx_scrap_cnt,
+      fx.regret_cnt AS fx_regret_cnt,
 
-      fx.description AS f_description,
-      fx.rate_type AS f_rate_type,
-      fx.min_save_term AS f_min_save_term,
-      fx.max_save_term AS f_max_save_term,
+      fx.description AS fx_description,
+      fx.rate_type AS fx_rate_type,
+      fx.min_save_term AS fx_min_save_term,
+      fx.max_save_term AS fx_max_save_term,
 
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,

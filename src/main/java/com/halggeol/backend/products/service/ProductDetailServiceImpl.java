@@ -35,7 +35,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         incrementProductViewCountAsync(productId);
 
         // 로그 처리
-        logService.buildLog("view", productId, Integer.valueOf(userId));
+//        logService.buildLog("view", productId, Integer.valueOf(userId));
 
 //        // productId의 첫 글자를 확인하여 상품 유형 확인
 //        if (productId == null || productId.isEmpty()) {
@@ -51,7 +51,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetailMapper::selectForexDetailById,
             productDetailMapper::selectPensionDetailById);
 
-            Double matchScore = recommendService.getProductMatchScore(productId, userId);
+//            Double matchScore = recommendService.getProductMatchScore(productId, userId);
+            Double matchScore = 0.5;
             Integer scoreValue = null;
             
             if (matchScore != null) {
