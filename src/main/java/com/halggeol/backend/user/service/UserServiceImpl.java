@@ -118,9 +118,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String, String> updateInsightCycle(CustomUser user, UpdateCycleRequestDTO cycle) {
-        if(!cycle.isValidCycle()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "설정 가능한 주기가 아닙니다.");
-        }
+        cycle.validateCycleType();
         userMapper.updateInsightCycleById(user.getUser().getId(), cycle.getCycle());
         return Map.of("Message", "인사이트 주기 변경이 완료되었습니다.");
     }
