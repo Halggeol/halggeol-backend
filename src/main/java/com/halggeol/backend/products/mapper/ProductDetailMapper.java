@@ -30,4 +30,11 @@ public interface ProductDetailMapper<T> {
     void incrementForexViewCount(@Param("productId") String productId);
     void incrementPensionViewCount(@Param("productId") String productId);
 
+    void updateProductStatus(
+        @Param("userId") Integer userId,
+        @Param("productId") String productId,
+        @Param("productStatus") String productStatus
+    );
+
+    String selectProductStatus(@Param("userId") Integer userId, @Param("productId") String productId);
 }

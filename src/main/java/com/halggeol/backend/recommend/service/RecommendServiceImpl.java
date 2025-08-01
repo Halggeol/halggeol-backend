@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -177,9 +180,26 @@ public class RecommendServiceImpl implements RecommendService{
         }
         return recommendations;
     }
-
-
-
-
     public record Recommendation(ProductVectorResponseDTO dto, double score){}
+
+    @Override
+    public Double getProductMatchScore(String productId, String userId) {
+        //상품 ID와 유저 ID로 추천 상품의 매칭 점수를 가져오는 로직
+        ProductVectorResponseDTO productVector = mapper.getProductVectorById(productId);
+        List<UserVectorResponseDTO> userVectors = mapper.getUserVectors();
+        UserVectorResponseDTO userVector = userVectors.stream()
+            .filter(u -> u.getId().equals(userId))
+            .findFirst()
+            .orElse(null);
+        // 유사도 계산
+        if (productVector != null && userVector != null) {
+            List<Double> productVectorList = List.of(productVector.getYieldScore(), productVector.getRiskScore(),
+                productVector.getCostScore(), productVector.getLiquidityScore(), productVector.getComplexityScore());
+            List<Double> userVectorList = List.of(userVector.getYieldScore(), userVector.getRiskScore(),
+                userVector.getCostScore(), userVector.getLiquidityScore(), userVector.getComplexityScore());
+            return cosineSimilarity(productVectorList, userVectorList);
+        }
+        return null; //해당 상품이 추천 목록에 없는 경우 null 반환
+    }
+
 }

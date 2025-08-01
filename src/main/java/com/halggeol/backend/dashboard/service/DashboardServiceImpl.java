@@ -33,6 +33,13 @@ public class DashboardServiceImpl implements DashboardService {
     public DashboardResponseDTO getDashboardData(@AuthenticationPrincipal CustomUser user) {
         DashboardResponseDTO dashboardResponse = new DashboardResponseDTO();
 
+        if (user == null) {
+            List<UnifiedProductRegretRankingResponseDTO> regretRanking = unifiedProductService.getRegretRankingProducts();
+            dashboardResponse.setRegretRanking(regretRanking);
+
+            return dashboardResponse;
+        }
+
         String userId = String.valueOf(user.getUser().getId());
 
         List<RecommendResponseDTO> recommendedProducts = recommendService.getRecommendProducts(userId);

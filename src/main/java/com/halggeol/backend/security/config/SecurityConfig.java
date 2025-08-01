@@ -7,6 +7,7 @@ import com.halggeol.backend.security.handler.CustomAccessDeniedHandler;
 import com.halggeol.backend.security.handler.CustomAuthEntryPoint;
 import com.halggeol.backend.security.util.JsonResponse;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mybatis.spring.annotation.MapperScan;
@@ -108,7 +109,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/password/reset/*",
                 "/api/signup",
                 "/api/signup/*",
-                "/api/survey"
+                "/api/products",
+                "/api/products/basic",
+                "/api/survey/knowledge/init",
+                "/api/survey/tendency/init",
+                "/api/main"
             ).permitAll()                   // 비로그인 접근 허용
             .anyRequest().authenticated();  // 인증된 사용자만 접근 허용
 
@@ -126,10 +131,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.logout()
             .logoutUrl("/api/logout")
-            .invalidateHttpSession(true)
-            .deleteCookies("remember-me", "JSESSIONID")
             .logoutSuccessHandler((request, response, authentication) -> {
-                JsonResponse.send(response, HttpStatus.OK);
+                JsonResponse.send(response, Map.of("message", "로그아웃 되었습니다."));
             });
     }
 

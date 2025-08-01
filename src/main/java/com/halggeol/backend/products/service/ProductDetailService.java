@@ -7,8 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ProductDetailService {
 
-    @Transactional
     Object getProductDetailById(String productId, @AuthenticationPrincipal CustomUser user);
 
     void incrementProductViewCountAsync(String productId);
+
+    // 추천 상품 productX_status 확인
+    String checkRecommendProductStatus(@AuthenticationPrincipal CustomUser user, String productId);
+
+    void updateProductStatus(@AuthenticationPrincipal CustomUser user, String productId, String productStatus);
 }

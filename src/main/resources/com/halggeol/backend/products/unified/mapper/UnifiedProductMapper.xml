@@ -7,21 +7,23 @@
 
 <!--  금융 상품 검색 및 필터링-->
   <select id="selectFilteredProducts" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO">
-    SELECT *
-    FROM (
+    use my_db;
+
     SELECT
     d.id AS productId,
     d.name,
     d.company,
-    '예금' AS type,
+    'deposit' AS type,
     d.min_save_term AS tag1,
     d.max_save_term AS tag2,
     NULL AS tag3,
-    CAST(d.prime_rate AS CHAR) AS title,
+    d.prime_rate AS title,
     CAST(d.rate AS CHAR) AS subTitle,
     d.f_sector AS fSector,
-    d.save_term AS saveTerm,
-    d.minimum_cost AS minAmount,
+    NULL AS saveTerm,
+    d.min_save_term,
+    d.max_save_term,
+    d.min_limit AS minAmount,
     d.view_cnt,
     d.scrap_cnt
     FROM deposit d
@@ -32,15 +34,17 @@
     s.id AS productId,
     s.name,
     s.company,
-    '적금' AS type,
+    'savings' AS type,
     s.min_save_term AS tag1,
     s.max_save_term AS tag2,
     NULL AS tag3,
-    CAST(s.prime_rate AS CHAR) AS title,
+    s.prime_rate AS title,
     CAST(s.rate AS CHAR) AS subTitle,
     s.f_sector AS fSector,
-    s.save_term AS saveTerm,
-    NULL AS minAmount,
+    NULL AS saveTerm,
+    s.min_save_term,
+    s.max_save_term,
+    s.min_limit AS minAmount,
     s.view_cnt,
     s.scrap_cnt
     FROM savings s
@@ -51,19 +55,27 @@
     p.id AS productId,
     p.name,
     p.company,
-    '연금' AS type,
+    'pension' AS type,
     p.pension_type AS tag1,
     p.pension_kind AS tag2,
     p.risk AS tag3,
+    -- 조건 분기된 title
+    CASE
+    WHEN p.pension_type = 1 THEN p.rate
+    ELSE p.pension_price_movement
+    END AS title,
+    -- 조건 분기된 subTitle
     CAST(
-    IF(p.pension_type = 1, p.rate, p.last_year_profit_rate) AS CHAR
-    ) AS title,
-    CAST(
-    IF(p.pension_type = 1, p.min_guarantee_rate, p.last_year_profit_rate) AS CHAR
+    CASE
+    WHEN p.pension_type = 1 THEN p.min_guarantee_rate
+    ELSE NULL
+    END AS CHAR
     ) AS subTitle,
     p.f_sector AS fSector,
-    NULL AS saveTerm,
-    NULL AS minAmount,
+    p.save_term AS saveTerm,
+    NULL AS min_save_term,
+    NULL AS max_save_term,
+    p.min_limit AS minAmount,
     p.view_cnt,
     p.scrap_cnt
     FROM pension p
@@ -74,15 +86,17 @@
     f.id AS productId,
     f.name,
     f.company,
-    '펀드' AS type,
+    'fund' AS type,
     f.category AS tag1,
     f.theme AS tag2,
     f.investment_warning_grade AS tag3,
-    CAST(f.rate AS CHAR) AS title,
-    CAST(f.fund_price_movement AS CHAR) AS subTitle,
+    f.rate AS title,
+    NULL AS subTitle,
     f.f_sector AS fSector,
     NULL AS saveTerm,
-    f.minimum_cost AS minAmount,
+    NULL AS min_save_term,
+    NULL AS max_save_term,
+    f.min_limit AS minAmount,
     f.view_cnt,
     f.scrap_cnt
     FROM fund f
@@ -93,23 +107,25 @@
     fx.id AS productId,
     fx.name,
     fx.company,
-    '외화' AS type,
+    'forex' AS type,
     fx.currency AS tag1,
     NULL AS tag2,
     NULL AS tag3,
-    CAST(fx.rate AS CHAR) AS title,
+    fx.rate AS title,
     CAST(fx.rate_give_way AS CHAR) AS subTitle,
     fx.f_sector AS fSector,
     NULL AS saveTerm,
-    NULL AS minAmount,
+    fx.min_save_term,
+    fx.max_save_term,
+    fx.min_limit AS minAmount,
     fx.view_cnt,
     fx.scrap_cnt
     FROM forex fx
     ) AS unified
     WHERE 1=1
-<!--    <if test="keyword != null and keyword != ''">-->
-<!--      AND name LIKE CONCAT('%', #{keyword}, '%')-->
-<!--    </if>-->
+    <if test="keyword != null and keyword != ''">
+      AND name LIKE CONCAT('%', #{keyword}, '%')
+    </if>
     <if test="type != null and type != ''">
       AND type = #{type}
     </if>

@@ -4,6 +4,7 @@ package com.halggeol.backend.logs.service;
 import com.halggeol.backend.domain.UserActionLog;
 import com.halggeol.backend.logs.repository.UserActionLogRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,6 +13,7 @@ public class LogService {
 
     private final UserActionLogRepository repository;
 
+    @Async
     public void buildLog(String action, String productId, Integer userId) {
         // 로그를 생성하는 메소드
         UserActionLog log = new UserActionLog();

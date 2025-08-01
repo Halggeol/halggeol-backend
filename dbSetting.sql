@@ -248,6 +248,7 @@ CREATE TABLE `rec_item` (
                             `product5_miss_amount` INT NULL, # 다섯 번째 상품에 대한 회고 시 놓친 금액 (원 단위)
 
                             `anlz_date` DATE NOT NULL, # 분석 날짜
+                            `round` INT NULL # 추천 회차 (1, 2, 3 등)
 
                             PRIMARY KEY (`rec_id`, `user_id`),
                             FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)

@@ -16,5 +16,4 @@ public class EmailDTO {
     @NotBlank
     @Email // RFC 5322의 간략한 버전으로 검사
     private String email;
-
 }

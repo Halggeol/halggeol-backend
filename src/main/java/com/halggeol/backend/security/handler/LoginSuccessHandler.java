@@ -5,6 +5,7 @@ import com.halggeol.backend.security.dto.AuthResultDTO;
 import com.halggeol.backend.security.util.JsonResponse;
 import com.halggeol.backend.security.util.JwtManager;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     ) throws IOException, ServletException {
         CustomUser user = (CustomUser) authentication.getPrincipal();
         AuthResultDTO authResult = makeAuthResult(user);
-        JsonResponse.send(response, authResult);
+        JsonResponse.send(response, Map.of(
+            "message", "로그인 되었습니다.",
+            "authResult", authResult
+        ));
     }
 }
