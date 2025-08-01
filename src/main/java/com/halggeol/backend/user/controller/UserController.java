@@ -1,7 +1,7 @@
 package com.halggeol.backend.user.controller;
 
 import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.user.dto.EditProfileDTO;
+import com.halggeol.backend.user.dto.UpdateProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
@@ -57,12 +57,12 @@ public class UserController {
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<Map<String, String>> editProfile(
+    public ResponseEntity<Map<String, String>> updateProfile(
         @AuthenticationPrincipal CustomUser user,
-        @Valid @RequestBody EditProfileDTO info
+        @Valid @RequestBody UpdateProfileDTO info
     ) {
         // 마이페이지 회원 정보 수정
-        return ResponseEntity.ok(userService.editProfile(user, info));
+        return ResponseEntity.ok(userService.updateProfile(user, info));
     }
 
     @DeleteMapping("/me")

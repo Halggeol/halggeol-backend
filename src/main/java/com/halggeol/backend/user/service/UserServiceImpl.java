@@ -6,7 +6,7 @@ import com.halggeol.backend.security.mail.domain.MailType;
 import com.halggeol.backend.security.mail.dto.MailDTO;
 import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
-import com.halggeol.backend.user.dto.EditProfileDTO;
+import com.halggeol.backend.user.dto.UpdateProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> editProfile(CustomUser user, EditProfileDTO info) {
+    public Map<String, String> updateProfile(CustomUser user, UpdateProfileDTO info) {
         userMapper.updateProfileById(user.getUser().getId(), info.getPhone());
         return Map.of("Message", "사용자 정보 수정이 완료되었습니다.");
     }
