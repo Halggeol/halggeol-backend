@@ -33,5 +33,10 @@ public interface UserMapper {
         @Param("phone") String phone
     );
 
+    int updateInsightCycleById(
+        @Param("id") int id,
+        @Param("insightCycle") String insightCycle
+    );
+
     int deleteUserById(int id);
 }

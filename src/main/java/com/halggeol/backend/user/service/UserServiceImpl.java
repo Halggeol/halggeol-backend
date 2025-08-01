@@ -8,6 +8,7 @@ import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.dto.EditProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
+import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
@@ -113,5 +114,14 @@ public class UserServiceImpl implements UserService {
         }
         userMapper.deleteUserById(user.getUser().getId());
         return Map.of("Message", "회원탈퇴가 완료되었습니다.");
+    }
+
+    @Override
+    public Map<String, String> updateInsightCycle(CustomUser user, UpdateCycleRequestDTO cycle) {
+        if(!cycle.isValidCycle()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "설정 가능한 주기가 아닙니다.");
+        }
+        userMapper.updateInsightCycleById(user.getUser().getId(), cycle.getCycle());
+        return Map.of("Message", "인사이트 주기 변경이 완료되었습니다.");
     }
 }

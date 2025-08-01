@@ -3,6 +3,7 @@ package com.halggeol.backend.user.controller;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.user.dto.EditProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
+import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.service.UserService;
 import java.util.Map;
@@ -71,5 +72,14 @@ public class UserController {
     ) {
         // 회원 탈퇴
         return ResponseEntity.ok(userService.deleteUser(user, bearerToken));
+    }
+
+    @PatchMapping("/me/update/cycle")
+    public ResponseEntity<Map<String, String>> updateInsightCycle(
+        @AuthenticationPrincipal CustomUser user,
+        @Valid @RequestBody UpdateCycleRequestDTO cycle
+    ) {
+        // 인사이트 발행 주기 변경
+        return ResponseEntity.ok(userService.updateInsightCycle(user, cycle));
     }
 }

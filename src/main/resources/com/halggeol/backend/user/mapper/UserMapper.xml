@@ -39,6 +39,10 @@
     UPDATE users SET phone = #{phone} WHERE id = #{id}
   </update>
 
+  <update id="updateInsightCycleById">
+    UPDATE users SET insight_cycle = #{insightCycle} WHERE id = #{id}
+  </update>
+
   <delete id="deleteUserById">
     DELETE FROM users WHERE id = #{id}
   </delete>
