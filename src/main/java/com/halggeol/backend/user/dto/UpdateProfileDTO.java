@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EditProfileDTO {
+public class UpdateProfileDTO {
     @NotBlank
     @Pattern(regexp = RegexConstants.PHONE_PATTERN)
     private String phone;
