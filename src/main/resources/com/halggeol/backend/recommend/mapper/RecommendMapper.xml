@@ -371,49 +371,82 @@
   <resultMap id="RecommendResponseDTOMap" type="com.halggeol.backend.recommend.dto.RecommendResponseDTO">
     <result property="productId" column="product_id"/>
     <result property="name" column="product_name"/>
-    <result property="matchScore" column="match_score"/>
   </resultMap>
 
   <select id="getRecommendationsByUserId" resultMap="RecommendResponseDTOMap">
-    SELECT
-      ri.product1_id AS product_id,
-      d.name AS product_name,
-      ri.product1_id * 0.1 + d.rate * 0.9 AS match_score
-    FROM rec_item ri
-    JOIN deposit d ON ri.product1_id = d.id
-    WHERE ri.user_id = #{userId}
-    UNION ALL
-    SELECT
-      ri.product2_id AS product_id,
-      s.name AS product_name,
-      ri.product2_id * 0.1 + s.rate * 0.9 AS match_score
-    FROM rec_item ri
-    JOIN savings s ON ri.product2_id = s.id
-    WHERE ri.user_id = #{userId}
-    UNION ALL
-    SELECT
-      ri.product3_id AS product_id,
-      f.name AS product_name,
-      ri.product3_id * 0.1 + f.rate * 0.9 AS match_score
-    FROM rec_item ri
-    JOIN fund f ON ri.product3_id = f.id
-    WHERE ri.user_id = #{userId}
-    UNION ALL
-    SELECT
-      ri.product4_id AS product_id,
-      p.name AS product_name,
-      ri.product4_id * 0.1 + p.rate * 0.9 AS match_score
-    FROM rec_item ri
-    JOIN pension p ON ri.product4_id = p.id
-    WHERE ri.user_id = #{userId}
-    UNION ALL
-    SELECT
-      ri.product5_id AS product_id,
-      fx.name AS product_name,
-      ri.product5_id * 0.1 + fx.rate * 0.9 AS match_score
-    FROM rec_item ri
-    JOIN forex fx ON ri.product5_id = fx.id
-    WHERE ri.user_id = #{userId}
+    SELECT DISTINCT
+      product_id,
+      product_name
+    FROM (
+      SELECT
+        ri.product1_id AS product_id,
+        COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
+      FROM rec_item ri
+      LEFT JOIN deposit d ON ri.product1_id = d.id
+      LEFT JOIN savings s ON ri.product1_id = s.id
+      LEFT JOIN fund f ON ri.product1_id = f.id
+      LEFT JOIN pension p ON ri.product1_id = p.id
+      LEFT JOIN forex fx ON ri.product1_id = fx.id
+      WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
+        AND ri.product1_id IS NOT NULL
+      
+      UNION ALL
+      
+      SELECT
+        ri.product2_id AS product_id,
+        COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
+      FROM rec_item ri
+      LEFT JOIN deposit d ON ri.product2_id = d.id
+      LEFT JOIN savings s ON ri.product2_id = s.id
+      LEFT JOIN fund f ON ri.product2_id = f.id
+      LEFT JOIN pension p ON ri.product2_id = p.id
+      LEFT JOIN forex fx ON ri.product2_id = fx.id
+      WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
+        AND ri.product2_id IS NOT NULL
+      
+      UNION ALL
+      
+      SELECT
+        ri.product3_id AS product_id,
+        COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
+      FROM rec_item ri
+      LEFT JOIN deposit d ON ri.product3_id = d.id
+      LEFT JOIN savings s ON ri.product3_id = s.id
+      LEFT JOIN fund f ON ri.product3_id = f.id
+      LEFT JOIN pension p ON ri.product3_id = p.id
+      LEFT JOIN forex fx ON ri.product3_id = fx.id
+      WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
+        AND ri.product3_id IS NOT NULL
+      
+      UNION ALL
+      
+      SELECT
+        ri.product4_id AS product_id,
+        COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
+      FROM rec_item ri
+      LEFT JOIN deposit d ON ri.product4_id = d.id
+      LEFT JOIN savings s ON ri.product4_id = s.id
+      LEFT JOIN fund f ON ri.product4_id = f.id
+      LEFT JOIN pension p ON ri.product4_id = p.id
+      LEFT JOIN forex fx ON ri.product4_id = fx.id
+      WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
+        AND ri.product4_id IS NOT NULL
+      
+      UNION ALL
+      
+      SELECT
+        ri.product5_id AS product_id,
+        COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
+      FROM rec_item ri
+      LEFT JOIN deposit d ON ri.product5_id = d.id
+      LEFT JOIN savings s ON ri.product5_id = s.id
+      LEFT JOIN fund f ON ri.product5_id = f.id
+      LEFT JOIN pension p ON ri.product5_id = p.id
+      LEFT JOIN forex fx ON ri.product5_id = fx.id
+      WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
+        AND ri.product5_id IS NOT NULL
+    ) AS recommendations
+    WHERE product_name IS NOT NULL
   </select>
 
   <select id="getMaxRate" resultType="double">
