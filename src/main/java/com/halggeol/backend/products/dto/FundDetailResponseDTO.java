@@ -27,7 +27,7 @@ public class FundDetailResponseDTO {
 
     private Double managementFee; // 판매 수수료
 
-    private Integer minimumCost; // 최소 비용
+    private Long minLimit; // 최소 비용
 
     private String target; // 판매 대상
 
@@ -50,8 +50,8 @@ public class FundDetailResponseDTO {
 
     private Integer regretCnt; // 후회수
 
+    private String description; // 상품 특징
 
-    private String matchScore;      // ENUM('상','중','하')
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
     private Boolean isScraped;      // 스크랩 여부
