@@ -109,11 +109,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/password/reset/*",
                 "/api/signup",
                 "/api/signup/*",
-                "/api/survey/knowledge",
-                "/api/survey/tendency",
-                "/api/main",
                 "/api/products",
-                "/api/products/basic"
+                "/api/products/basic",
+                "/api/survey/knowledge/init",
+                "/api/survey/tendency/init",
+                "/api/main"
             ).permitAll()                   // 비로그인 접근 허용
             .anyRequest().authenticated();  // 인증된 사용자만 접근 허용
 
