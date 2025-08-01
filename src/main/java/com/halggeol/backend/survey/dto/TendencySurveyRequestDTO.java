@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Data
 @NoArgsConstructor
@@ -29,6 +31,11 @@ public class TendencySurveyRequestDTO {
     List<TendencyExperienceItemDTO> experiences;
 
     public int getInvestmentPeriodOption() {
-        return answers.get(6).getOption();
+        return answers.stream()
+            .filter(answer -> answer.getNumber() == 8)
+            .findFirst()
+            .map(TendencySurveyItemDTO::getOption)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "8번 문항이 누락되었습니다."));
     }
 }
