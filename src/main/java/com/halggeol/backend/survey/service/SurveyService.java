@@ -3,7 +3,6 @@ package com.halggeol.backend.survey.service;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.survey.dto.TendencyExperienceItemDTO;
 import com.halggeol.backend.survey.dto.TendencySurveyItemDTO;
-import com.halggeol.backend.survey.service.SurveyServiceImpl.InvestmentType;
 import com.halggeol.backend.survey.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.survey.dto.TendencySurveyRequestDTO;
 import java.util.List;
@@ -25,5 +24,5 @@ public interface SurveyService {
 
     int calculateMaxExperienceScore(List<TendencyExperienceItemDTO> answers);
 
-    InvestmentType classifyInvestmentType(int risk, int investmentPeriodOption);
+    int classifyInvestmentType(int risk, int investmentPeriodOption);
 }
