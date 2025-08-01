@@ -2,6 +2,7 @@ package com.halggeol.backend.products.unified.elasticsearch.service;
 
 import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
 import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +28,13 @@ import org.springframework.stereotype.Service;
 public class ProductSearchService {
 
     private final ElasticsearchOperations elasticsearchOperations;
+    Integer MAX_RESULTS_LIMIT = 10000;
 
     public List<ProductSearchResponseDTO> searchProducts(
         String sort,
         String keyword,
-        Integer fSector,
-        String type,
+        List<Integer> fSectors,
+        List<String> types,
         String minAmount,
         Integer saveTerm
     ) {
@@ -44,13 +46,13 @@ public class ProductSearchService {
         }
 
         // 상품 유형 필터링
-        if(type!=null && !type.isBlank()){
-            boolQuery.filter(QueryBuilders.termQuery("type.keyword", type));
+        if (types != null && !types.isEmpty()) {
+            boolQuery.filter(QueryBuilders.termsQuery("type.keyword", types));
         }
 
         // 금융권 필터링
-        if(fSector!=null){
-            boolQuery.filter(QueryBuilders.termQuery("fsector", fSector));
+        if(fSectors!=null && !fSectors.isEmpty()) {
+            boolQuery.filter(QueryBuilders.termsQuery("fsector", fSectors));
         }
 
         // 가입 기간 필터링
@@ -78,7 +80,7 @@ public class ProductSearchService {
 
 
         // 최소 가입 금액 필터링
-        if(minAmount!=null&&!minAmount.isBlank()){
+        if (minAmount != null && !minAmount.isBlank()) {
             try{
                 long minAmt = Long.parseLong(minAmount.trim());
 
@@ -88,14 +90,14 @@ public class ProductSearchService {
                 );
 
                 boolQuery.filter(QueryBuilders.wrapperQuery(rangeQueryJson));
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 log.error("Invalid minAmount input: {}", minAmount, e);
             }
         }
 
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder()
             .withQuery(boolQuery)
-            .withMaxResults(10000); // 검색결과는 최대 10000건 불러옴
+            .withMaxResults(MAX_RESULTS_LIMIT); // 검색결과는 최대 MAX_RESULTS_LIMIT건 불러옴
 
         // 복합 정렬 (viewCnt + scrapCnt × 2)
         Script script = new Script("doc['view_cnt'].value + doc['scrap_cnt'].value * 2");
@@ -135,8 +137,8 @@ public class ProductSearchService {
             .tag3(doc.getTag3())
             .title(doc.getTitle())
             .subTitle(doc.getSubTitle())
-            .type(doc.getType())
-            .fSector(doc.getFSector())
+            .type(doc.getType() != null ? Collections.singletonList(doc.getType()) : Collections.emptyList())
+            .fSector(doc.getFSector() != null ? Collections.singletonList(doc.getFSector()) : Collections.emptyList())
             .saveTerm(doc.getSaveTerm())
             .minSaveTerm(doc.getMinSaveTerm())
             .maxSaveTerm(doc.getMaxSaveTerm())

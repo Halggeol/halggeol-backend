@@ -1,5 +1,6 @@
 package com.halggeol.backend.products.unified.elasticsearch.dto;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,10 +13,10 @@ public class ProductSearchResponseDTO {
     private String tag1;
     private String tag2;
     private String tag3;
-    private String type;
+    private List<String> type;
     private Double title;
     private String subTitle;
-    private Integer fSector;
+    private List<Integer> fSector;
     private Integer saveTerm;
     private Integer minSaveTerm;
     private Integer maxSaveTerm;

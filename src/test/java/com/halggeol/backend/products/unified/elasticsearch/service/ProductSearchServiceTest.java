@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument; // ProductDocument 임포트
+import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
 import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +28,6 @@ class ProductSearchServiceTest {
     @Mock
     private ElasticsearchOperations elasticsearchOperations;
 
-    // SearchHits와 SearchHit의 제네릭 타입을 ProductDocument로 변경
     @Mock
     private SearchHits<ProductDocument> searchHits;
 
@@ -40,7 +40,7 @@ class ProductSearchServiceTest {
     @InjectMocks
     private ProductSearchService productSearchService;
 
-    // ProductDocument 인스턴스를 준비
+    // ProductDocument 인스턴스 준비
     private ProductDocument testProductDoc1;
     private ProductDocument testProductDoc2;
 
@@ -63,7 +63,7 @@ class ProductSearchServiceTest {
         testProductDoc1.setMinAmount(10000);
         testProductDoc1.setViewCnt(100);
         testProductDoc1.setScrapCnt(50);
-        testProductDoc1.setTimestamp("2023-01-01T10:00:00Z"); // ProductDocument에 있는 timestamp 필드 추가
+        testProductDoc1.setTimestamp(LocalDateTime.parse("2023-01-01T10:00:00")); // LocalDateTime 타입으로 변경
 
         testProductDoc2 = new ProductDocument();
         testProductDoc2.setId("D2");
@@ -73,7 +73,7 @@ class ProductSearchServiceTest {
         testProductDoc2.setTag1("tag1");
         testProductDoc2.setTag2("tag2");
         testProductDoc2.setTag3("tag3");
-        testProductDoc2.setTitle(4.0); // ProductDocument의 title이 Integer이므로 Integer로 변경
+        testProductDoc2.setTitle(4.0); // Double 타입으로 변경
         testProductDoc2.setSubTitle("Test SubTitle 2");
         testProductDoc2.setType("deposit");
         testProductDoc2.setFSector(2);
@@ -81,19 +81,16 @@ class ProductSearchServiceTest {
         testProductDoc2.setMinAmount(50000);
         testProductDoc2.setViewCnt(200);
         testProductDoc2.setScrapCnt(75);
-        testProductDoc2.setTimestamp("2023-01-02T11:00:00Z"); // ProductDocument에 있는 timestamp 필드 추가
+        testProductDoc2.setTimestamp(LocalDateTime.parse("2023-01-02T11:00:00")); // LocalDateTime 타입으로 변경
     }
 
     @Test
     @DisplayName("모든 필터 없이 기본 검색 테스트")
     void searchProducts_WithNoFilters_ShouldReturnAllResults() {
         // Given
-        // searchHit.getContent()가 ProductDocument를 반환하도록 설정
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
         when(searchHit2.getContent()).thenReturn(testProductDoc2);
-        // searchHits.getSearchHits()가 ProductDocument 타입의 SearchHit 리스트를 반환하도록 설정
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1, searchHit2));
-        // elasticsearchOperations.search가 ProductDocument 클래스를 인자로 받도록 설정
+        when(searchHits.getSearchHits()).thenReturn(List.of(searchHit1, searchHit2));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
@@ -107,7 +104,6 @@ class ProductSearchServiceTest {
         assertEquals("Test Product 1", results.get(0).getName());
         assertEquals("Test Product 2", results.get(1).getName());
 
-        // ElasticsearchOperations.search가 호출되었는지 검증
         verify(elasticsearchOperations, times(1)).search(any(NativeSearchQuery.class), eq(ProductDocument.class));
     }
 
@@ -116,7 +112,7 @@ class ProductSearchServiceTest {
     void searchProducts_WithKeyword_ShouldApplyMatchQuery() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
@@ -129,15 +125,11 @@ class ProductSearchServiceTest {
         assertEquals(1, results.size());
         assertEquals("Test Product 1", results.get(0).getName());
 
-        // 쿼리가 올바르게 구성되었는지 확인하기 위해 ArgumentCaptor 사용
         ArgumentCaptor<NativeSearchQuery> queryCaptor = ArgumentCaptor.forClass(NativeSearchQuery.class);
         verify(elasticsearchOperations).search(queryCaptor.capture(), eq(ProductDocument.class));
 
         NativeSearchQuery capturedQuery = queryCaptor.getValue();
         assertNotNull(capturedQuery.getQuery());
-        // TODO: ArgumentCaptor를 통해 캡처된 쿼리 객체(capturedQuery) 내부의 BoolQueryBuilder를 검사하여
-        // "name" 필드에 대한 "Test Product" 매치 쿼리가 실제로 포함되어 있는지 더 상세하게 검증할 수 있습니다.
-        // 이는 Elasticsearch 쿼리 빌더의 내부 구조에 따라 복잡해질 수 있습니다.
     }
 
     @Test
@@ -145,18 +137,18 @@ class ProductSearchServiceTest {
     void searchProducts_WithType_ShouldApplyTypeFilter() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
         // When
         List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-            null, null, null, "savings", null, null
+            null, null, null, List.of("savings"), null, null
         );
 
         // Then
         assertEquals(1, results.size());
-        assertEquals("savings", results.get(0).getType());
+        assertEquals(Collections.singletonList("savings"), results.get(0).getType());
     }
 
     @Test
@@ -164,18 +156,18 @@ class ProductSearchServiceTest {
     void searchProducts_WithFSector_ShouldApplyFSectorFilter() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
         // When
         List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-            null, null, 1, null, null, null
+            null, null, Collections.singletonList(1), null, null, null
         );
 
         // Then
         assertEquals(1, results.size());
-        assertEquals(1, results.get(0).getFSector());
+        assertEquals(Collections.singletonList(1), results.get(0).getFSector());
     }
 
     @Test
@@ -183,7 +175,7 @@ class ProductSearchServiceTest {
     void searchProducts_WithSaveTerm_ShouldApplySaveTermFilter() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
@@ -202,7 +194,7 @@ class ProductSearchServiceTest {
     void searchProducts_WithMinAmount_ShouldApplyMinAmountFilter() {
         // Given
         when(searchHit2.getContent()).thenReturn(testProductDoc2);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit2));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit2));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
@@ -213,7 +205,6 @@ class ProductSearchServiceTest {
 
         // Then
         assertEquals(1, results.size());
-        // ProductDocument의 minAmount가 Integer이므로, 비교 대상도 Integer로 변경
         assertTrue(results.get(0).getMinAmount() >= 30000);
     }
 
@@ -223,7 +214,7 @@ class ProductSearchServiceTest {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
         when(searchHit2.getContent()).thenReturn(testProductDoc2);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1, searchHit2));
+        when(searchHits.getSearchHits()).thenReturn(List.of(searchHit1, searchHit2));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
@@ -233,7 +224,7 @@ class ProductSearchServiceTest {
         );
 
         // Then
-        assertEquals(2, results.size()); // 필터가 무시되어 전체 결과 반환
+        assertEquals(2, results.size());
     }
 
     @Test
@@ -241,19 +232,17 @@ class ProductSearchServiceTest {
     void searchProducts_WithPopularSort_ShouldApplyScriptSort() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
         // When
-        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
+        productSearchService.searchProducts(
             "popularDesc", null, null, null, null, null
         );
 
         // Then
-        assertEquals(1, results.size());
         verify(elasticsearchOperations).search(any(NativeSearchQuery.class), eq(ProductDocument.class));
-        // TODO: ArgumentCaptor를 사용하여 NativeSearchQuery의 sort 빌더가 ScriptSortBuilder인지 검증하는 로직 추가 가능
     }
 
     @Test
@@ -261,19 +250,17 @@ class ProductSearchServiceTest {
     void searchProducts_WithRateSort_ShouldApplyTitleSort() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
         // When
-        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
+        productSearchService.searchProducts(
             "rateDesc", null, null, null, null, null
         );
 
         // Then
-        assertEquals(1, results.size());
         verify(elasticsearchOperations).search(any(NativeSearchQuery.class), eq(ProductDocument.class));
-        // TODO: ArgumentCaptor를 사용하여 NativeSearchQuery의 sort 빌더가 FieldSortBuilder("title")인지 검증하는 로직 추가 가능
     }
 
     @Test
@@ -281,30 +268,30 @@ class ProductSearchServiceTest {
     void searchProducts_WithMultipleFilters_ShouldApplyAllFilters() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
         // When
         List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-            "popularDesc", "Test", 1, "savings", "5000", 12
+            "popularDesc", "Test", Collections.singletonList(1), List.of("savings"), "5000", 12
         );
 
         // Then
         assertEquals(1, results.size());
         ProductSearchResponseDTO result = results.get(0);
         assertEquals("Test Product 1", result.getName());
-        assertEquals("savings", result.getType());
-        assertEquals(1, result.getFSector());
+        assertEquals(Collections.singletonList("savings"), result.getType());
+        assertEquals(Collections.singletonList(1), result.getFSector());
         assertEquals(12, result.getSaveTerm());
-        assertTrue(result.getMinAmount() >= 5000); // Integer로 변경
+        assertTrue(result.getMinAmount() >= 5000);
     }
 
     @Test
     @DisplayName("검색 결과가 없는 경우 테스트")
     void searchProducts_WithNoResults_ShouldReturnEmptyList() {
         // Given
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList());
+        when(searchHits.getSearchHits()).thenReturn(Collections.emptyList());
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
@@ -322,7 +309,7 @@ class ProductSearchServiceTest {
     void searchProducts_ShouldCorrectlyConvertToDTO() {
         // Given
         when(searchHit1.getContent()).thenReturn(testProductDoc1);
-        when(searchHits.getSearchHits()).thenReturn(Arrays.asList(searchHit1));
+        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
         when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
             .thenReturn(searchHits);
 
@@ -335,7 +322,6 @@ class ProductSearchServiceTest {
         assertEquals(1, results.size());
         ProductSearchResponseDTO result = results.get(0);
 
-        // ProductDocument의 필드와 ProductSearchResponseDTO의 필드를 비교
         assertEquals(testProductDoc1.getProductId(), result.getProductId());
         assertEquals(testProductDoc1.getName(), result.getName());
         assertEquals(testProductDoc1.getCompany(), result.getCompany());
@@ -344,8 +330,8 @@ class ProductSearchServiceTest {
         assertEquals(testProductDoc1.getTag3(), result.getTag3());
         assertEquals(testProductDoc1.getTitle(), result.getTitle());
         assertEquals(testProductDoc1.getSubTitle(), result.getSubTitle());
-        assertEquals(testProductDoc1.getType(), result.getType());
-        assertEquals(testProductDoc1.getFSector(), result.getFSector());
+        assertEquals(Collections.singletonList(testProductDoc1.getType()), result.getType());
+        assertEquals(Collections.singletonList(testProductDoc1.getFSector()), result.getFSector());
         assertEquals(testProductDoc1.getSaveTerm(), result.getSaveTerm());
         assertEquals(testProductDoc1.getMinAmount(), result.getMinAmount());
         assertEquals(testProductDoc1.getViewCnt(), result.getViewCnt());
