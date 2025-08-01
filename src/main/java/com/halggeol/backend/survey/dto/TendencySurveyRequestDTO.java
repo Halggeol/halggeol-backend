@@ -20,6 +20,15 @@ public class TendencySurveyRequestDTO {
 
     @NotNull
     @Valid
-    @Size(min = 10, max = 10)
+    @Size(min = 8, max = 8)
     List<TendencySurveyItemDTO> answers;
+
+    @NotNull
+    @Valid
+    @Size(min = 1, max = 3)
+    List<TendencyExperienceItemDTO> experiences;
+
+    public int getInvestmentPeriodOption() {
+        return answers.get(6).getOption();
+    }
 }
