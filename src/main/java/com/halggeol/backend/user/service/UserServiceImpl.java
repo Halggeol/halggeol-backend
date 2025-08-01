@@ -1,17 +1,13 @@
 package com.halggeol.backend.user.service;
 
-import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.security.domain.User;
 import com.halggeol.backend.security.mail.domain.MailType;
 import com.halggeol.backend.security.mail.dto.MailDTO;
 import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
-import com.halggeol.backend.security.util.SecurityUtil;
 import com.halggeol.backend.user.dto.EditProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
-import com.halggeol.backend.survey.dto.KnowledgeSurveyRequestDTO;
-import com.halggeol.backend.survey.dto.TendencySurveyRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
@@ -32,12 +28,21 @@ public class UserServiceImpl implements UserService {
     private final MailService mailService;
     private final JwtManager jwtManager;
     private final Argon2PasswordEncoder passwordEncoder;
-    private final SecurityUtil securityUtil;
 
     @Override
     public boolean findByEmail(String email) {
         User user = userMapper.findByEmail(email);
         return user != null;
+    }
+
+    @Override
+    public void emailExists(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 입력되지 않았습니다.");
+        }
+        if (!findByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+        }
     }
 
     @Override

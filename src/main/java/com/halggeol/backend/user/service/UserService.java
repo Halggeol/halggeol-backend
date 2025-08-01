@@ -11,6 +11,8 @@ import java.util.Map;
 public interface UserService {
     boolean findByEmail(String email);
 
+    void emailExists(String email);
+
     Map<String, String> requestJoin(EmailDTO email);
 
     Map<String, String> join(UserJoinDTO user, String token);
