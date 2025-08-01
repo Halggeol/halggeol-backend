@@ -51,8 +51,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetailMapper::selectForexDetailById,
             productDetailMapper::selectPensionDetailById);
 
-//            Double matchScore = recommendService.getProductMatchScore(productId, userId);
-            Double matchScore = 0.5;
+            Double matchScore = recommendService.getProductMatchScore(productId, userId);
+//            Double matchScore = 0.5;
             Integer scoreValue = null;
             
             if (matchScore != null) {

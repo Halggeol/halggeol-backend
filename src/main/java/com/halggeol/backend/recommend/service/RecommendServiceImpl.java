@@ -181,8 +181,8 @@ public class RecommendServiceImpl implements RecommendService{
         
         // 각 추천 상품에 대해 매칭 점수를 계산하여 설정
         for (RecommendResponseDTO recommendation : recommendations) {
-//            Double matchScore = getProductMatchScore(recommendation.getProductId(), userId);
-            Double matchScore = 0.5;
+            Double matchScore = getProductMatchScore(recommendation.getProductId(), userId);
+//            Double matchScore = 0.5;
             if (matchScore != null) {
                 recommendation.setMatchScore((int) Math.round(matchScore * 100)); // 0~100 퍼센트로 변환
             }

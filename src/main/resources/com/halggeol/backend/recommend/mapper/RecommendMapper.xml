@@ -222,7 +222,7 @@
   
   <resultMap id="ProductVectorResponseDTOMap" type="com.halggeol.backend.recommend.dto.ProductVectorResponseDTO">
     <id property="id" column="id"/>
-    <result property="yieldScore" column="yieldScore"/>
+    <result property="yieldScore" column="yield_score"/>
     <result property="riskScore" column="risk_score"/>
     <result property="costScore" column="cost_score"/>
     <result property="liquidityScore" column="liquidity_score"/>
@@ -278,7 +278,7 @@
 
   <resultMap id="UserVectorResponseDTOMap" type="com.halggeol.backend.recommend.dto.UserVectorResponseDTO">
     <id property="id" column="id"/>
-    <result property="yieldScore" column="yieldScore"/>
+    <result property="yieldScore" column="yield_score"/>
     <result property="riskScore" column="risk_score"/>
     <result property="costScore" column="cost_score"/>
     <result property="liquidityScore" column="liquidity_score"/>
