@@ -3,6 +3,7 @@ package com.halggeol.backend.user.controller;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.user.dto.EditProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
+import com.halggeol.backend.user.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.service.UserService;
 import java.util.Map;
@@ -68,5 +69,13 @@ public class UserController {
         @RequestHeader("Authorization") String bearerToken
     ) {
         return ResponseEntity.ok(userService.deleteUser(user, bearerToken));
+    }
+
+    @PatchMapping("/survey/knowledge")
+    public ResponseEntity<Map<String, String>> updateKnowledge(
+        @AuthenticationPrincipal CustomUser user,
+        @Valid @RequestBody KnowledgeSurveyRequestDTO surveyResult
+    ) {
+        return ResponseEntity.ok(userService.updateKnowledge(user, surveyResult));
     }
 }
