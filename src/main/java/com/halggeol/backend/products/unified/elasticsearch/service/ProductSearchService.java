@@ -113,7 +113,7 @@ public class ProductSearchService {
             queryBuilder.withSort(sortBuilder);
         }
         else { // 기본 정렬은 인기순
-            queryBuilder.withSort(new FieldSortBuilder("view_cnt").order(SortOrder.DESC));
+            queryBuilder.withSort(sortBuilder);
         }
 
         NativeSearchQuery searchQuery = queryBuilder.build();
