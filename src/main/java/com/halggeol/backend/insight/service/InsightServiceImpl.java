@@ -5,6 +5,8 @@ import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
 import com.halggeol.backend.insight.dto.RegretItemDTO;
 import com.halggeol.backend.insight.mapper.InsightMapper;
+import com.halggeol.backend.recommend.service.RecommendService;
+import com.halggeol.backend.recommend.service.RecommendServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 import org.json.simple.JSONArray;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 public class InsightServiceImpl implements InsightService {
 
     private final InsightMapper insightMapper;
+    private final RecommendService recommendService;
 
     // application.properties에 저장해둔 인증키
     private static String API_KEY = "ATw64SDmn6zzCgPUzOxDkXqya2O8RMSm";
@@ -85,136 +88,63 @@ public class InsightServiceImpl implements InsightService {
         return insightMapper.getAggressivePensionInsight();
     }
 
-//    public List<ExchangeRateDTO> getExchangeRates(String searchDate) {
-//        List<ExchangeRateDTO> list = new ArrayList<>();
-//
-//        // SSL 인증서 체크 비활성화
-//        disableSSLCertificateChecking();
-//
-//        HttpURLConnection connection = null;
-//        BufferedReader reader = null;
-//
-//        try {
-//            String apiUrl = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey="
-//                    + API_KEY + "&searchdate=" + searchDate + "&data=AP01";
-//
-//            System.out.println("API URL: " + apiUrl);
-//
-//            URL url = new URL(apiUrl);
-//            connection = (HttpURLConnection) url.openConnection();
-//
-//            // ✅ 개선: 자동 리다이렉트 활성화
-//            connection.setInstanceFollowRedirects(true);
-//            connection.setRequestMethod("GET");
-//            connection.setConnectTimeout(15000);
-//            connection.setReadTimeout(15000);
-//
-//            // 헤더 설정
-//            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-//            connection.setRequestProperty("Accept", "application/json, text/plain, */*");
-//            connection.setRequestProperty("Accept-Language", "ko-KR,ko;q=0.9,en;q=0.8");
-//            connection.setRequestProperty("Connection", "keep-alive");
-//            connection.setRequestProperty("Referer", "https://www.koreaexim.go.kr/");
-//
-//            int responseCode = connection.getResponseCode();
-//            System.out.println("Response Code: " + responseCode);
-//
-//            if (responseCode != 200) {
-//                System.out.println("API 호출 실패. Response Code: " + responseCode);
-//
-//                // 에러 응답 내용 확인
-//                InputStream errorStream = connection.getErrorStream();
-//                if (errorStream != null) {
-//                    BufferedReader errorReader = new BufferedReader(new InputStreamReader(errorStream, "UTF-8"));
-//                    StringBuilder errorContent = new StringBuilder();
-//                    String errorLine;
-//                    while ((errorLine = errorReader.readLine()) != null) {
-//                        errorContent.append(errorLine);
-//                    }
-//                    System.out.println("Error Response: " + errorContent.toString());
-//                    errorReader.close();
-//                }
-//                return list;
-//            }
-//
-//            // 성공적인 응답 읽기
-//            InputStream inputStream = connection.getInputStream();
-//            reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-//            StringBuilder sb = new StringBuilder();
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                sb.append(line);
-//            }
-//
-//            String response = sb.toString();
-//            System.out.println("API Response: " + response);
-//
-//            // 응답이 비어있는지 확인
-//            if (response.trim().isEmpty()) {
-//                System.out.println("API 응답이 비어있습니다.");
-//                return list;
-//            }
-//
-//            // JSON 파싱
-//            JSONParser parser = new JSONParser();
-//            Object parsedObj = parser.parse(response);
-//
-//            if (!(parsedObj instanceof JSONArray)) {
-//                System.out.println("예상과 다른 JSON 형식: " + response);
-//                return list;
-//            }
-//
-//            JSONArray jsonArr = (JSONArray) parsedObj;
-//
-//            for (Object obj : jsonArr) {
-//                JSONObject o = (JSONObject) obj;
-//                ExchangeRateDTO dto = new ExchangeRateDTO();
-//
-//                dto.setCurUnit((String) o.get("cur_unit"));
-//                dto.setCurNm((String) o.get("cur_nm"));
-//
-//                Object dealBasRObj = o.get("deal_bas_r");
-//                if (dealBasRObj != null) {
-//                    String dealBasRStr = dealBasRObj.toString().replace(",", "");
-//                    if (!dealBasRStr.isEmpty() && !dealBasRStr.equals("null")) {
-//                        dto.setDealBasR(new BigDecimal(dealBasRStr));
-//                    }
-//                }
-//
-//                dto.setBaseDate(searchDate);
-//                list.add(dto);
-//            }
-//
-//        } catch (Exception e) {
-//            System.err.println("환율 API 호출 중 오류 발생:");
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                if (reader != null) reader.close();
-//            } catch (IOException ignored) {}
-//            if (connection != null) connection.disconnect();
-//        }
-//
-//        return list;
-//    }
-
     @Override
     public List<ExchangeRateDTO> getExchangeRates(String searchDate) {
+        // 캐시에서 먼저 확인
         if (cachedRateMap.containsKey(searchDate)) {
             Map<String, BigDecimal> cachedRates = cachedRateMap.get(searchDate);
-            List<ExchangeRateDTO> result = new ArrayList<>();
-            cachedRates.forEach((cur, rate) -> {
-                ExchangeRateDTO dto = new ExchangeRateDTO();
-                dto.setCurUnit(cur);
-                dto.setDealBasR(rate);
-                dto.setBaseDate(searchDate);
-                result.add(dto);
-            });
-            return result;
+            return convertMapToList(cachedRates, searchDate);
         }
 
+        // API 호출 시도 (재시도 로직 포함)
+        List<ExchangeRateDTO> result = fetchExchangeRatesWithRetry(searchDate);
+
+        // API 호출 실패 시 이전 날짜 데이터로 대체
+        if (result.isEmpty()) {
+            result = fetchFallbackData(searchDate);
+        }
+
+        return result;
+    }
+
+    /**
+     * 재시도 로직을 포함한 환율 데이터 조회
+     */
+    private List<ExchangeRateDTO> fetchExchangeRatesWithRetry(String searchDate) {
+        int maxRetries = 3;
+        int retryDelay = 2000; // 2초
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                List<ExchangeRateDTO> result = callExchangeRateApi(searchDate);
+                if (!result.isEmpty()) {
+                    return result;
+                }
+            } catch (Exception e) {
+                System.err.println("API 호출 시도 " + attempt + " 실패: " + e.getMessage());
+
+                if (attempt < maxRetries) {
+                    try {
+                        Thread.sleep(retryDelay);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+        }
+
+        System.err.println("모든 API 호출 시도 실패: " + searchDate);
+        return new ArrayList<>();
+    }
+
+    /**
+     * 실제 API 호출 메서드
+     */
+    private List<ExchangeRateDTO> callExchangeRateApi(String searchDate) throws Exception {
         List<ExchangeRateDTO> list = new ArrayList<>();
         disableSSLCertificateChecking();
+
         HttpURLConnection connection = null;
         BufferedReader reader = null;
 
@@ -223,62 +153,200 @@ public class InsightServiceImpl implements InsightService {
                     + API_KEY + "&searchdate=" + searchDate + "&data=AP01";
             URL url = new URL(apiUrl);
             connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(15000);
 
-            // 🔽 여기를 수정
-            connection.setInstanceFollowRedirects(false); // ✅ 리디렉션 무제한 방지
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)");
-            connection.setRequestProperty("Accept", "application/json");
+            // 연결 설정
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(10000); // 10초로 단축
+            connection.setReadTimeout(10000);    // 10초로 단축
+            connection.setInstanceFollowRedirects(false);
+
+            // 헤더 설정
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+            connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+            connection.setRequestProperty("Accept-Language", "ko-KR,ko;q=0.9,en;q=0.8");
+            connection.setRequestProperty("Cache-Control", "no-cache");
             connection.setRequestProperty("Referer", "https://www.koreaexim.go.kr/");
 
-            if (connection.getResponseCode() != 200) return list;
+            int responseCode = connection.getResponseCode();
 
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) sb.append(line);
-
-            JSONArray jsonArr = (JSONArray) new JSONParser().parse(sb.toString());
-            Map<String, BigDecimal> rateMap = new HashMap<>();
-
-            for (Object obj : jsonArr) {
-                JSONObject o = (JSONObject) obj;
-                String curUnit = (String) o.get("cur_unit");
-                String rateStr = (String) o.get("deal_bas_r");
-
-                if (curUnit != null && rateStr != null && !rateStr.isEmpty()) {
-                    BigDecimal rate = new BigDecimal(rateStr.replace(",", ""));
-                    rateMap.put(curUnit.trim(), rate);
-
-                    ExchangeRateDTO dto = new ExchangeRateDTO();
-                    dto.setCurUnit(curUnit);
-                    dto.setCurNm((String) o.get("cur_nm"));
-                    dto.setDealBasR(rate);
-                    dto.setBaseDate(searchDate);
-                    list.add(dto);
+            // 응답 코드 확인
+            if (responseCode == 200) {
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
                 }
+
+                String responseBody = sb.toString().trim();
+
+                // 빈 응답 또는 에러 메시지 체크
+                if (responseBody.isEmpty() || responseBody.startsWith("{\"error")) {
+                    throw new Exception("API에서 빈 응답 또는 에러 반환: " + responseBody);
+                }
+
+                // JSON 파싱
+                JSONArray jsonArr = (JSONArray) new JSONParser().parse(responseBody);
+                Map<String, BigDecimal> rateMap = new HashMap<>();
+
+                for (Object obj : jsonArr) {
+                    JSONObject jsonObj = (JSONObject) obj;
+                    String curUnit = (String) jsonObj.get("cur_unit");
+                    String rateStr = (String) jsonObj.get("deal_bas_r");
+
+                    if (curUnit != null && rateStr != null && !rateStr.isEmpty()) {
+                        try {
+                            BigDecimal rate = new BigDecimal(rateStr.replace(",", ""));
+                            rateMap.put(curUnit.trim(), rate);
+
+                            ExchangeRateDTO dto = new ExchangeRateDTO();
+                            dto.setCurUnit(curUnit);
+                            dto.setCurNm((String) jsonObj.get("cur_nm"));
+                            dto.setDealBasR(rate);
+                            dto.setBaseDate(searchDate);
+                            list.add(dto);
+                        } catch (NumberFormatException e) {
+                            System.err.println("환율 파싱 오류: " + curUnit + " = " + rateStr);
+                        }
+                    }
+                }
+
+                // 캐시 저장
+                if (!rateMap.isEmpty()) {
+                    cachedRateMap.putIfAbsent(searchDate, rateMap);
+                }
+
+            } else if (responseCode == 302 || responseCode == 301) {
+                throw new Exception("API 리디렉션 발생: " + responseCode);
+            } else {
+                throw new Exception("API 응답 오류: " + responseCode);
             }
-            cachedRateMap.put(searchDate, rateMap);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } finally {
+            if (reader != null) {
+                try { reader.close(); } catch (IOException e) { /* 무시 */ }
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
+
         return list;
     }
 
+    /**
+     * API 호출 실패 시 대체 데이터 조회 (이전 날짜들 시도)
+     */
+    private List<ExchangeRateDTO> fetchFallbackData(String originalDate) {
+        System.out.println("대체 데이터 조회 시작: " + originalDate);
+
+        try {
+            LocalDate date = LocalDate.parse(originalDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+            // 최대 7일 전까지 시도
+            for (int i = 1; i <= 7; i++) {
+                LocalDate fallbackDate = date.minusDays(i);
+                String fallbackDateStr = fallbackDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+                // 주말 건너뛰기 (토요일=6, 일요일=7)
+                if (fallbackDate.getDayOfWeek().getValue() >= 6) {
+                    continue;
+                }
+
+                System.out.println("대체 날짜 시도: " + fallbackDateStr);
+
+                // 캐시에서 먼저 확인
+                if (cachedRateMap.containsKey(fallbackDateStr)) {
+                    Map<String, BigDecimal> cachedRates = cachedRateMap.get(fallbackDateStr);
+                    System.out.println("캐시에서 대체 데이터 발견: " + fallbackDateStr);
+                    return convertMapToList(cachedRates, originalDate); // 원본 날짜로 반환
+                }
+
+                // API 호출 시도
+                try {
+                    List<ExchangeRateDTO> fallbackResult = callExchangeRateApi(fallbackDateStr);
+                    if (!fallbackResult.isEmpty()) {
+                        System.out.println("대체 데이터 API 호출 성공: " + fallbackDateStr);
+                        // 원본 날짜로 변경해서 반환
+                        return fallbackResult.stream()
+                                .peek(dto -> dto.setBaseDate(originalDate))
+                                .collect(Collectors.toList());
+                    }
+                } catch (Exception e) {
+                    System.err.println("대체 데이터 API 호출 실패: " + fallbackDateStr + " - " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("대체 데이터 조회 중 오류: " + e.getMessage());
+        }
+
+        System.err.println("모든 대체 데이터 조회 실패");
+        return new ArrayList<>();
+    }
+
+    /**
+     * Map을 List로 변환하는 헬퍼 메서드
+     */
+    private List<ExchangeRateDTO> convertMapToList(Map<String, BigDecimal> rateMap, String baseDate) {
+        List<ExchangeRateDTO> result = new ArrayList<>();
+        rateMap.forEach((cur, rate) -> {
+            ExchangeRateDTO dto = new ExchangeRateDTO();
+            dto.setCurUnit(cur);
+            dto.setDealBasR(rate);
+            dto.setBaseDate(baseDate);
+            result.add(dto);
+        });
+        return result;
+    }
+
+    /**
+     * 개선된 getTodayRatesMap - 대체 데이터 로직 포함
+     */
+    private Map<String, BigDecimal> getTodayRatesMap(String date) {
+        // 먼저 캐시에서 확인
+        Map<String, BigDecimal> existingRates = cachedRateMap.get(date);
+        if (existingRates != null && !existingRates.isEmpty()) {
+            return existingRates;
+        }
+
+        // API에서 가져오기 (재시도 및 대체 로직 포함)
+        List<ExchangeRateDTO> list = getExchangeRates(date);
+        Map<String, BigDecimal> map = new HashMap<>();
+
+        for (ExchangeRateDTO dto : list) {
+            map.put(dto.getCurUnit(), dto.getDealBasR());
+        }
+
+        // 데이터가 있으면 캐시에 저장
+        if (!map.isEmpty()) {
+            cachedRateMap.putIfAbsent(date, map);
+            return cachedRateMap.get(date);
+        }
+
+        // 여전히 데이터가 없으면 빈 맵 반환
+        return new HashMap<>();
+    }
+
+    /**
+     * 개선된 compareForexRegretItems - 어제 날짜부터 시도
+     */
     @Override
     public List<ForexCompareDTO> compareForexRegretItems(Long userId) {
         List<RegretItemDTO> regretItems = insightMapper.getForexRegretItems(userId);
-
         List<ForexCompareDTO> result = new ArrayList<>();
 
-        String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        Map<String, BigDecimal> todayRates = getTodayRatesMap(today);
+        // 오늘부터 최대 3일 전까지 사용 가능한 환율 데이터 찾기
+        String usableDate = findUsableExchangeRateDate();
+        Map<String, BigDecimal> todayRates = getTodayRatesMap(usableDate);
+
+        if (todayRates.isEmpty()) {
+            System.err.println("사용 가능한 환율 데이터를 찾을 수 없습니다.");
+            return result;
+        }
 
         for (RegretItemDTO item : regretItems) {
             String productId = item.getProductId();
-            String productName = insightMapper.getForexProductNameById(productId); // ✅ 상품명 조회
+            String productName = insightMapper.getForexProductNameById(productId);
             LocalDate recDate = item.getRecDate();
             String currencyStr = item.getCurrency();
 
@@ -291,7 +359,7 @@ public class InsightServiceImpl implements InsightService {
                 BigDecimal todayRate = todayRates.get(currency);
 
                 if (todayRate == null) {
-                    todayRate = getLatestRateFromApi(currency, today);
+                    todayRate = getLatestRateFromApi(currency, usableDate);
                 }
 
                 if (todayRate == null) continue;
@@ -309,7 +377,7 @@ public class InsightServiceImpl implements InsightService {
                         .multiply(BigDecimal.valueOf(100));
 
                 ForexCompareDTO dto = new ForexCompareDTO();
-                dto.setRound(item.getRound()); // ✅ 이 한 줄 추가
+                dto.setRound(item.getRound());
                 dto.setProductName(productName);
                 dto.setCurUnit(currency);
                 dto.setPastRate(pastRate);
@@ -322,6 +390,44 @@ public class InsightServiceImpl implements InsightService {
             }
         }
         return result;
+    }
+
+    /**
+     * 사용 가능한 환율 데이터 날짜 찾기
+     */
+    private String findUsableExchangeRateDate() {
+        LocalDate today = LocalDate.now();
+
+        for (int i = 0; i <= 3; i++) {
+            LocalDate targetDate = today.minusDays(i);
+
+            // 주말 건너뛰기
+            if (targetDate.getDayOfWeek().getValue() >= 6) {
+                continue;
+            }
+
+            String dateStr = targetDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+            // 캐시에 있으면 바로 사용
+            if (cachedRateMap.containsKey(dateStr) && !cachedRateMap.get(dateStr).isEmpty()) {
+                System.out.println("캐시에서 사용 가능한 날짜 발견: " + dateStr);
+                return dateStr;
+            }
+
+            // API 테스트 호출
+            try {
+                List<ExchangeRateDTO> testResult = fetchExchangeRatesWithRetry(dateStr);
+                if (!testResult.isEmpty()) {
+                    System.out.println("API에서 사용 가능한 날짜 발견: " + dateStr);
+                    return dateStr;
+                }
+            } catch (Exception e) {
+                System.err.println("날짜 테스트 실패: " + dateStr + " - " + e.getMessage());
+            }
+        }
+
+        // 기본값으로 어제 반환
+        return today.minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
     @Override
@@ -381,28 +487,6 @@ public class InsightServiceImpl implements InsightService {
         return result;
     }
 
-
-//    // ✅ 새로 추가된 메서드: 오늘 기준으로 가장 가까운 환율을 Open API로 조회
-//    private BigDecimal getLatestRateFromApi(String currency, String startDate) {
-//        LocalDate date = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
-//        int maxRetryDays = 1;
-//
-//        for (int i = 0; i < maxRetryDays; i++) {
-//            String queryDate = date.minusDays(i).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-//            List<ExchangeRateDTO> rates = getExchangeRates(queryDate);
-//
-//            for (ExchangeRateDTO dto : rates) {
-//                if (dto.getCurUnit().startsWith(currency)) {
-//                    System.out.println("[OpenAPI 대체 사용] " + currency + " @ " + queryDate + " => " + dto.getDealBasR());
-//                    return dto.getDealBasR();
-//                }
-//            }
-//        }
-//
-//        System.out.println("최근 " + maxRetryDays + "일 내 " + currency + " 환율을 찾지 못했습니다.");
-//        return null;
-//    }
-
     private BigDecimal getLatestRateFromApi(String currency, String date) {
         List<ExchangeRateDTO> rates = getExchangeRates(date);
         for (ExchangeRateDTO dto : rates) {
@@ -413,122 +497,10 @@ public class InsightServiceImpl implements InsightService {
         return null;
     }
 
-    private Map<String, BigDecimal> getTodayRatesMap(String date) {
-        return cachedRateMap.computeIfAbsent(date, d -> {
-            List<ExchangeRateDTO> list = getExchangeRates(d);
-            Map<String, BigDecimal> map = new HashMap<>();
-            for (ExchangeRateDTO dto : list) {
-                map.put(dto.getCurUnit(), dto.getDealBasR());
-            }
-            return map;
-        });
-    }
-
-//    private Map<String, BigDecimal> getTodayRatesMap(String searchDate) {
-//        Map<String, BigDecimal> rateMap = new HashMap<>();
-//
-//        // SSL 인증서 체크 비활성화
-//        disableSSLCertificateChecking();
-//
-//        HttpURLConnection connection = null;
-//        BufferedReader reader = null;
-//
-//        try {
-//            String apiUrl = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey="
-//                    + API_KEY + "&searchdate=" + searchDate + "&data=AP01";
-//
-//            URL url = new URL(apiUrl);
-//            connection = (HttpURLConnection) url.openConnection();
-//
-//            // 리다이렉트 문제 해결을 위한 설정
-//            connection.setInstanceFollowRedirects(false);
-//            connection.setRequestMethod("GET");
-//            connection.setConnectTimeout(15000);
-//            connection.setReadTimeout(15000);
-//            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-//            connection.setRequestProperty("Accept", "application/json");
-//            connection.setRequestProperty("Referer", "https://www.koreaexim.go.kr/");
-//
-//            int responseCode = connection.getResponseCode();
-//
-//            // 리다이렉트 처리
-//            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
-//                    responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
-//                    responseCode == HttpURLConnection.HTTP_SEE_OTHER ||
-//                    responseCode == 307 || responseCode == 308) {
-//
-//                String newUrl = connection.getHeaderField("Location");
-//                if (newUrl != null) {
-//                    // 상대경로인 경우 절대경로로 변환
-//                    if (newUrl.startsWith("/")) {
-//                        newUrl = "https://www.koreaexim.go.kr" + newUrl;
-//                    }
-//
-//                    connection.disconnect();
-//
-//                    URL redirectUrl = new URL(newUrl);
-//                    connection = (HttpURLConnection) redirectUrl.openConnection();
-//                    connection.setInstanceFollowRedirects(false);
-//                    connection.setRequestMethod("GET");
-//                    connection.setConnectTimeout(15000);
-//                    connection.setReadTimeout(15000);
-//                    connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-//                    connection.setRequestProperty("Accept", "application/json");
-//
-//                    responseCode = connection.getResponseCode();
-//                }
-//            }
-//
-//            if (responseCode != 200) {
-//                System.out.println("getTodayRatesMap API 호출 실패. Response Code: " + responseCode);
-//                return rateMap;
-//            }
-//
-//            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-//            StringBuilder responseContent = new StringBuilder();
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                responseContent.append(line);
-//            }
-//
-//            String response = responseContent.toString();
-//
-//            if (response.trim().isEmpty()) {
-//                return rateMap;
-//            }
-//
-//            // JSON 파싱
-//            JSONParser parser = new JSONParser();
-//            JSONArray jsonArr = (JSONArray) parser.parse(response);
-//
-//            for (Object obj : jsonArr) {
-//                JSONObject o = (JSONObject) obj;
-//                String curUnit = (String) o.get("cur_unit");
-//                String rateStr = (String) o.get("deal_bas_r");
-//
-//                if (curUnit != null && rateStr != null && !rateStr.isEmpty()) {
-//                    BigDecimal rate = new BigDecimal(rateStr.replace(",", ""));
-//                    rateMap.put(curUnit.trim(), rate);
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            System.err.println("getTodayRatesMap 오류:");
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                if (reader != null) reader.close();
-//            } catch (IOException ignored) {}
-//            if (connection != null) connection.disconnect();
-//
-//        }
-//
-//        return rateMap;
-//    }
-
     @Override
     public Map<Long, List<ForexCompareDTO>> getUserForexCompareGrouped(Long userId) {
         List<ForexCompareDTO> list = getUserForexCompareList(userId);
+
         return list.stream()
                 .collect(Collectors.groupingBy(dto -> Long.valueOf(dto.getRound()), LinkedHashMap::new, Collectors.toList()));
     }
@@ -537,6 +509,12 @@ public class InsightServiceImpl implements InsightService {
     public List<ForexCompareDTO> getUserForexCompareList(Long userId) {
         // 기존 compareForexRegretItems(userId) 메서드의 내용을 재사용
         return compareForexRegretItems(userId);
+    }
+
+    //유사도 측정
+    @Override
+    public List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId) {
+        return recommendService.getSimilarProducts(productId);
     }
 }
 

@@ -3,6 +3,7 @@ package com.halggeol.backend.insight.service;
 import com.halggeol.backend.insight.dto.ExchangeRateDTO;
 import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
+import com.halggeol.backend.recommend.service.RecommendServiceImpl;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,8 +18,6 @@ public interface InsightService {
 
     List<ExchangeRateDTO> getExchangeRates(String searchDate);
 
-//    List<ForexCompareDTO> compareForexRegretItems(Long userId);
-
     List<ForexCompareDTO> compareForexRegretItems(Long userId);
 
     //기존 : 특정 날짜 기준 외환 비교
@@ -29,4 +28,6 @@ public interface InsightService {
 
     Map<Long, List<ForexCompareDTO>> getUserForexCompareGrouped(Long userId);
 
+    //유사도 측정
+    List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId);
 }
