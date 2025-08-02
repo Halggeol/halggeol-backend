@@ -67,8 +67,6 @@
     <result property="tag3" column="tag3"/>
     <result property="title" column="title"/>
     <result property="subTitle" column="subTitle"/>
-    <result property="minSaveTerm" column="min_save_term"/>
-    <result property="maxSaveTerm" column="max_save_term"/>
     <result property="viewCnt" column="view_cnt"/>
     <result property="scrapCnt" column="scrap_cnt"/>
   </resultMap>
@@ -87,8 +85,6 @@
         NULL AS tag3,
         CAST(d.prime_rate AS DECIMAL(10, 5)) AS title,
         CAST(d.rate AS CHAR) AS subTitle,
-        d.min_save_term,
-        d.max_save_term,
         d.view_cnt,
         d.scrap_cnt
         FROM deposit d
@@ -109,8 +105,6 @@
         NULL AS tag3,
         CAST(s.prime_rate AS DECIMAL(10, 5)) AS title,
         CAST(s.rate AS CHAR) AS subTitle,
-        s.min_save_term,
-        s.max_save_term,
         s.view_cnt,
         s.scrap_cnt
         FROM savings s
@@ -141,8 +135,6 @@
         ELSE NULL
         END AS CHAR
         ) AS subTitle,
-        NULL AS min_save_term,
-        NULL AS max_save_term,
         p.view_cnt,
         p.scrap_cnt
         FROM pension p
@@ -163,8 +155,6 @@
         f.investment_warning_grade AS tag3,
         CAST(f.rate AS DECIMAL(10, 5)) AS title,
         NULL AS subTitle,
-        NULL AS min_save_term,
-        NULL AS max_save_term,
         f.view_cnt,
         f.scrap_cnt
         FROM fund f
@@ -185,8 +175,6 @@
         NULL AS tag3,
         CAST(fx.rate AS DECIMAL(10, 5)) AS title,
         CAST(fx.rate_give_way AS CHAR) AS subTitle,
-        fx.min_save_term,
-        fx.max_save_term,
         fx.view_cnt,
         fx.scrap_cnt
         FROM forex fx

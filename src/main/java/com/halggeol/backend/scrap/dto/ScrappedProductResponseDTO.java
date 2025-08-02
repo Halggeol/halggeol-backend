@@ -20,11 +20,7 @@ public class ScrappedProductResponseDTO {
     private String type;
 
     private Double title;
-
     private String subTitle;
-
-    private Integer minSaveTerm;
-    private Integer maxSaveTerm;
 
     private Integer viewCnt;
     private Integer scrapCnt;
