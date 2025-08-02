@@ -155,4 +155,44 @@ public class RecommendServiceImpl implements RecommendService{
         }
         return null; //해당 상품이 추천 목록에 없는 경우 null 반환
     }
+
+//    @Override
+//    public List<Recommendation> getSimilarProducts(String productId) {
+//        //상품 벡터와 유사한 상품을 찾는 로직
+//        ProductVectorResponseDTO productVector = mapper.getProductVectorById(productId);
+//        List<Double> productVectorList = List.of(productVector.getYieldScore(), productVector.getRiskScore(),
+//                productVector.getCostScore(), productVector.getLiquidityScore(), productVector.getComplexityScore());
+//        List<ProductVectorResponseDTO> productVectors = mapper.getProductVectors();
+//        return productVectors.stream()
+//                .map(dto -> new Recommendation(dto, cosineSimilarity(List.of(dto.getYieldScore(),dto.getRiskScore(),dto.getCostScore(),
+//                        dto.getLiquidityScore(),dto.getComplexityScore()), productVectorList)))
+//                .sorted(Comparator.comparingDouble(Recommendation::score).reversed())
+//                .limit(5)
+//                .toList();
+//    }
+@Override
+public List<Recommendation> getSimilarProducts(String productId) {
+    ProductVectorResponseDTO productVector = mapper.getProductVectorById(productId);
+    List<Double> productVectorList = List.of(
+            productVector.getYieldScore(), productVector.getRiskScore(),
+            productVector.getCostScore(), productVector.getLiquidityScore(), productVector.getComplexityScore()
+    );
+
+    List<ProductVectorResponseDTO> productVectors = mapper.getProductVectors();
+
+    return productVectors.stream()
+            .filter(dto -> !dto.getId().equals(productId)) // ✅ 자기 자신 제외
+            .map(dto -> new Recommendation(
+                    dto,
+                    cosineSimilarity(
+                            List.of(dto.getYieldScore(), dto.getRiskScore(), dto.getCostScore(),
+                                    dto.getLiquidityScore(), dto.getComplexityScore()),
+                            productVectorList
+                    )
+            ))
+            .sorted(Comparator.comparingDouble(Recommendation::score).reversed())
+            .limit(5)
+            .toList();
+}
+
 }

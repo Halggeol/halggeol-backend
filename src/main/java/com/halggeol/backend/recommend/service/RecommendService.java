@@ -13,9 +13,11 @@ public interface RecommendService {
 
     public List<Recommendation> similarProducts(ProductVectorResponseDTO productVector, List<ProductVectorResponseDTO> productVectors);
 
-//    public List<Recommendation> recommendProducts(String userId);
+//  public List<Recommendation> recommendProducts(String userId);
 
     public List<RecommendResponseDTO> getRecommendProducts(String userId);
 
     Double getProductMatchScore(String productId, String userId);
+
+    public List<Recommendation> getSimilarProducts(String productId);
 }

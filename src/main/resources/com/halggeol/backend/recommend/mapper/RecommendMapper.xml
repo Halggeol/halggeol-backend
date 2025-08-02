@@ -108,7 +108,7 @@
       f.minimum_cost,
       f.theme
     FROM fund f</select>
-  
+
   <update id="updateFundAlgoCodeById">
     UPDATE fund
     SET fund.algo_code = #{algoCode},
@@ -187,20 +187,22 @@
     ,forex.liquidity_score = #{liquidityScore}
     ,forex.complexity_score = #{complexityScore}
     WHERE forex.id = #{pid}</update>
-  
+
   <resultMap id="ProductVectorResponseDTOMap" type="com.halggeol.backend.recommend.dto.ProductVectorResponseDTO">
     <id property="id" column="id"/>
+    <result property="name" column="name"/>
     <result property="yieldScore" column="yieldScore"/>
     <result property="riskScore" column="risk_score"/>
     <result property="costScore" column="cost_score"/>
     <result property="liquidityScore" column="liquidity_score"/>
     <result property="complexityScore" column="complexity_score"/>
   </resultMap>
-  
+
   <select id="getProductVectors" resultMap="ProductVectorResponseDTOMap">
     SELECT
       id,
-      yieldScore,
+      name,
+      yield_score AS yieldScore,
       risk_score,
       cost_score,
       liquidity_score,
@@ -209,7 +211,8 @@
     union all
     SELECT
       id,
-      yieldScore,
+      name,
+      yield_score AS yieldScore,
       risk_score,
       cost_score,
       liquidity_score,
@@ -218,7 +221,8 @@
     union all
     SELECT
       id,
-      yieldScore,
+      name,
+      yield_score AS yieldScore,
       risk_score,
       cost_score,
       liquidity_score,
@@ -227,7 +231,8 @@
     union all
     SELECT
       id,
-      yieldScore,
+      name,
+      yield_score AS yieldScore,
       risk_score,
       cost_score,
       liquidity_score,
@@ -236,7 +241,8 @@
     union all
     SELECT
       id,
-      yieldScore,
+      name,
+      yield_score AS yieldScore,
       risk_score,
       cost_score,
       liquidity_score,
@@ -292,7 +298,7 @@
   <select id="getProductVectorById" resultMap="ProductVectorResponseDTOMap">
   SELECT
   id,
-  yieldScore,
+  yield_score AS yieldScore,
   risk_score,
   cost_score,
   liquidity_score,
@@ -301,7 +307,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score AS yieldScore,
   risk_score,
   cost_score,
   liquidity_score,
@@ -310,7 +316,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score AS yieldScore,
   risk_score,
   cost_score,
   liquidity_score,
@@ -319,7 +325,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score AS yieldScore,
   risk_score,
   cost_score,
   liquidity_score,
@@ -328,7 +334,7 @@
   UNION ALL
   SELECT
   id,
-  yieldScore,
+  yield_score AS yieldScore,
   risk_score,
   cost_score,
   liquidity_score,
