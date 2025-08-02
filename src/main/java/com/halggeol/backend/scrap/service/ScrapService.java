@@ -1,6 +1,5 @@
 package com.halggeol.backend.scrap.service;
 
-import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import com.halggeol.backend.security.domain.CustomUser;

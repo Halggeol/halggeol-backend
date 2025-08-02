@@ -1,6 +1,5 @@
 package com.halggeol.backend.scrap.mapper;
 
-import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import java.util.List;

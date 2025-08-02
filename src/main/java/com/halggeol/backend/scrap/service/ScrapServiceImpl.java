@@ -75,8 +75,8 @@ public class ScrapServiceImpl implements ScrapService {
     @Override
     public List<ScrappedProductResponseDTO> getScrappedProducts(CustomUser user, List<String> types,
         String sort) {
-        if(user==null){
-            throw  new IllegalArgumentException("User not authenticated.");
+        if (user == null) {
+            throw new IllegalArgumentException("User not authenticated.");
         }
         return scrapMapper.selectScrappedProducts(user.getUser().getId(), types, sort);
     }
