@@ -16,10 +16,10 @@ import org.apache.ibatis.type.Alias;
 @AllArgsConstructor
 @Builder
 public class Mydata {
-    private int id;
-    private LocalDateTime collectDate;
-    private Integer asset;
-    private int userId;
+    private int id; // 마이데이터 id 자동생성 1부터 시작
+    private LocalDateTime collectDate; // 마이데이터 수집일자 매일 있음
+    private Integer asset; // 자산(원화) 수집일자의 자산
+    private int userId; // 유저 id
 
     private List<MyProduct> myProducts;
 }

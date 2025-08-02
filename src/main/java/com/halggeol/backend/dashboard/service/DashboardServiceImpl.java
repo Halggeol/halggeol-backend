@@ -59,7 +59,10 @@ public class DashboardServiceImpl implements DashboardService {
 
         String userName = userMapper.findNameById(Integer.parseInt(userId));
         dashboardResponse.setUserName(userName);
-//
+
+        Double feedbackRatio = dashboardMapper.getFeedbackRatioByUserId(userId);
+        dashboardResponse.setFeedbackRatio(feedbackRatio);
+
         return dashboardResponse;
     }
 

@@ -20,4 +20,5 @@ public class PersonalizedDescription {
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
     private String productId;
+    private String description;  // 상품 설명
 }

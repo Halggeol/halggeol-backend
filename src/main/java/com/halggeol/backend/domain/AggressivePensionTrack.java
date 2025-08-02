@@ -22,4 +22,6 @@ public class AggressivePensionTrack {
     private LocalDateTime trackingDate;
 
     private Integer price;
+
+    private Double profit;
 }

@@ -18,13 +18,13 @@ public class Pension {
 
     private Double rate; // 금리
 
+    private Double pensionPriceMovement; // 연금 가격 변동
+
     private String pensionKind; // 연금 종류
 
     private Boolean pensionType; // 금리 고정 여부
 
     private Double minGuaranteeRate; // 최저 보증 이율
-
-    private Double lastYearProfitRate; // 작년 수익률
 
     private LocalDateTime endDate; // 공시 종료일
 
@@ -55,5 +55,19 @@ public class Pension {
     private Double liquidityScore; // 유동성 점수
 
     private Double complexityScore; // 복잡성 점수
+
+    private Integer fSector; // 금융권 구분
+
+    private String description; // 상품 설명
+
+    private Integer saveTerm; // 저축 기간
+
+    private String rateType; // 금리 타입 (예: "단리", "복리")
+
+    private Long minLimit; // 최소 가입금액
+
+    private Long maxLimit; // 최고 한도
+
+    private Double TER; // 총 보수 비율 (Total Expense Ratio)
 }
 

@@ -16,6 +16,7 @@ public class SavingsDetailResponseDTO {
 
     private Date endDate; // 공시 종료일
 
+    private Long minLimit;
     private Long maxLimit; // 최고 한도
 
     private String joinMember; // 가입 대상
@@ -23,8 +24,6 @@ public class SavingsDetailResponseDTO {
     private String joinDeny; // 가입 제한
 
     private String bonusCondition; // 우대 조건
-
-    private Long saveTerm; // 저축 기간
 
     private String rateType; // 금리 유형
     private String saveType; // 저축 유형
@@ -45,7 +44,8 @@ public class SavingsDetailResponseDTO {
 
     private Long regretCnt; // 후회수
 
-    private String matchScore;      // ENUM('상','중','하')
+    private String description; // 상품 특징
+
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
     private Boolean isScraped;      // 스크랩 여부

@@ -112,6 +112,8 @@ dependencies {
 //    implementation 'org.springframework:spring-context-support:5.3.37'
 //    implementation 'com.sun.mail:javax.mail:1.6.2'
     implementation 'com.mashape.unirest:unirest-java:1.4.9'
+    implementation 'org.springframework:spring-context-support:5.3.37'
+    implementation 'com.sun.mail:javax.mail:1.6.2'
 
     // https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core
     implementation("org.springframework.batch:spring-batch-core:4.3.10")

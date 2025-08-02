@@ -16,4 +16,7 @@ public interface DashboardMapper {
 
     @Cacheable(value = "userDashboardDataCache", key = "'portfolio:' + #userId")
     List<DashboardPortfolioResponseDTO> getPortfolioByUserId(String userId);
+
+    @Cacheable(value = "userDashboardDataCache", key = "'feedbackRatio:' + #userId")
+    Double getFeedbackRatioByUserId(String userId);
 }

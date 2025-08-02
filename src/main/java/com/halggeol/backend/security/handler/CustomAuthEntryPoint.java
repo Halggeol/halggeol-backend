@@ -22,10 +22,12 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
         HttpServletResponse response,
         AuthenticationException exception
     ) throws IOException, ServletException {
-        String message = "인증에 실패했습니다.";
+        String message = "인증에 실패했습니다: ";
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
-        JsonResponse.sendError(response, status, Map.of("message", message));
-        log.error(exception.getMessage());
+        JsonResponse.sendError(response, status, Map.of(
+            "message",
+            message + exception.getMessage()
+        ));
     }
 }

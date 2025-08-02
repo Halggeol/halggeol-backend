@@ -20,4 +20,5 @@ public class DashboardResponseDTO {
     private List<UnifiedProductRegretRankingResponseDTO> regretRanking;
     private String userName;
     private List<RecommendResponseDTO> recommendItems;
+    private Double feedbackRatio;
 }

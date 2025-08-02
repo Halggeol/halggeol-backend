@@ -6,15 +6,12 @@ import com.halggeol.backend.security.mail.domain.MailType;
 import com.halggeol.backend.security.mail.dto.MailDTO;
 import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
-import com.halggeol.backend.user.dto.EditProfileDTO;
+import com.halggeol.backend.user.dto.UpdateProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
-import com.halggeol.backend.user.dto.KnowledgeSurveyRequestDTO;
+import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
-import com.halggeol.backend.user.dto.UserProductResponseDTO;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,6 +34,16 @@ public class UserServiceImpl implements UserService {
     public boolean findByEmail(String email) {
         User user = userMapper.findByEmail(email);
         return user != null;
+    }
+
+    @Override
+    public void emailExists(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 입력되지 않았습니다.");
+        }
+        if (!findByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+        }
     }
 
     @Override
@@ -95,7 +102,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> editProfile(CustomUser user, EditProfileDTO info) {
+    public Map<String, String> updateProfile(CustomUser user, UpdateProfileDTO info) {
         userMapper.updateProfileById(user.getUser().getId(), info.getPhone());
         return Map.of("Message", "사용자 정보 수정이 완료되었습니다.");
     }
@@ -110,9 +117,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> updateKnowledge(CustomUser user, KnowledgeSurveyRequestDTO surveyResult) {
-        int userKlg = 0; // surveyResult로 점수 내기
-        userMapper.updateKnowledgeById(user.getUser().getId(), userKlg);
-        return Map.of("Message", "금융 이해도 갱신이 완료되었습니다.");
+    public Map<String, String> updateInsightCycle(CustomUser user, UpdateCycleRequestDTO cycle) {
+        cycle.validateCycleType();
+        userMapper.updateInsightCycleById(user.getUser().getId(), cycle.getCycle());
+        return Map.of("Message", "인사이트 주기 변경이 완료되었습니다.");
     }
 }

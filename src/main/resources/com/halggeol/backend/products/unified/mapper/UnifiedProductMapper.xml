@@ -7,6 +7,11 @@
 
 <!--  금융 상품 검색 및 필터링-->
   <select id="selectFilteredProducts" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO">
+<<<<<<< HEAD
+=======
+    use my_db;
+
+>>>>>>> 62b627cb504e9d75aa38ef065ccd2de11e9fa614
     SELECT
     d.id AS productId,
     d.name,

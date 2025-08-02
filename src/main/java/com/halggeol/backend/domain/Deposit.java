@@ -36,9 +36,7 @@ public class Deposit {
 
     private String bonusCondition; // 우대 조건
 
-    private Long saveTerm; // 저축 기간
-
-    private Long minimumCost; // 최소 가입금액
+    private String rateType; // 금리 타입 (예: "단리", "복리")
 
     private String company; // 운용 회사
 
@@ -71,4 +69,10 @@ public class Deposit {
     private Double liquidityScore; // 유동성 점수
 
     private Double complexityScore; // 복잡성 점수
+
+    private Integer fSector; // 금융권 구분 (1: 1금융권, 2: 2금융권)
+
+    private String description; // 상품 설명
+
+    private Boolean extraDeposit; // 추가 입금 가능 여부
 }

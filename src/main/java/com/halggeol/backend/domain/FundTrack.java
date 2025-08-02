@@ -23,4 +23,6 @@ public class FundTrack {
 
     private Integer price;
 
+    private Double profit; // 수익률
+
 }
