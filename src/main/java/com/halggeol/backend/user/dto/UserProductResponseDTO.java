@@ -46,6 +46,7 @@ public class UserProductResponseDTO {
     // 연금: 안정형은 최저 보증 이율 (min_guarantee_rate), 공격형은 NULL
     private String subTitle;
 
-    // SQL 쿼리에 없는 필드입니다. 추가 정보가 필요합니다.
     private int amount;
+    
+    private boolean isScraped;
 }
