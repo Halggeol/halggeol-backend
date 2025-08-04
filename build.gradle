@@ -10,6 +10,22 @@ repositories {
     mavenCentral()
 }
 
+// 빌드 성능 최적화
+configurations.configureEach {
+    exclude group: 'commons-logging', module: 'commons-logging'
+    resolutionStrategy {
+        failOnVersionConflict()
+        preferProjectModules()
+    }
+}
+
+// 개발 시 테스트 스킵하는 태스크 추가
+task buildFast {
+    dependsOn 'compileJava', 'processResources', 'classes', 'war'
+    group = 'build'
+    description = 'Fast build without tests'
+}
+
 ext {
     junitVersion = '5.9.2'
     springVersion = '5.3.37'
@@ -23,6 +39,10 @@ targetCompatibility = '17'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+    options.incremental = true
+    options.fork = true
+    options.forkOptions.jvmArgs += ['-Xmx3g', '-XX:+UseG1GC']
+    options.compilerArgs += ['-Xlint:none', '-nowarn']
 }
 
 dependencies {
@@ -141,5 +161,25 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    
+    // 빌드 성능 최적화
+    maxParallelForks = Runtime.runtime.availableProcessors()
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = false
+    }
+    jvmArgs '-Xmx2g', '-XX:+UseG1GC'
+}
+
+// WAR 태스크 최적화
+war {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // 불필요한 파일 제외
+    exclude '**/Thumbs.db'
+    exclude '**/.DS_Store'
+    exclude '**/application.yml'
+    
+    // 압축 최적화
+    entryCompression = ZipEntryCompression.DEFLATED
 }
 
