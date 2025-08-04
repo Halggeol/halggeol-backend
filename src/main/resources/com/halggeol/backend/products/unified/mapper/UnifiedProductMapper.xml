@@ -7,8 +7,6 @@
 
 <!--  금융 상품 검색 및 필터링-->
   <select id="selectFilteredProducts" resultType="com.halggeol.backend.products.unified.dto.UnifiedProductResponseDTO">
-    use my_db;
-
     SELECT
     d.id AS productId,
     d.name,

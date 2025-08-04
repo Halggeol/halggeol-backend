@@ -1,6 +1,8 @@
 package com.halggeol.backend.scrap.mapper;
 
 import com.halggeol.backend.scrap.domain.Scrap;
+import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,4 +23,10 @@ public interface ScrapMapper {
     void decrementFundScrapCount(@Param("productId") String productId);
     void decrementForexScrapCount(@Param("productId") String productId);
     void decrementPensionScrapCount(@Param("productId") String productId);
+
+    // 관심상품 조회
+    List<ScrappedProductResponseDTO> selectScrappedProducts(
+        @Param("userId") int userId,
+        @Param("types") List<String> types,
+        @Param("sort") String sort);
 }
