@@ -25,8 +25,8 @@
       CAST(d.min_save_term AS CHAR) AS tag1,
       CAST(d.max_save_term AS CHAR) AS tag2,
       NULL AS tag3,
-      CONCAT('최고 ', CAST(d.prime_rate AS CHAR), '%') AS title,
-      CONCAT('기본 ', CAST(d.rate AS CHAR), '%') AS subTitle,
+      d.prime_rate AS title,
+      d.rate AS subTitle,
       ulmp.amount,
       CASE WHEN s.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
@@ -43,8 +43,8 @@
       CAST(s.min_save_term AS CHAR) AS tag1,
       CAST(s.max_save_term AS CHAR) AS tag2,
       NULL AS tag3,
-      CONCAT('최고 ', CAST(s.prime_rate AS CHAR), '%') AS title,
-      CONCAT('기본 ', CAST(s.rate AS CHAR), '%') AS subTitle,
+      s.prime_rate AS title,
+      s.rate AS subTitle,
       ulmp.amount,
       CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
@@ -62,13 +62,13 @@
       CAST(p.risk AS CHAR) AS tag2,
       NULL AS tag3,
       CASE
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN CONCAT('가격변동 ', CAST(p.pension_price_movement AS CHAR), '%')
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('수익률 ', CAST(p.rate AS CHAR), '%')
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN p.pension_price_movement
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN p.rate
         ELSE NULL
       END AS title,
       CASE
         WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN NULL
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('최저보증 ', CAST(p.min_guarantee_rate AS CHAR), '%')
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN p.min_guarantee_rate
         ELSE NULL
       END AS subTitle,
       ulmp.amount,
@@ -87,8 +87,8 @@
       f.category AS tag1,
       f.theme AS tag2,
       CAST(f.risk AS CHAR) AS tag3,
-      CONCAT('수익률 ', CAST(f.rate AS CHAR), '%') AS title,
-      CONCAT('가격변동 ', CAST(f.fund_price_movement AS CHAR)) AS subTitle,
+      f.rate AS title,
+      f.fund_price_movement AS subTitle,
       ulmp.amount,
       CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
@@ -105,8 +105,8 @@
       fx.currency AS tag1,
       NULL AS tag2,
       NULL AS tag3,
-      CONCAT('환율 ', CAST(fx.rate AS CHAR)) AS title,
-      CONCAT('우대율 ', CAST(fx.rate_give_way AS CHAR), '%') AS subTitle,
+      fx.rate AS title,
+      fx.rate_give_way AS subTitle,
       ulmp.amount,
       CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
