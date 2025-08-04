@@ -56,10 +56,6 @@ dependencies {
     runtimeOnly 'org.aspectj:aspectjrt:1.9.20'
     runtimeOnly 'org.aspectj:aspectjweaver:1.9.20'
 
-    // Caching
-    implementation 'org.springframework:spring-context-support:5.3.37'
-    implementation 'net.sf.ehcache:ehcache:2.10.9.2'
-
     // JSP, SERVLET, JSTL
     implementation('javax.servlet:javax.servlet-api:4.0.1')
     compileOnly 'javax.servlet.jsp:jsp-api:2.1'
@@ -96,9 +92,7 @@ dependencies {
 
     // redis
     implementation 'org.springframework.data:spring-data-redis:2.7.6'
-
-//    implementation 'io.lettuce.core:lettuce-core:6.1.5'
-
+    implementation 'redis.clients:jedis:3.8.0'
 
     // 테스트
     testImplementation "org.springframework:spring-test:${springVersion}"
