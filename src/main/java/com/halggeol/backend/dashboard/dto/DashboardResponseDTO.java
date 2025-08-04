@@ -2,6 +2,7 @@ package com.halggeol.backend.dashboard.dto;
 
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
+import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DashboardResponseDTO {
+public class DashboardResponseDTO implements Serializable {
 
     private Double avgRegretScore;
     private List<DashboardAssetResponseDTO> assets;
