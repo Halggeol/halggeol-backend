@@ -22,7 +22,7 @@
     "tokenizer": {
       "nori_tokenizer": {
         "type": "nori_tokenizer",
-        "decompound_mode": "mixed"  // 복합어를 원형과 분해형 둘 다 생성
+        "decompound_mode": "mixed"
       }
     }
   }
