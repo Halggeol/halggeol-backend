@@ -1,12 +1,15 @@
 package com.halggeol.backend.insight.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 public class ProfitSimulationDTO {
-    private String date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate date;
     private Double profit; // 추천 상품 수익
     private Long asset;
 
