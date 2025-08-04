@@ -1,5 +1,6 @@
 package com.halggeol.backend.products.unified.dto;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UnifiedProductRegretRankingResponseDTO {
+public class UnifiedProductRegretRankingResponseDTO implements Serializable {
     private Integer rank;
     private String productId;
     private String productName;
