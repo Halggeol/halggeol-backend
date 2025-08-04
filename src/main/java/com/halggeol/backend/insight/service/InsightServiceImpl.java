@@ -3,10 +3,8 @@ package com.halggeol.backend.insight.service;
 import com.halggeol.backend.insight.dto.ExchangeRateDTO;
 import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
-import com.halggeol.backend.insight.dto.RegretItemDTO;
 import com.halggeol.backend.insight.mapper.InsightMapper;
 import com.halggeol.backend.recommend.service.RecommendService;
-import com.halggeol.backend.recommend.service.RecommendServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 import org.json.simple.JSONArray;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,7 +33,6 @@ import java.util.stream.Collectors;
 public class InsightServiceImpl implements InsightService {
 
     private final InsightMapper insightMapper;
-    private final RecommendService recommendService;
 
     // application.properties에 저장해둔 인증키
     private static String API_KEY = "ATw64SDmn6zzCgPUzOxDkXqya2O8RMSm";
@@ -330,67 +326,66 @@ public class InsightServiceImpl implements InsightService {
     /**
      * 개선된 compareForexRegretItems - 어제 날짜부터 시도
      */
-    @Override
-    public List<ForexCompareDTO> compareForexRegretItems(Long userId) {
-        List<RegretItemDTO> regretItems = insightMapper.getForexRegretItems(userId);
-        List<ForexCompareDTO> result = new ArrayList<>();
-
-        // 오늘부터 최대 3일 전까지 사용 가능한 환율 데이터 찾기
-        String usableDate = findUsableExchangeRateDate();
-        Map<String, BigDecimal> todayRates = getTodayRatesMap(usableDate);
-
-        if (todayRates.isEmpty()) {
-            System.err.println("사용 가능한 환율 데이터를 찾을 수 없습니다.");
-            return result;
-        }
-
-        for (RegretItemDTO item : regretItems) {
-            String productId = item.getProductId();
-            String productName = insightMapper.getForexProductNameById(productId);
-            LocalDate recDate = item.getRecDate();
-            String currencyStr = item.getCurrency();
-
-            if (currencyStr == null || currencyStr.isEmpty()) continue;
-
-            String[] currencies = currencyStr.split(",\\s*");
-
-            for (String currency : currencies) {
-                currency = currency.trim();
-                BigDecimal todayRate = todayRates.get(currency);
-
-                if (todayRate == null) {
-                    todayRate = getLatestRateFromApi(currency, usableDate);
-                }
-
-                if (todayRate == null) continue;
-
-                BigDecimal pastRate = insightMapper.getForexRateOnDate(productId, recDate, currency);
-                if (pastRate == null) {
-                    pastRate = insightMapper.getLatestForexRateBeforeDate(productId, currency, recDate);
-                }
-
-                if (pastRate == null) continue;
-
-                BigDecimal diff = todayRate.subtract(pastRate);
-                BigDecimal diffPercent = diff
-                        .divide(pastRate, 4, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100));
-
-                ForexCompareDTO dto = new ForexCompareDTO();
-                dto.setRound(item.getRound());
-                dto.setProductName(productName);
-                dto.setCurUnit(currency);
-                dto.setPastRate(pastRate);
-                dto.setCurrentRate(todayRate);
-                dto.setRecDate(recDate.toString());
-                dto.setDiff(diff);
-                dto.setDiffPercent(diffPercent);
-
-                result.add(dto);
-            }
-        }
-        return result;
-    }
+//    @Override
+//    public List<ForexCompareDTO> compareForexRegretItems(Long userId) {
+////        List<RegretItemDTO> regretItems = insightMapper.getForexRegretItems(userId);
+//        List<ForexCompareDTO> result = new ArrayList<>();
+//
+//        // 오늘부터 최대 3일 전까지 사용 가능한 환율 데이터 찾기
+//        String usableDate = findUsableExchangeRateDate();
+//        Map<String, BigDecimal> todayRates = getTodayRatesMap(usableDate);
+//
+//        if (todayRates.isEmpty()) {
+//            System.err.println("사용 가능한 환율 데이터를 찾을 수 없습니다.");
+//            return result;
+//        }
+//
+//        for (RegretItemDTO item : regretItems) {
+//            String productId = item.getProductId();
+//            LocalDate recDate = item.getRecDate();
+//            String currencyStr = item.getCurrency();
+//
+//            if (currencyStr == null || currencyStr.isEmpty()) continue;
+//
+//            String[] currencies = currencyStr.split(",\\s*");
+//
+//            for (String currency : currencies) {
+//                currency = currency.trim();
+//                BigDecimal todayRate = todayRates.get(currency);
+//
+//                if (todayRate == null) {
+//                    todayRate = getLatestRateFromApi(currency, usableDate);
+//                }
+//
+//                if (todayRate == null) continue;
+//
+//                BigDecimal pastRate = insightMapper.getForexRateOnDate(productId, recDate, currency);
+//                if (pastRate == null) {
+//                    pastRate = insightMapper.getLatestForexRateBeforeDate(productId, currency, recDate);
+//                }
+//
+//                if (pastRate == null) continue;
+//
+//                BigDecimal diff = todayRate.subtract(pastRate);
+//                BigDecimal diffPercent = diff
+//                        .divide(pastRate, 4, RoundingMode.HALF_UP)
+//                        .multiply(BigDecimal.valueOf(100));
+//
+//                ForexCompareDTO dto = new ForexCompareDTO();
+////                dto.setRound(item.getRound());
+////                dto.setProductName(productName);
+//                dto.setCurUnit(currency);
+//                dto.setPastRate(pastRate);
+//                dto.setCurrentRate(todayRate);
+//                dto.setRecDate(recDate.toString());
+//                dto.setDiff(diff);
+//                dto.setDiffPercent(diffPercent);
+//
+//                result.add(dto);
+//            }
+//        }
+//        return result;
+//    }
 
     /**
      * 사용 가능한 환율 데이터 날짜 찾기
@@ -430,62 +425,62 @@ public class InsightServiceImpl implements InsightService {
         return today.minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-    @Override
-    public List<ForexCompareDTO> compareForexRegretItems(Long userId, LocalDate date) {
-        List<RegretItemDTO> regretItems = insightMapper.getForexRegretItemsByDate(userId, date);
-
-        List<ForexCompareDTO> result = new ArrayList<>();
-
-        String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        Map<String, BigDecimal> todayRates = getTodayRatesMap(today);
-
-        for (RegretItemDTO item : regretItems) {
-            String productId = item.getProductId();
-            String productName = insightMapper.getForexProductNameById(productId); // ✅ 상품명 조회
-            LocalDate recDate = item.getRecDate();
-            String currencyStr = item.getCurrency();
-
-            if (currencyStr == null || currencyStr.isEmpty()) continue;
-
-            String[] currencies = currencyStr.split(",\\s*");
-
-            for (String currency : currencies) {
-                currency = currency.trim();
-                BigDecimal todayRate = todayRates.get(currency);
-
-                if (todayRate == null) {
-                    todayRate = getLatestRateFromApi(currency, today);
-                }
-
-                if (todayRate == null) continue;
-
-                BigDecimal pastRate = insightMapper.getForexRateOnDate(productId, recDate, currency);
-                if (pastRate == null) {
-                    pastRate = insightMapper.getLatestForexRateBeforeDate(productId, currency, recDate);
-                }
-
-                if (pastRate == null) continue;
-
-                BigDecimal diff = todayRate.subtract(pastRate);
-                BigDecimal diffPercent = diff
-                        .divide(pastRate, 4, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100));
-
-                ForexCompareDTO dto = new ForexCompareDTO();
-                dto.setRound(item.getRound()); // ✅ 이 한 줄 추가
-                dto.setProductName(productName); // ✅ 세팅
-                dto.setCurUnit(currency);
-                dto.setPastRate(pastRate);
-                dto.setCurrentRate(todayRate);
-                dto.setRecDate(recDate.toString());
-                dto.setDiff(diff);
-                dto.setDiffPercent(diffPercent);
-
-                result.add(dto);
-            }
-        }
-        return result;
-    }
+//    @Override
+//    public List<ForexCompareDTO> compareForexRegretItems(Long userId, LocalDate date) {
+////        List<RegretItemDTO> regretItems = insightMapper.getForexRegretItemsByDate(userId, date);
+//
+//        List<ForexCompareDTO> result = new ArrayList<>();
+//
+//        String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+//        Map<String, BigDecimal> todayRates = getTodayRatesMap(today);
+//
+//        for (RegretItemDTO item : regretItems) {
+//            String productId = item.getProductId();
+////            String productName = insightMapper.getForexProductNameById(productId); // ✅ 상품명 조회
+//            LocalDate recDate = item.getRecDate();
+//            String currencyStr = item.getCurrency();
+//
+//            if (currencyStr == null || currencyStr.isEmpty()) continue;
+//
+//            String[] currencies = currencyStr.split(",\\s*");
+//
+//            for (String currency : currencies) {
+//                currency = currency.trim();
+//                BigDecimal todayRate = todayRates.get(currency);
+//
+//                if (todayRate == null) {
+//                    todayRate = getLatestRateFromApi(currency, today);
+//                }
+//
+//                if (todayRate == null) continue;
+//
+//                BigDecimal pastRate = insightMapper.getForexRateOnDate(productId, recDate, currency);
+//                if (pastRate == null) {
+//                    pastRate = insightMapper.getLatestForexRateBeforeDate(productId, currency, recDate);
+//                }
+//
+//                if (pastRate == null) continue;
+//
+//                BigDecimal diff = todayRate.subtract(pastRate);
+//                BigDecimal diffPercent = diff
+//                        .divide(pastRate, 4, RoundingMode.HALF_UP)
+//                        .multiply(BigDecimal.valueOf(100));
+//
+//                ForexCompareDTO dto = new ForexCompareDTO();
+////                dto.setRound(item.getRound()); // ✅ 이 한 줄 추가
+////                dto.setProductName(productName); // ✅ 세팅
+//                dto.setCurUnit(currency);
+//                dto.setPastRate(pastRate);
+//                dto.setCurrentRate(todayRate);
+//                dto.setRecDate(recDate.toString());
+//                dto.setDiff(diff);
+//                dto.setDiffPercent(diffPercent);
+//
+//                result.add(dto);
+//            }
+//        }
+//        return result;
+//    }
 
     private BigDecimal getLatestRateFromApi(String currency, String date) {
         List<ExchangeRateDTO> rates = getExchangeRates(date);
@@ -497,24 +492,24 @@ public class InsightServiceImpl implements InsightService {
         return null;
     }
 
-    @Override
-    public Map<Long, List<ForexCompareDTO>> getUserForexCompareGrouped(Long userId) {
-        List<ForexCompareDTO> list = getUserForexCompareList(userId);
+//    @Override
+//    public Map<Long, List<ForexCompareDTO>> getUserForexCompareGrouped(Long userId) {
+//        List<ForexCompareDTO> list = getUserForexCompareList(userId);
+//
+//        return list.stream()
+//                .collect(Collectors.groupingBy(dto -> Long.valueOf(dto.getRound()), LinkedHashMap::new, Collectors.toList()));
+//    }
 
-        return list.stream()
-                .collect(Collectors.groupingBy(dto -> Long.valueOf(dto.getRound()), LinkedHashMap::new, Collectors.toList()));
-    }
-
-    @Override
-    public List<ForexCompareDTO> getUserForexCompareList(Long userId) {
-        // 기존 compareForexRegretItems(userId) 메서드의 내용을 재사용
-        return compareForexRegretItems(userId);
-    }
+//    @Override
+//    public List<ForexCompareDTO> getUserForexCompareList(Long userId) {
+//        // 기존 compareForexRegretItems(userId) 메서드의 내용을 재사용
+//        return compareForexRegretItems(userId);
+//    }
 
     //유사도 측정
-    @Override
-    public List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId) {
-        return recommendService.getSimilarProducts(productId);
-    }
+//    @Override
+//    public List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId) {
+//        return recommendService.getSimilarProducts(productId);
+//    }
 }
 

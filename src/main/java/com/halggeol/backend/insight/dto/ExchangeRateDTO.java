@@ -4,7 +4,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-// 외환 데이터 흐름 2
 // 한국수출입은행 open api
 public class ExchangeRateDTO {
     private String curUnit;      // 통화 코드 (USD, EUR 등)

@@ -8,8 +8,8 @@ public enum ProductType {
     SAVINGS("S", "savings"),
     CONSERVATIVE("C", "conservative"),
     AGGRESSIVE("A", "aggressive"),
-    FUND("F", "fund"),;
-//    FOREX("X", "forex"),;
+    FUND("F", "fund"),
+    FOREX("X", "forex");
 
     private final String prefix;
     private final String simulationType;
@@ -31,7 +31,7 @@ public enum ProductType {
             case 'C' -> CONSERVATIVE;
             case 'A' -> AGGRESSIVE;
             case 'F' -> FUND;
-//            case 'X' -> FOREX;
+            case 'X' -> FOREX;
             default -> throw new IllegalArgumentException("유효하지 않은 카테고리: " + productId);
         };
     }

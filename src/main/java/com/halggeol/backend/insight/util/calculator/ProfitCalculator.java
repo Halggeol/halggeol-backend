@@ -1,4 +1,4 @@
-package com.halggeol.backend.insight.service.calculator;
+package com.halggeol.backend.insight.util.calculator;
 
 import com.halggeol.backend.insight.dto.ProfitCalculationInput;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProfitCalculator {
+    // todo. 전략 패턴 적용으로 수정하기
     public static List<ProfitSimulationDTO>  calculateProfitSimulations(ProfitCalculationInput input) {
         char prefix = input.getProductId().charAt(0);
         long principal = estimateInvestmentAmount(input.getProfitSimulations(), input.getMaxLimit(), prefix);
 
-        // 외환 수익률 계산 추후 추가
         if (prefix == 'D' || prefix == 'C') {
             return calculateProfitForConservative(input, principal);
         } else if (prefix == 'S') {
@@ -51,8 +51,7 @@ public class ProfitCalculator {
         boolean isCompound = Boolean.TRUE.equals(input.getIsCompound());
 
         ProfitSimulationDTO base = profits.get(0);
-        String snapshotDate = base.getDate().split(" ")[0];
-        LocalDate baseDate = LocalDate.parse(snapshotDate);
+        LocalDate baseDate = base.getDate();
         double rate = base.getProfit() != null ? base.getProfit() / 100.0 : 0.0;
 
         long profitAmount = 0;
@@ -65,7 +64,7 @@ public class ProfitCalculator {
             long totalAsset = principal + totalProfit;
 
             ProfitSimulationDTO simulation = new ProfitSimulationDTO();
-            simulation.setDate(String.valueOf(nxtDate));
+            simulation.setDate(nxtDate);
             simulation.setProfit(base.getProfit());
             simulation.setAsset(base.getAsset());
 
@@ -84,8 +83,7 @@ public class ProfitCalculator {
         boolean isCompound = Boolean.TRUE.equals(input.getIsCompound());
 
         ProfitSimulationDTO base = input.getProfitSimulations().get(0);
-        String snapshotDate = base.getDate().split(" ")[0];
-        LocalDate baseDate = LocalDate.parse(snapshotDate);
+        LocalDate baseDate = base.getDate();
         double rate = base.getProfit() != null ? base.getProfit() / 100.0 : 0.0;
 
         long totalPrincipal = 0;
@@ -104,7 +102,7 @@ public class ProfitCalculator {
             profitAmount = totalProfit;
 
             ProfitSimulationDTO simulation = new ProfitSimulationDTO();
-            simulation.setDate(String.valueOf(date));
+            simulation.setDate(date);
             simulation.setProfit(base.getProfit());
             simulation.setAsset(base.getAsset());
             simulation.setLostInvestment(monthlyProfit);
