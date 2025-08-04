@@ -11,120 +11,109 @@
       WHERE user_id = #{userId}
       ORDER BY collect_date DESC, id DESC
       LIMIT 1
-      ),
-      UserLatestMyProducts AS (
-    -- 2. 가장 최근 mydata에 연결된 myproduct 기록들을 가져옵니다.
-    -- amount 컬럼을 추가합니다.
-    SELECT mp.product_id, mp.reg_date, mp.end_date, mp.amount
-    FROM myproduct mp
+    ),
+    UserLatestMyProducts AS (
+      SELECT mp.product_id, mp.amount
+      FROM myproduct mp
       JOIN LatestMydata lm ON mp.mydata_id = lm.id
-      )
+    )
 
--- 1. 예금 (Deposit - D)
     SELECT
       ulmp.product_id AS productId,
-      dp.company AS company,
-      dp.name AS name,
-      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
-      -- tag1, tag2, tag3
-      CAST(dp.min_save_term AS CHAR) AS tag1,
-      CAST(dp.max_save_term AS CHAR) AS tag2,
+      d.name,
+      d.company,
+      CAST(d.min_save_term AS CHAR) AS tag1,
+      CAST(d.max_save_term AS CHAR) AS tag2,
       NULL AS tag3,
-
-      -- title, subTitle
-      CONCAT('최고 ', CAST(dp.prime_rate AS CHAR), '%') AS title,
-      CONCAT('기본 ', CAST(dp.rate AS CHAR), '%') AS subTitle
+      CONCAT('최고 ', CAST(d.prime_rate AS CHAR), '%') AS title,
+      CONCAT('기본 ', CAST(d.rate AS CHAR), '%') AS subTitle,
+      ulmp.amount,
+      CASE WHEN s.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
-           JOIN deposit dp ON ulmp.product_id = dp.id
+    JOIN deposit d ON ulmp.product_id = d.id
+    LEFT JOIN scrap s ON s.user_id = #{userId} AND s.product_id = ulmp.product_id
     WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'D'
 
     UNION ALL
 
--- 2. 적금 (Savings - S)
     SELECT
       ulmp.product_id AS productId,
-      sp.company AS company,
-      sp.name AS name,
-      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
-      -- tag1, tag2, tag3
-      CAST(sp.min_save_term AS CHAR) AS tag1,
-      CAST(sp.max_save_term AS CHAR) AS tag2,
+      s.name,
+      s.company,
+      CAST(s.min_save_term AS CHAR) AS tag1,
+      CAST(s.max_save_term AS CHAR) AS tag2,
       NULL AS tag3,
-
-      -- title, subTitle
-      CONCAT('최고 ', CAST(sp.prime_rate AS CHAR), '%') AS title,
-      CONCAT('기본 ', CAST(sp.rate AS CHAR), '%') AS subTitle
+      CONCAT('최고 ', CAST(s.prime_rate AS CHAR), '%') AS title,
+      CONCAT('기본 ', CAST(s.rate AS CHAR), '%') AS subTitle,
+      ulmp.amount,
+      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
-           JOIN savings sp ON ulmp.product_id = sp.id
+    JOIN savings s ON ulmp.product_id = s.id
+    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
     WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'S'
 
     UNION ALL
 
--- 3. 연금 (Pension - A, C)
     SELECT
       ulmp.product_id AS productId,
-      pp.company AS company,
-      pp.name AS name,
-      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
-      -- tag1, tag2, tag3
-      pp.pension_kind AS tag1,
-      CAST(pp.risk AS CHAR) AS tag2,
+      p.name,
+      p.company,
+      p.pension_kind AS tag1,
+      CAST(p.risk AS CHAR) AS tag2,
       NULL AS tag3,
-
-      -- title, subTitle
       CASE
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN CONCAT('작년수익 ', CAST(pp.last_year_profit_rate AS CHAR), '%')
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('수익률 ', CAST(pp.rate AS CHAR), '%')
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN CONCAT('가격변동 ', CAST(p.pension_price_movement AS CHAR), '%')
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('수익률 ', CAST(p.rate AS CHAR), '%')
         ELSE NULL
-        END AS title,
+      END AS title,
       CASE
         WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN NULL
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('최저보증 ', CAST(pp.min_guarantee_rate AS CHAR), '%')
+        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN CONCAT('최저보증 ', CAST(p.min_guarantee_rate AS CHAR), '%')
         ELSE NULL
-        END AS subTitle
+      END AS subTitle,
+      ulmp.amount,
+      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
-           JOIN pension pp ON ulmp.product_id = pp.id
+    JOIN pension p ON ulmp.product_id = p.id
+    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
     WHERE SUBSTRING(ulmp.product_id, 1, 1) IN ('A', 'C')
 
     UNION ALL
 
--- 4. 펀드 (Fund - F)
     SELECT
       ulmp.product_id AS productId,
-      fp.company AS company,
-      fp.name AS name,
-      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
-      -- tag1, tag2, tag3
-      fp.category AS tag1,
-      fp.theme AS tag2,
-      CAST(fp.risk AS CHAR) AS tag3,
-
-      -- title, subTitle
-      CONCAT('수익률 ', CAST(fp.rate AS CHAR), '%') AS title,
-      CONCAT('가격변동 ', CAST(fp.fund_price_movement AS CHAR)) AS subTitle
+      f.name,
+      f.company,
+      f.category AS tag1,
+      f.theme AS tag2,
+      CAST(f.risk AS CHAR) AS tag3,
+      CONCAT('수익률 ', CAST(f.rate AS CHAR), '%') AS title,
+      CONCAT('가격변동 ', CAST(f.fund_price_movement AS CHAR)) AS subTitle,
+      ulmp.amount,
+      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
-           JOIN fund fp ON ulmp.product_id = fp.id
+    JOIN fund f ON ulmp.product_id = f.id
+    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
     WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'F'
 
     UNION ALL
 
--- 5. 외화 (Foreign eXchange - X)
     SELECT
       ulmp.product_id AS productId,
-      fxp.company AS company,
-      fxp.name AS name,
-      ulmp.amount AS amount, -- myproduct에서 amount 가져오기
-      -- tag1, tag2, tag3
-      fxp.currency AS tag1,
+      fx.name,
+      fx.company,
+      fx.currency AS tag1,
       NULL AS tag2,
       NULL AS tag3,
-
-      -- title, subTitle
-      CONCAT('환율 ', CAST(fxp.rate AS CHAR)) AS title,
-      CONCAT('우대율 ', CAST(fxp.rate_give_way AS CHAR), '%') AS subTitle
+      CONCAT('환율 ', CAST(fx.rate AS CHAR)) AS title,
+      CONCAT('우대율 ', CAST(fx.rate_give_way AS CHAR), '%') AS subTitle,
+      ulmp.amount,
+      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
     FROM UserLatestMyProducts ulmp
-           JOIN forex fxp ON ulmp.product_id = fxp.id
+    JOIN forex fx ON ulmp.product_id = fx.id
+    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
     WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'X'
+    
     ORDER BY productId ASC;
   </select>
 </mapper>
