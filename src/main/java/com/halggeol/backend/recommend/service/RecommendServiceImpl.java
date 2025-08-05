@@ -9,24 +9,23 @@ import com.halggeol.backend.recommend.dto.ForexAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.FundAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.PensionAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.ProductVectorResponseDTO;
+import com.halggeol.backend.recommend.dto.ProductVectorUpdateResponseDTO;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.dto.SavingsAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
 import com.halggeol.backend.recommend.mapper.RecommendMapper;
 import com.halggeol.backend.recommend.service.calculater.ScoreCalculator;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class RecommendServiceImpl implements RecommendService{
+public class RecommendServiceImpl implements RecommendService {
 
     private final RecommendMapper mapper;
 
@@ -48,57 +47,50 @@ public class RecommendServiceImpl implements RecommendService{
         System.out.println("Updating algorithm codes for all products...");
         updateStaticValues(); //최대/최소 금리를 업데이트
         List<DepositAlgorithmResponseDTO> depositList = mapper.getDepositAlgorithmDetail();
-        for( DepositAlgorithmResponseDTO deposit : depositList) {
-            Map<String, Double> scores = ScoreCalculator.calculateDepositScore(deposit);
-            //이 score가 deposit의 algo_code로 사용될 예정
-            System.out.println("Updating algo_code for deposit: " + deposit.getName() +
-                " with score: " + scores.get("algoCode"));
-            mapper.updateDepositAlgoCodeById(deposit.getId(), scores.get("algoCode")*100,scores.get("riskScore"), scores.get("yieldScore"), scores.get("costScore") , scores.get("liquidityScore"), scores.get("complexityScore")); // 0~100으로 변환
+        for(DepositAlgorithmResponseDTO deposit : depositList) {
+            ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("deposit", deposit);
+            mapper.updateProductVectorById(responseDTO); // 0~100으로 변환
         }
         List<SavingsAlgorithmResponseDTO> savingsList = mapper.getSavingsAlgorithmDetail();
         for(SavingsAlgorithmResponseDTO savings : savingsList) {
-            Map<String,Double> scores = ScoreCalculator.calculateSavingsScore(savings);
-            //이 score가 savings의 algo_code로 사용될 예정
-            System.out.println("Updating algo_code for savings: " + savings.getName() +
-                " with score: " + scores.get("algoCode"));
-            mapper.updateSavingsAlgoCodeById(savings.getId(), scores.get("algoCode")*100,scores.get("riskScore"), scores.get("yieldScore"), scores.get("costScore") , scores.get("liquidityScore"), scores.get("complexityScore")); // 0~100으로 변환
-        }
+            ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("savings", savings);
+            mapper.updateProductVectorById(responseDTO);
+            }
         List<FundAlgorithmResponseDTO> fundList = mapper.getFundAlgorithmDetail();
         for (FundAlgorithmResponseDTO fund : fundList) {
-            Map<String,Double> scores = ScoreCalculator.calculateFundScore(fund);
-            //이 score가 fund의 algo_code로 사용될 예정
-            System.out.println("Updating algo_code for fund: " + fund.getName() +
-                " with score: " + scores.get("algoCode"));
-            mapper.updateFundAlgoCodeById(fund.getId(), scores.get("algoCode")*100,scores.get("riskScore"), scores.get("yieldScore"), scores.get("costScore") , scores.get("liquidityScore"), scores.get("complexityScore")); // 0~100으로 변환
+            ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("fund", fund);
+            mapper.updateProductVectorById(responseDTO);
         }
         List<PensionAlgorithmResponseDTO> pensionList = mapper.getPensionAlgorithmDetail();
         for (PensionAlgorithmResponseDTO pension : pensionList) {
-            Map<String, Double> scores = ScoreCalculator.calculatePensionScore(pension);
-            //이 score가 pension의 algo_code로 사용될 예정
-            System.out.println("Updating algo_code for pension: " + pension.getName() +
-                " with score: " + scores.get("algoCode"));
-            mapper.updatePensionAlgoCodeById(pension.getId(), scores.get("algoCode")*100,scores.get("riskScore"), scores.get("yieldScore"), scores.get("costScore") , scores.get("liquidityScore"), scores.get("complexityScore")); // 0~100으로 변환
+            ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("pension", pension);
+            mapper.updateProductVectorById(responseDTO);
         }
-
         List<ForexAlgorithmResponseDTO> forexList = mapper.getForexAlgorithmDetail();
         for( ForexAlgorithmResponseDTO forex : forexList) {
-            Map<String, Double> scores = ScoreCalculator.calculateForexScore(forex);
-            //이 score가 forex의 algo_code로 사용될 예정
-            System.out.println("Updating algo_code for forex: " + forex.getName() +
-                " with score: " + scores.get("algoCode"));
-            mapper.updateForexAlgoCodeById(forex.getId(), scores.get("algoCode")*100,scores.get("riskScore"), scores.get("yieldScore"), scores.get("costScore") , scores.get("liquidityScore"), scores.get("complexityScore")); // 0~100으로 변환
+            ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("forex", forex);
+            mapper.updateProductVectorById(responseDTO);
         }
-
         System.out.println("All algorithm codes updated successfully.");
     }
 
     @Override
-    @Scheduled(cron = "15 0 0 * * *")
+    @Scheduled(cron = "0 0 0 /7 * *")
     public void updateRecommendation() {
         System.out.println("Updating recommendations for all users...");
         List<UserVectorResponseDTO> userVectors = mapper.getUserVectors(); //유저 벡터 리스트를 가져옴
         List<ProductVectorResponseDTO> productVectors = mapper.getProductVectors(); //상품 벡터 리스트를 가져옴
         for (UserVectorResponseDTO userVector : userVectors) {
+            CronExpression cron = CronExpression.parse(mapper.getUserById(Integer.parseInt(userVector.getId())).getInsightCycle());
+            //cron 표현식이 현재 시간과 일치하는지 확인
+            ZonedDateTime now = ZonedDateTime.now();
+
+            ZonedDateTime nextExecution = cron.next(now.minusWeeks(1));
+            if (nextExecution == null || nextExecution.isBefore(now)) {
+                System.out.println("Skipping recommendation update for user ID: " + userVector.getId() +
+                    " as the cron expression does not match current time.");
+                continue; //현재 시간과 일치하지 않는 경우 건너뜀
+            }
             //유저 벡터를 리스트로 변환
             List<Double> userVectorList = List.of(userVector.getYieldScore(), userVector.getRiskScore(),
                 userVector.getCostScore(), userVector.getLiquidityScore(), userVector.getComplexityScore());
@@ -178,7 +170,7 @@ public class RecommendServiceImpl implements RecommendService{
         if (recommendations.isEmpty()) {
             return List.of(); //추천 상품이 없는 경우 빈 리스트 반환
         }
-        
+
         // 각 추천 상품에 대해 매칭 점수를 계산하여 설정
         for (RecommendResponseDTO recommendation : recommendations) {
             Double matchScore = getProductMatchScore(recommendation.getProductId(), userId);
@@ -187,7 +179,7 @@ public class RecommendServiceImpl implements RecommendService{
                 recommendation.setMatchScore((int) Math.round(matchScore * 100)); // 0~100 퍼센트로 변환
             }
         }
-        
+
         return recommendations;
     }
     public record Recommendation(ProductVectorResponseDTO dto, double score){}
