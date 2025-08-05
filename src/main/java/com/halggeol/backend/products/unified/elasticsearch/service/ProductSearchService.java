@@ -42,10 +42,7 @@ public class ProductSearchService {
 
         // 검색어 (상품명 부분 매칭)
         if(keyword!=null && !keyword.isBlank()){
-            BoolQueryBuilder nameQuery = QueryBuilders.boolQuery()
-                .should(QueryBuilders.matchQuery("name", keyword))           // 완전 단어 매칭
-                .should(QueryBuilders.matchQuery("name.ngram", keyword));    // 부분 매칭
-            boolQuery.must(nameQuery);
+            boolQuery.must(QueryBuilders.matchQuery("name", keyword));
         }
 
         // 상품 유형 필터링

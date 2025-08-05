@@ -36,6 +36,18 @@
     FROM deposit
   </select>
 
+  <update id="updateDepositAlgoCodeById">
+    UPDATE deposit
+    SET
+        deposit.algo_code = #{algoCode},
+        deposit.yield_score = #{yieldScore},
+        deposit.risk_score = #{riskScore},
+        deposit.liquidity_score = #{liquidityScore},
+        deposit.complexity_score = #{complexityScore},
+        deposit.cost_score = #{costScore}
+    WHERE deposit.id = #{pid}
+  </update>
+
   <resultMap id="SavingsAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.SavingsAlgorithmResponseDTO">
     <id property="id" column="id"/>
     <result property="rateType" column="rate_type"/>
@@ -66,6 +78,17 @@
     FROM savings s
     </select>
 
+  <update id="updateSavingsAlgoCodeById">
+    UPDATE savings
+    SET
+        savings.algo_code = #{algoCode}
+        ,savings.yield_score = #{yieldScore}
+        ,savings.risk_score = #{riskScore}
+        ,savings.cost_score = #{costScore}
+        ,savings.liquidity_score = #{liquidityScore}
+        ,savings.complexity_score = #{complexityScore}
+    WHERE savings.id = #{pid}
+  </update>
 
   <resultMap id="FundAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.FundAlgorithmResponseDTO">
     <id property="id" column="Id"/>
@@ -99,7 +122,16 @@
       f.category,
       f.risk
     FROM fund f</select>
-
+  
+  <update id="updateFundAlgoCodeById">
+    UPDATE fund
+    SET fund.algo_code = #{algoCode},
+    fund.yield_score = #{yieldScore},
+    fund.risk_score = #{riskScore},
+    fund.cost_score = #{costScore},
+    fund.liquidity_score = #{liquidityScore},
+    fund.complexity_score = #{complexityScore}
+    WHERE fund.id = #{pid}</update>
   <resultMap id="PensionAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.PensionAlgorithmResponseDTO">
     <id property="id" column="id"/>
     <result property="name" column="name"/>
@@ -134,6 +166,15 @@
     FROM pension p
     </select>
 
+  <update id="updatePensionAlgoCodeById">
+    UPDATE pension
+    SET pension.algo_code = #{algoCode}
+    ,pension.yield_score = #{yieldScore}
+    ,pension.risk_score = #{riskScore}
+    ,pension.cost_score = #{costScore}
+    ,pension.liquidity_score = #{liquidityScore}
+    ,pension.complexity_score = #{complexityScore}
+    WHERE pension.id = #{pid}</update>
 
   <resultMap id="ForexAlgorithmResponseDTOMap" type="com.halggeol.backend.recommend.dto.ForexAlgorithmResponseDTO">
     <id property="id" column="id"/>
@@ -169,6 +210,15 @@
     FROM forex fx
   </select>
 
+  <update id="updateForexAlgoCodeById">
+    UPDATE forex
+    SET forex.algo_code = #{algoCode}
+    ,forex.yield_score = #{yieldScore}
+    ,forex.risk_score = #{riskScore}
+    ,forex.cost_score = #{costScore}
+    ,forex.liquidity_score = #{liquidityScore}
+    ,forex.complexity_score = #{complexityScore}
+    WHERE forex.id = #{pid}</update>
   
   <resultMap id="ProductVectorResponseDTOMap" type="com.halggeol.backend.recommend.dto.ProductVectorResponseDTO">
     <id property="id" column="id"/>
@@ -272,52 +322,50 @@
   </select>
 
   <select id="getProductVectorById" resultMap="ProductVectorResponseDTOMap">
-    SELECT id,
-           yield_score,
-           risk_score,
-           cost_score,
-           liquidity_score,
-           complexity_score
-    FROM deposit
-    WHERE id = #{id}
-    UNION ALL
-    SELECT id,
-           yield_score,
-           risk_score,
-           cost_score,
-           liquidity_score,
-           complexity_score
-    FROM savings
-
-    WHERE id = #{id}
-    UNION ALL
-    SELECT id,
-           yield_score,
-           risk_score,
-           cost_score,
-           liquidity_score,
-           complexity_score
-    FROM fund
-    WHERE id = #{id}
-    UNION ALL
-    SELECT id,
-           yield_score,
-           risk_score,
-           cost_score,
-           liquidity_score,
-           complexity_score
-    FROM pension
-    WHERE id = #{id}
-    UNION ALL
-    SELECT id,
-           yield_score,
-           risk_score,
-           cost_score,
-           liquidity_score,
-           complexity_score
-    FROM forex
-    WHERE id = #{id};
-
+  SELECT
+  id,
+  yield_score,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM deposit WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yield_score,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM savings WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yield_score,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM fund WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yield_score,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM pension WHERE id = #{id}
+  UNION ALL
+  SELECT
+  id,
+  yield_score,
+  risk_score,
+  cost_score,
+  liquidity_score,
+  complexity_score
+  FROM forex WHERE id = #{id}
   </select>
 
   <resultMap id="RecommendResponseDTOMap" type="com.halggeol.backend.recommend.dto.RecommendResponseDTO">
@@ -341,9 +389,9 @@
       LEFT JOIN forex fx ON ri.product1_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product1_id IS NOT NULL
-
+      
       UNION ALL
-
+      
       SELECT
         ri.product2_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
@@ -355,9 +403,9 @@
       LEFT JOIN forex fx ON ri.product2_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product2_id IS NOT NULL
-
+      
       UNION ALL
-
+      
       SELECT
         ri.product3_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
@@ -369,9 +417,9 @@
       LEFT JOIN forex fx ON ri.product3_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product3_id IS NOT NULL
-
+      
       UNION ALL
-
+      
       SELECT
         ri.product4_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
@@ -383,9 +431,9 @@
       LEFT JOIN forex fx ON ri.product4_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product4_id IS NOT NULL
-
+      
       UNION ALL
-
+      
       SELECT
         ri.product5_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
@@ -458,71 +506,4 @@
   <select id="getMinFundTER" resultType="double">
   SELECT MIN(TER) FROM fund
   </select>
-
-  <select id="getUserVectorById" resultMap="UserVectorResponseDTOMap">
-    SELECT
-      id,
-      yield_score,
-      risk_score,
-      cost_score,
-      liquidity_score,
-      complexity_score
-    FROM users
-    WHERE id = #{id}
-  </select>
-
-  <update id="updateProductVectorById">
-    <choose>
-      <when test="productVector.id.startsWith('D')">
-        UPDATE deposit
-        SET yield_score = #{productVector.yieldScore},
-            risk_score = #{productVector.riskScore},
-            cost_score = #{productVector.costScore},
-            liquidity_score = #{productVector.liquidityScore},
-            complexity_score = #{productVector.complexityScore},
-            algo_code = #{productVector.algoCode}
-        WHERE id = #{productVector.id}
-      </when>
-      <when test="productVector.id.startsWith('S')">
-        UPDATE savings
-        SET yield_score = #{productVector.yieldScore},
-            risk_score = #{productVector.riskScore},
-            cost_score = #{productVector.costScore},
-            liquidity_score = #{productVector.liquidityScore},
-            complexity_score = #{productVector.complexityScore},
-            algo_code = #{productVector.algoCode}
-        WHERE id = #{productVector.id}
-      </when>
-      <when test="productVector.id.startsWith('F')">
-        UPDATE fund
-        SET yield_score = #{productVector.yieldScore},
-            risk_score = #{productVector.riskScore},
-            cost_score = #{productVector.costScore},
-            liquidity_score = #{productVector.liquidityScore},
-            complexity_score = #{productVector.complexityScore},
-            algo_code = #{productVector.algoCode}
-        WHERE id = #{productVector.id}
-      </when>
-      <when test="productVector.id.startsWith('A') or productVector.id.startsWith('C')">
-        UPDATE pension
-        SET yield_score = #{productVector.yieldScore},
-            risk_score = #{productVector.riskScore},
-            cost_score = #{productVector.costScore},
-            liquidity_score = #{productVector.liquidityScore},
-            complexity_score = #{productVector.complexityScore},
-            algo_code = #{productVector.algoCode}
-        WHERE id = #{productVector.id}
-      </when>
-      <when test="productVector.id.startsWith('X')">
-        UPDATE forex
-        SET yield_score = #{productVector.yieldScore},
-            risk_score = #{productVector.riskScore},
-            cost_score = #{productVector.costScore},
-            liquidity_score = #{productVector.liquidityScore},
-            complexity_score = #{productVector.complexityScore},
-            algo_code = #{productVector.algoCode}
-        WHERE id = #{productVector.id}
-      </when>
-    </choose>
-  </update>
 </mapper>
