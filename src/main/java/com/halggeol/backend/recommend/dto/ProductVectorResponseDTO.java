@@ -7,7 +7,6 @@ import lombok.Setter;
 @Setter
 public class ProductVectorResponseDTO {
     private String id;
-    private String name;
     private Double yieldScore;
     private Double riskScore;
     private Double costScore;

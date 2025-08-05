@@ -33,5 +33,4 @@ public class User {
     private Double costScore; // 비용 점수
     private Double liquidityScore; // 유동성 점수
     private Double complexityScore; // 복잡성 점수
-    private String insightCycle; // 인사이트 주기
 }
