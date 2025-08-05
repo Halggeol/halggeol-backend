@@ -1,6 +1,5 @@
 package com.halggeol.backend.recommend.service;
 
-import com.halggeol.backend.recommend.dto.ProductVectorResponseDTO;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendServiceImpl.Recommendation;
 import java.util.List;
