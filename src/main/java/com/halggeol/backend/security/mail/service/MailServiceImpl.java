@@ -2,7 +2,7 @@ package com.halggeol.backend.security.mail.service;
 
 import com.halggeol.backend.security.mail.domain.MailType;
 import com.halggeol.backend.security.mail.dto.MailDTO;
-import com.mashape.unirest.http.HttpResponse; // unirest v1.4.9
+import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -33,15 +33,15 @@ public class MailServiceImpl implements MailService {
     private String subject, body;
 
     public void sendMail(@Valid MailDTO mail) {
-        settingByMailType(mail.getMailType());
+        settingByMailType(mail.getMailType(), mail.getToken());
 
         try {
             HttpResponse<JsonNode> response = Unirest.post(url)
                 .basicAuth("api", apiKey)
-                .queryString("from", senderName + " <" + senderEmail + ">")
-                .queryString("to", mail.getEmail())
-                .queryString("subject", subject)
-                .queryString("text", body + mail.getToken())
+                .field("from", senderName + " <" + senderEmail + ">")
+                .field("to", mail.getEmail())
+                .field("subject", subject)
+                .field("html", body)
                 .asJson();
 
             int statusCode = response.getStatus();
@@ -58,16 +58,24 @@ public class MailServiceImpl implements MailService {
         }
     }
 
-    public void settingByMailType(MailType mailType) {
+    public void settingByMailType(MailType mailType, String token) {
         switch (mailType) {
             case SIGNUP:
                 subject = "Signup to Halggeol";
-                body = "/api/signup?token=";
+                body = "<p>아래 링크를 클릭하여 회원가입을 완료해주세요:</p>\n"
+                    + "<a href=\"http://localhost:3000/signup?token=" + token
+                    + "\">회원가입 링크</a>"
+                    + "\n(http://localhost:3000/signup?token="
+                    + token + ")";
                 break;
 
             case PASSWORD_RESET:
                 subject = "Password Reset for Halggeol";
-                body = "/api/password/reset?token=";
+                body = "<p>아래 링크를 클릭하여 비밀번호 재설정을 완료해주세요:</p>\n"
+                    + "<a href=\"http://localhost:3000/find/password/reset?token=" + token
+                    + "\">비밀번호 재설정 링크</a>"
+                    + "\n(http://localhost:3000/find/password/reset?token="
+                    + token + ")";
                 break;
 
             default:
