@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.halggeol.backend.insight.mapper.InsightMapper">
+
+    <select id="getTop3MissedProducts" resultType="com.halggeol.backend.insight.dto.InsightDTO">
+        SELECT *
+        FROM (
+        <!-- saving -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'saving' AS type,
+        tmp.miss_amount
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN savings p ON tmp.product_id = p.id
+        WHERE MONTH(tmp.rec_date) = #{month}
+        AND YEAR(tmp.rec_date) = #{year}
+
+        UNION
+
+        <!-- fund -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'fund' AS type,
+        tmp.miss_amount
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN fund p ON tmp.product_id = p.id
+        WHERE MONTH(tmp.rec_date) = #{month}
+        AND YEAR(tmp.rec_date) = #{year}
+
+        UNION
+
+        <!-- pension -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'pension' AS type,
+        tmp.miss_amount
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN pension p ON tmp.product_id = p.id
+        WHERE MONTH(tmp.rec_date) = #{month}
+        AND YEAR(tmp.rec_date) = #{year}
+
+        UNION
+
+        <!-- deposit -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'deposit' AS type,
+        tmp.miss_amount
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN deposit p ON tmp.product_id = p.id
+        WHERE MONTH(tmp.rec_date) = #{month}
+        AND YEAR(tmp.rec_date) = #{year}
+
+        UNION
+
+        <!-- forex -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'forex' AS type,
+        tmp.miss_amount
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN forex p ON tmp.product_id = p.id
+        WHERE MONTH(tmp.rec_date) = #{month}
+        AND YEAR(tmp.rec_date) = #{year}
+
+        ) all_products
+        ORDER BY miss_amount DESC
+        LIMIT 3
+    </select>
+
+
+    <select id="getFundInsight" resultType="com.halggeol.backend.insight.dto.InsightDTO">
+        SELECT
+            p.id AS product_id,
+            p.name,
+            p.company AS company,
+            'fund' AS type,
+            tmp.miss_amount
+        FROM (
+                 SELECT product1_id AS product_id, product1_status AS status, product1_miss_amount AS miss_amount FROM rec_item
+                 UNION ALL
+                 SELECT product2_id, product2_status, product2_miss_amount FROM rec_item
+                 UNION ALL
+                 SELECT product3_id, product3_status, product3_miss_amount FROM rec_item
+                 UNION ALL
+                 SELECT product4_id, product4_status, product4_miss_amount FROM rec_item
+                 UNION ALL
+                 SELECT product5_id, product5_status, product5_miss_amount FROM rec_item
+             ) tmp
+                 JOIN fund p ON p.id = tmp.product_id
+        WHERE tmp.status = '회고'
+        ORDER BY tmp.miss_amount DESC
+    </select>
+
+
+    <select id="getAggressivePensionInsight" resultType="com.halggeol.backend.insight.dto.InsightDTO">
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company AS company,
+        'pension' AS type,
+        tmp.miss_amount
+        FROM (
+        SELECT product1_id AS product_id, product1_status AS status, product1_miss_amount AS miss_amount FROM rec_item
+        UNION ALL
+        SELECT product2_id, product2_status, product2_miss_amount FROM rec_item
+        UNION ALL
+        SELECT product3_id, product3_status, product3_miss_amount FROM rec_item
+        UNION ALL
+        SELECT product4_id, product4_status, product4_miss_amount FROM rec_item
+        UNION ALL
+        SELECT product5_id, product5_status, product5_miss_amount FROM rec_item
+        ) tmp
+        JOIN pension p ON p.id = tmp.product_id
+        WHERE tmp.status = '회고'
+        AND p.id LIKE 'A%'  <!-- 공격형 연금만 필터링 -->
+        ORDER BY tmp.miss_amount DESC
+    </select>
+
+<!--    &lt;!&ndash; 외환 비교  &ndash;&gt;-->
+<!--    <select id="getForexRegretItems" resultType="com.halggeol.backend.insight.dto.RegretItemDTO" parameterType="long">-->
+<!--        SELECT tmp.round, tmp.product_id, tmp.rec_date, f.currency-->
+<!--        FROM (-->
+<!--                 SELECT round, user_id, product1_id AS product_id, product1_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT round, user_id, product2_id AS product_id, product2_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT round, user_id, product3_id AS product_id, product3_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT round, user_id, product4_id AS product_id, product4_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT round, user_id, product5_id AS product_id, product5_status AS status, rec_date FROM rec_item-->
+<!--             ) tmp-->
+<!--                 JOIN forex f ON tmp.product_id = f.id-->
+<!--        WHERE tmp.status = '회고'-->
+<!--          AND tmp.product_id IN (SELECT id FROM forex)-->
+<!--          AND tmp.user_id = #{userId}-->
+<!--    </select>-->
+
+    <!--정확한 날짜의 환율만 있을 때 사용-->
+    <select id="getForexRateOnDate" resultType="java.math.BigDecimal">
+        SELECT price
+        FROM forex_track
+        WHERE product_id = #{productId}
+          AND tracking_date = #{recDate}
+          AND currency = #{currency}
+    </select>
+
+    <!-- 정확한 날짜의 데이터가 없을 때 가장 가까운 날짜 환율 사용 -->
+    <select id="getLatestForexRateBeforeDate" resultType="java.math.BigDecimal">
+        SELECT price
+        FROM forex_track
+        WHERE product_id = #{productId}
+        AND currency = #{currency}
+        AND tracking_date &lt;= #{recDate}
+        ORDER BY tracking_date DESC
+        LIMIT 1
+    </select>
+
+    <select id="getForexCurrencyByProductId" resultType="String">
+        SELECT currency FROM forex WHERE id = #{productId}
+    </select>
+
+    <select id="getForexProductNameById" resultType="String">
+        SELECT name FROM forex WHERE id = #{productId}
+    </select>
+
+
+<!--    <select id="getForexRegretItemsByDate" resultType="com.halggeol.backend.insight.dto.RegretItemDTO" parameterType="map">-->
+<!--        SELECT tmp.rec_id, tmp.product_id, tmp.rec_date, f.currency-->
+<!--        FROM (-->
+<!--                 SELECT rec_id, user_id, product1_id AS product_id, product1_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT rec_id, user_id, product2_id AS product_id, product2_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT rec_id, user_id, product3_id AS product_id, product3_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT rec_id, user_id, product4_id AS product_id, product4_status AS status, rec_date FROM rec_item-->
+<!--                 UNION ALL-->
+<!--                 SELECT rec_id, user_id, product5_id AS product_id, product5_status AS status, rec_date FROM rec_item-->
+<!--             ) tmp-->
+<!--                 JOIN forex f ON tmp.product_id = f.id-->
+<!--        WHERE tmp.status = '회고'-->
+<!--          AND tmp.product_id IN (SELECT id FROM forex)-->
+<!--          AND tmp.rec_date = #{date}-->
+<!--          AND tmp.user_id = #{userId}-->
+<!--    </select>-->
+<!--    <select id="getForexCompareListByUserId" resultType="com.halggeol.backend.insight.dto.ForexCompareDTO"></select>-->
+
+</mapper>

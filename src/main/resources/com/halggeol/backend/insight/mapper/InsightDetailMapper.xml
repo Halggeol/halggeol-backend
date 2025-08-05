@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.halggeol.backend.insight.mapper.InsightDetailMapper">
+
+  <sql id="recItemJoin">
+    LEFT JOIN (SELECT rec_date, anlz_date, user_id, product_id, survey_result, regret_score, miss_amount
+                      FROM (SELECT rec_date,
+                                   anlz_date,
+                                   user_id,
+                                   product1_id           AS product_id,
+                                   product1_survey       AS survey_result,
+                                   product1_regret_score AS regret_score,
+                                   product1_miss_amount  AS miss_amount
+                            FROM rec_item
+                            WHERE user_id = #{userId} AND round = #{round}
+    UNION ALL
+    SELECT rec_date,
+    anlz_date,
+    user_id,
+    product2_id,
+    product2_survey,
+    product2_regret_score,
+    product2_miss_amount
+    FROM rec_item
+    WHERE user_id = #{userId} AND round = #{round}
+    UNION ALL
+    SELECT rec_date,
+    anlz_date,
+    user_id,
+    product3_id,
+    product3_survey,
+    product3_regret_score,
+    product3_miss_amount
+    FROM rec_item
+    WHERE user_id = #{userId} AND round = #{round}
+    UNION ALL
+    SELECT rec_date,
+    anlz_date,
+    user_id,
+    product4_id,
+    product4_survey,
+    product4_regret_score,
+    product4_miss_amount
+    FROM rec_item
+    WHERE user_id = #{userId} AND round = #{round}
+    UNION ALL
+    SELECT rec_date,
+    anlz_date,
+    user_id,
+    product5_id,
+    product5_survey,
+    product5_regret_score,
+    product5_miss_amount
+    FROM rec_item
+    WHERE user_id = #{userId} AND round = #{round}) rec
+    WHERE product_id = #{productId}) ri ON p.id = ri.product_id
+    LEFT JOIN personalized_description d ON d.product_id = p.id
+    LEFT JOIN users u ON u.id = ri.user_id
+    WHERE p.id = #{productId} AND ri.user_id = #{userId}
+  </sql>
+  <!--  depositInfo  -->
+  <select id="getDepositInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
+    SELECT p.id,
+           p.prime_rate                                                    AS interestRate,
+           p.min_limit,
+           p.max_limit,
+           CASE WHEN p.rate_type = '복리' THEN TRUE ELSE FALSE END           AS isCompound,
+           ri.rec_date, ri.anlz_date,
+           CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE
+             WHEN ri.survey_result = '관심이 없어서' THEN 1
+             WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
+             WHEN ri.survey_result = '상품을 신뢰할 수 없어서' THEN 3
+             WHEN ri.survey_result = '가입 절차가 번거로워서' THEN 4
+             END                                                           AS regrettedReason,
+           ri.regret_score,
+           ri.miss_amount,
+           d.description,
+           d.advantage,
+           d.disadvantage,
+           u.name
+    FROM deposit p
+    <include refid="recItemJoin"/>
+  </select>
+  <!--  savingsInfo  -->
+  <select id="getSavingsInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
+    SELECT p.id,
+           p.prime_rate                                                    AS interestRate,
+           p.min_limit,
+           p.max_limit,
+           CASE WHEN p.rate_type = '복리' THEN TRUE ELSE FALSE END           AS isCompound,
+           ri.rec_date, ri.anlz_date,
+           CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE
+             WHEN ri.survey_result = '관심이 없어서' THEN 1
+             WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
+             WHEN ri.survey_result = '상품을 신뢰할 수 없어서' THEN 3
+             WHEN ri.survey_result = '가입 절차가 번거로워서' THEN 4
+             END                                                           AS regrettedReason,
+           ri.regret_score,
+           ri.miss_amount,
+           d.description,
+           d.advantage,
+           d.disadvantage,
+           u.name
+    FROM savings p
+    <include refid="recItemJoin"/>
+  </select>
+  <!--  forexInfo  -->
+  <select id="getForexInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
+    SELECT p.id,
+           p.rate                                                          AS interestRate,
+           p.min_limit,
+           p.max_limit,
+           CASE WHEN p.rate_type = '복리' THEN TRUE ELSE FALSE END           AS isCompound,
+           p.currency,
+           ri.rec_date, ri.anlz_date,
+           CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE
+             WHEN ri.survey_result = '관심이 없어서' THEN 1
+             WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
+             WHEN ri.survey_result = '상품을 신뢰할 수 없어서' THEN 3
+             WHEN ri.survey_result = '가입 절차가 번거로워서' THEN 4
+             END                                                           AS regrettedReason,
+           ri.regret_score, ri.miss_amount,
+           d.description,
+           d.advantage,
+           d.disadvantage,
+           u.name
+    FROM forex p
+    <include refid="recItemJoin"/>
+  </select>
+  <!--  conservativePensionInfo  -->
+  <select id="getConservativePensionInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
+    SELECT p.id,
+           p.rate                                                          AS interestRate,
+           p.min_limit,
+           p.max_limit,
+           CASE WHEN p.rate_type = '복리' THEN TRUE ELSE FALSE END           AS isCompound,
+           p.save_term,
+           ri.rec_date, ri.anlz_date,
+           CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE
+             WHEN ri.survey_result = '관심이 없어서' THEN 1
+             WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
+             WHEN ri.survey_result = '상품을 신뢰할 수 없어서' THEN 3
+             WHEN ri.survey_result = '가입 절차가 번거로워서' THEN 4
+             END                                                           AS regrettedReason,
+           ri.regret_score,
+           ri.miss_amount,
+           d.description,
+           d.advantage,
+           d.disadvantage,
+           u.name
+    FROM pension p
+    <include refid="recItemJoin"/>
+  </select>
+  <!--  aggressivePensionInfo  -->
+  <select id="getAggressivePensionInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
+    SELECT p.id,
+           p.rate                                                          AS interestRate,
+           p.min_limit,
+           p.max_limit,
+           p.TER,
+           CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
+           ri.rec_date, ri.anlz_date,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE
+             WHEN ri.survey_result = '관심이 없어서' THEN 1
+             WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
+             WHEN ri.survey_result = '상품을 신뢰할 수 없어서' THEN 3
+             WHEN ri.survey_result = '가입 절차가 번거로워서' THEN 4
+             END                                                           AS regrettedReason,
+           ri.regret_score,
+           ri.miss_amount,
+           d.description,
+           d.advantage,
+           d.disadvantage,
+           u.name
+    FROM pension p
+    <include refid="recItemJoin"/>
+  </select>
+  <!--  fundInfo  -->
+  <select id="getFundInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
+    SELECT p.id,
+           p.rate                                                          AS interestRate,
+           p.min_limit,
+           p.TER,
+           p.upfront_fee,
+           ri.regret_score,
+           ri.miss_amount,
+           CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
+           ri.rec_date, ri.anlz_date,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE
+             WHEN ri.survey_result = '관심이 없어서' THEN 1
+             WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
+             WHEN ri.survey_result = '상품을 신뢰할 수 없어서' THEN 3
+             WHEN ri.survey_result = '가입 절차가 번거로워서' THEN 4
+             END                                                           AS regrettedReason,
+           d.description,
+           d.advantage,
+           d.disadvantage
+    FROM fund p
+    <include refid="recItemJoin"/>
+  </select>
+  <!--  Tracking  -->
+  <select id="getProfitSimulation"
+    resultType="com.halggeol.backend.insight.dto.ProfitSimulationDTO">
+    <choose>
+      <when test="type == 'aggressive'">
+        SELECT
+        t.tracking_date AS date, t.profit,
+        m.asset,
+        NULL AS lostAsset, NULL AS lostInvestment
+        FROM aggressive_pension_track t
+        LEFT JOIN mydata m ON m.collect_date = t.tracking_date AND m.user_id = #{userId}
+        WHERE t.product_id = #{productId} AND t.tracking_date BETWEEN #{recDate} AND #{anlzDate}
+      </when>
+      <when test="type == 'fund'">
+        SELECT
+        t.tracking_date AS date, t.profit,
+        m.asset,
+        NULL AS lostAsset, NULL AS lostInvestment
+        FROM fund_track t
+        LEFT JOIN mydata m ON m.collect_date = t.tracking_date AND m.user_id = #{userId}
+        WHERE t.product_id = #{productId} AND t.tracking_date BETWEEN #{recDate} AND #{anlzDate}
+      </when>
+        <when test="type == 'conservative'">
+          SELECT m.collect_date AS date, m.asset,
+                 (SELECT p.rate FROM pension p WHERE p.id = #{productId}) AS profit,
+                 NULL AS lostAsset, NULL AS lostInvestment
+          FROM mydata m
+          WHERE m.user_id = #{userId} AND m.collect_date BETWEEN #{recDate} AND #{anlzDate}
+        </when>
+        <when test="type == 'savings'">
+          SELECT m.collect_date AS date, m.asset,
+                 (SELECT p.prime_rate FROM savings p WHERE p.id = #{productId}) AS profit,
+                 NULL AS lostAsset, NULL AS lostInvestment
+          FROM mydata m
+          WHERE m.user_id = #{userId} AND m.collect_date BETWEEN #{recDate} AND #{anlzDate}
+        </when>
+        <when test="type == 'deposit'">
+          SELECT m.collect_date AS date, m.asset,
+                 (SELECT p.prime_rate FROM deposit p WHERE p.id = #{productId}) AS profit,
+                 NULL AS lostAsset, NULL AS lostInvestment
+          FROM mydata m
+          WHERE m.user_id = #{userId} AND m.collect_date BETWEEN #{recDate} AND #{anlzDate}
+        </when>
+    </choose>
+  </select>
+
+  <update id="updateRegretSurvey" parameterType="map">
+    UPDATE rec_item
+    SET product1_survey = CASE
+                            WHEN product1_id = #{productId} AND user_id = #{userId}
+                              THEN #{surveyResult}
+                            ELSE product1_survey END,
+        product2_survey = CASE
+                            WHEN product2_id = #{productId} AND user_id = #{userId}
+                              THEN #{surveyResult}
+                            ELSE product2_survey END,
+        product3_survey = CASE
+                            WHEN product3_id = #{productId} AND user_id = #{userId}
+                              THEN #{surveyResult}
+                            ELSE product3_survey END,
+        product4_survey = CASE
+                            WHEN product4_id = #{productId} AND user_id = #{userId}
+                              THEN #{surveyResult}
+                            ELSE product4_survey END,
+        product5_survey = CASE
+                            WHEN product5_id = #{productId} AND user_id = #{userId}
+                              THEN #{surveyResult}
+                            ELSE product5_survey END
+    WHERE user_id = #{userId}
+      AND (
+      product1_id = #{productId} OR
+      product2_id = #{productId} OR
+      product3_id = #{productId} OR
+      product4_id = #{productId} OR
+      product5_id = #{productId}
+      );
+  </update>
+
+<!--  자산 가져오기  -->
+  <select id="getAsset" resultType="Long">
+    SELECT asset
+    FROM mydata
+    WHERE user_id = #{id} AND collect_date = #{date}
+  </select>
+  
+<!--  환율 가져오기  -->
+  <select id="getExchangeRate" resultType="BigDecimal">
+    SELECT price
+    FROM forex_track
+    WHERE tracking_date = #{date} AND currency = #{currency}
+    LIMIT 1
+  </select>
+
+</mapper>
