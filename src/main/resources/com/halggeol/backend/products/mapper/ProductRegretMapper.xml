@@ -12,58 +12,68 @@
     <result property="rate" column="rate"/>
   </resultMap>
   <select id="getRegretRanking" resultMap="regretRankingResponseDTOMap">
-    SELECT
-      d.id AS productId,
-      d.name,
-      d.company,
-      'deposit' AS type,
-      d.rate,
-      d.regret_cnt
-    FROM deposit d
+    (SELECT
+       d.id AS productId,
+       d.name,
+       d.company,
+       'deposit' AS type,
+       d.rate,
+       d.regret_cnt
+     FROM deposit d
+     ORDER BY d.regret_cnt DESC
+     LIMIT 5)
 
     UNION ALL
 
-    SELECT
-      s.id AS productId,
-      s.name,
-      s.company,
-      'savings' AS type,
-      s.rate,
-      s.regret_cnt
-    FROM savings s
+    (SELECT
+       s.id AS productId,
+       s.name,
+       s.company,
+       'savings' AS type,
+       s.rate,
+       s.regret_cnt
+     FROM savings s
+     ORDER BY s.regret_cnt DESC
+     LIMIT 5)
 
     UNION ALL
 
-    SELECT
-      p.id AS productId,
-      p.name,
-      p.company,
-      'pension' AS type,
-      p.rate,
-      p.regret_cnt
-    FROM pension p
+    (SELECT
+       p.id AS productId,
+       p.name,
+       p.company,
+       'pension' AS type,
+       p.rate,
+       p.regret_cnt
+     FROM pension p
+     ORDER BY p.regret_cnt DESC
+     LIMIT 5)
 
     UNION ALL
 
-    SELECT
-      f.id AS productId,
-      f.name,
-      f.company,
-      'fund' AS type,
-      f.rate,
-      f.regret_cnt
-    FROM fund f
+    (SELECT
+       f.id AS productId,
+       f.name,
+       f.company,
+       'fund' AS type,
+       f.rate,
+       f.regret_cnt
+     FROM fund f
+     ORDER BY f.regret_cnt DESC
+     LIMIT 5)
 
     UNION ALL
 
-    SELECT
-      fx.id AS productId,
-      fx.name,
-      fx.company,
-      'forex' AS type,
-      fx.rate,
-      fx.regret_cnt
-    FROM forex fx
+    (SELECT
+       fx.id AS productId,
+       fx.name,
+       fx.company,
+       'forex' AS type,
+       fx.rate,
+       fx.regret_cnt
+     FROM forex fx
+     ORDER BY fx.regret_cnt DESC
+     LIMIT 5)
 
     ORDER BY regret_cnt DESC
     LIMIT 5;
