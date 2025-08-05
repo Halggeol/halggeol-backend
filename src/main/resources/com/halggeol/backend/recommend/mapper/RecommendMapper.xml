@@ -232,6 +232,7 @@
   <select id="getProductVectors" resultMap="ProductVectorResponseDTOMap">
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
@@ -241,6 +242,7 @@
     union all
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
@@ -250,6 +252,7 @@
     union all
     SELECT
       id,
+      name,
       fund.yield_score,
       risk_score,
       cost_score,
@@ -259,6 +262,7 @@
     union all
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
@@ -268,6 +272,7 @@
     union all
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
