@@ -13,8 +13,6 @@ public interface RecommendService {
 
     public List<Recommendation> getSimilarProducts(String productId);
 
-//    public List<Recommendation> recommendProducts(String userId);
-
     public List<RecommendResponseDTO> getRecommendProducts(String userId);
 
     public void updateRecommendationByUserId(String userId);

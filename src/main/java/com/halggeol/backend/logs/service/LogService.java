@@ -27,7 +27,7 @@ public class LogService {
         logAction(log);
     }
 
-    public void logAction(UserActionLog log) {
+    private void logAction(UserActionLog log) {
         // 로그를 저장하는 메소드
         repository.save(log);
     }
