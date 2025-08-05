@@ -46,5 +46,5 @@ public interface InsightMapper {
 //                                                  @Param("date") LocalDate date);
 
     // userId로 모든 recId별 ForexCompareDTO 리스트 조회
-    List<ForexCompareDTO> getForexCompareListByUserId(@Param("userId") Long userId);
+//    List<ForexCompareDTO> getForexCompareListByUserId(@Param("userId") Long userId);
 }
