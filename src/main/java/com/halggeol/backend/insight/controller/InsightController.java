@@ -144,4 +144,11 @@ public class InsightController {
 
         return yesterday.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
+
+    //스케줄(자동)을 수동으로 open api 연결 해보기
+    @GetMapping("/fetch-exchange")
+    public ResponseEntity<String> fetchExchangeManually() {
+        insightService.fetchAndSaveExchangeRates();
+        return ResponseEntity.ok("환율 데이터 수동 저장 완료");
+    }
 }

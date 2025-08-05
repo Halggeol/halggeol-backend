@@ -13,6 +13,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,13 +45,15 @@ public class InsightServiceImpl implements InsightService {
     // SSL 인증서 문제 해결을 위한 메서드
     private static void disableSSLCertificateChecking() {
         try {
-            TrustManager[] trustAllCerts = new TrustManager[] {
+            TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
                         public X509Certificate[] getAcceptedIssuers() {
                             return null;
                         }
+
                         public void checkClientTrusted(X509Certificate[] certs, String authType) {
                         }
+
                         public void checkServerTrusted(X509Certificate[] certs, String authType) {
                         }
                     }
@@ -226,7 +229,9 @@ public class InsightServiceImpl implements InsightService {
 
         } finally {
             if (reader != null) {
-                try { reader.close(); } catch (IOException e) { /* 무시 */ }
+                try {
+                    reader.close();
+                } catch (IOException e) { /* 무시 */ }
             }
             if (connection != null) {
                 connection.disconnect();
@@ -518,5 +523,49 @@ public class InsightServiceImpl implements InsightService {
     public List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId) {
         return recommendService.getSimilarProducts(productId);
     }
+
+    //환율 OPEN API 스케줄러 코드
+    @Transactional
+    public void fetchAndSaveExchangeRates(String searchDate) {
+        List<ExchangeRateDTO> rates = getExchangeRates(searchDate);
+        if (rates.isEmpty()) {
+            System.err.println("[환율 저장 실패] API 데이터 없음: " + searchDate);
+            return;
+        }
+        for (ExchangeRateDTO dto : rates) {
+            try {
+                // curUnit에서 괄호와 그 안의 내용 제거 (예: "JPY(100)" -> "JPY")
+                String cleanedCurUnit = dto.getCurUnit().replaceAll("\\(.*\\)", "").trim();
+
+                // DB 존재 여부 확인할 때도 깨끗한 값 사용
+                boolean exists = insightMapper.existsExchangeRate(cleanedCurUnit, searchDate);
+
+                if (!exists) {
+                    // DTO의 curUnit을 깨끗한 값으로 변경 후 저장
+                    dto.setCurUnit(cleanedCurUnit);
+                    insightMapper.insertExchangeRate(dto);
+                }
+            } catch (Exception e) {
+                System.err.println("[환율 저장 오류] " + dto.getCurUnit() + ": " + e.getMessage());
+            }
+        }
+        System.out.println("[환율 저장 완료] " + searchDate + " (" + rates.size() + " 건)");
+    }
+
+        @Override
+    //오늘 날짜 기준으로 환율 데이터 조회하고 저장하는 기능
+    public void fetchAndSaveExchangeRates() {
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        fetchAndSaveExchangeRates(today); // 기존 메서드 재활용
+    }
+
+//    수동으로 환율 open api 호출해서 forex_track에 저장
+//    @Override
+//    public void fetchAndSaveExchangeRates() {
+//        String targetDate = LocalDate.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//        fetchAndSaveExchangeRates(targetDate);
+//    }
+
+
 }
 

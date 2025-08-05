@@ -1,5 +1,6 @@
 package com.halggeol.backend.insight.mapper;
 
+import com.halggeol.backend.insight.dto.ExchangeRateDTO;
 import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
 import com.halggeol.backend.insight.dto.RegretItemDTO;
@@ -48,4 +49,12 @@ public interface InsightMapper {
 
     // userId로 모든 recId별 ForexCompareDTO 리스트 조회
     List<ForexCompareDTO> getForexCompareListByUserId(@Param("userId") Long userId);
+
+    //환율 OPEN API 스케줄러 코드 존재 여부 확인
+    boolean existsExchangeRate(@Param("curUnit") String curUnit,
+                               @Param("baseDate") String baseDate);
+
+    // 저장 INSERT, 환율 OPEN API 스케줄러 코드
+    void insertExchangeRate(ExchangeRateDTO dto);
+
 }

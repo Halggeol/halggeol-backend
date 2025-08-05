@@ -30,4 +30,8 @@ public interface InsightService {
 
     //유사도 측정
     List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId);
+
+    //스케줄러 수동
+    void fetchAndSaveExchangeRates();
+
 }

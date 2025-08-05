@@ -274,4 +274,20 @@
     </select>
     <select id="getForexCompareListByUserId" resultType="com.halggeol.backend.insight.dto.ForexCompareDTO"></select>
 
+
+    <!-- 환율 OPEN API 스케줄러 코드 삽입 전,후 중복 방지-->
+    <select id="existsExchangeRate" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM forex_track
+        WHERE currency = #{curUnit}
+          AND tracking_date = #{baseDate}
+    </select>
+
+    <!-- 스케줄러 후 삽입 -->
+    <insert id="insertExchangeRate" parameterType="com.halggeol.backend.insight.dto.ExchangeRateDTO">
+        INSERT INTO forex_track (currency, price, tracking_date)
+        VALUES (#{curUnit}, #{dealBasR}, #{baseDate})
+    </insert>
+
+
 </mapper>
