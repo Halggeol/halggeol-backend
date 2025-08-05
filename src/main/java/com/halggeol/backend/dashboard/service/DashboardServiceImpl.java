@@ -12,7 +12,6 @@ import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.user.mapper.UserMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,6 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "userDashboardDataCache", key = "#user.getUser().getId()") // 캐시 적용
     public DashboardResponseDTO getDashboardData(@AuthenticationPrincipal CustomUser user) {
         DashboardResponseDTO dashboardResponse = new DashboardResponseDTO();
 

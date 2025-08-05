@@ -9,13 +9,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.InnerField;
 import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.elasticsearch.annotations.MultiField;
 
 @Getter
 @Setter
 @Data
 @NoArgsConstructor
-@Setting(settingPath = "elasticsearch/settings/product-index-settings.json") // 애플리케이션 재시작 → 인덱스 생성됨
+//@Setting(settingPath = "elasticsearch/settings/product-index-settings.json") // 애플리케이션 재시작 → 인덱스 생성됨
 @Document(indexName = "products_index")
 public class ProductDocument { // Elasticsearch의 인덱스
 
@@ -25,7 +27,12 @@ public class ProductDocument { // Elasticsearch의 인덱스
     @Field(name = "productid", type = FieldType.Keyword) // name 지정은 Elasticsearch 필드명과 맞추기 위함
     private String productId;
 
-    @Field(type = FieldType.Text, analyzer = "korean") // name 필드에 korean analyzer 적용
+    @MultiField(
+        mainField = @Field(type = FieldType.Text, analyzer = "korean"),
+        otherFields = {
+            @InnerField(suffix = "ngram", type = FieldType.Text, analyzer = "korean_ngram")
+        }
+    )
     private String name;
 
     @Field(type = FieldType.Keyword)
