@@ -75,7 +75,7 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 /7 * *")
+    @Scheduled(cron = "0 0 0 1 * *")
     public void updateRecommendation() {
         System.out.println("Updating recommendations for all users...");
         List<UserVectorResponseDTO> userVectors = mapper.getUserVectors(); //유저 벡터 리스트를 가져옴
