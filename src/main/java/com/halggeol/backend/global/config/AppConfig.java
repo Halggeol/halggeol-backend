@@ -25,9 +25,23 @@ import org.springframework.web.bind.annotation.RestController;
 @Configuration
 @EnableScheduling
 @PropertySource({"classpath:/application.properties"})
-@MapperScan("com.halggeol.backend.**.mapper")
+@MapperScan({
+    "com.halggeol.backend.**.mapper",
+    // TODO: 도메인 고정 시 빠른 빌드를 위해 Scan 범위를 좁히기
+//    "com.halggeol.backend.mapper",
+//    "com.halggeol.backend.user.mapper",
+//    "com.halggeol.backend.dashboard.mapper",
+////    "com.halggeol.backend.products.mapper",
+//    "com.halggeol.backend.products.**.mapper",
+//    "com.halggeol.backend.recommend.mapper",
+//    "com.halggeol.backend.scrap.mapper",
+//    "com.halggeol.backend.security.mapper",
+//    "com.halggeol.backend.survey.mapper",
+////    "com.halggeol.backend.insight.mapper",
+})
 @ComponentScan(
-        basePackages = {"com.halggeol.backend", "com.halggeol.backend.user.service", "com.halggeol.backend.security", "com.halggeol.backend.products.deposit.controller","com.halggeol.backend.insight"},
+    // TODO: 도메인 고정 시 빠른 빌드를 위해 Scan 범위를 좁히기
+    basePackages = {"com.halggeol.backend", "com.halggeol.backend.user.service", "com.halggeol.backend.security", "com.halggeol.backend.products.deposit.controller","com.halggeol.backend.insight"},
     excludeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Controller.class),
         @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class)
