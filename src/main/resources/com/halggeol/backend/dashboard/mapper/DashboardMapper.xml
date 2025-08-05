@@ -81,4 +81,27 @@
     GROUP BY tp.product_type
     ORDER BY tp.product_type ASC;
     </select>
+
+  <select id="getFeedbackRatioByUserId" resultType="java.lang.Double">
+    SELECT
+      CASE 
+        WHEN total_products = 0 THEN 0.0
+        ELSE CAST(feedback_products AS DECIMAL(10,2)) / CAST(total_products AS DECIMAL(10,2))
+      END AS feedback_ratio
+    FROM (
+      SELECT
+        SUM(CASE WHEN product1_status = '회고' THEN 1 ELSE 0 END +
+            CASE WHEN product2_status = '회고' THEN 1 ELSE 0 END +
+            CASE WHEN product3_status = '회고' THEN 1 ELSE 0 END +
+            CASE WHEN product4_status = '회고' THEN 1 ELSE 0 END +
+            CASE WHEN product5_status = '회고' THEN 1 ELSE 0 END) AS feedback_products,
+        SUM(CASE WHEN product1_status IS NOT NULL THEN 1 ELSE 0 END +
+            CASE WHEN product2_status IS NOT NULL THEN 1 ELSE 0 END +
+            CASE WHEN product3_status IS NOT NULL THEN 1 ELSE 0 END +
+            CASE WHEN product4_status IS NOT NULL THEN 1 ELSE 0 END +
+            CASE WHEN product5_status IS NOT NULL THEN 1 ELSE 0 END) AS total_products
+      FROM rec_item
+      WHERE user_id = #{userId}
+    ) AS feedback_stats;
+  </select>
 </mapper>

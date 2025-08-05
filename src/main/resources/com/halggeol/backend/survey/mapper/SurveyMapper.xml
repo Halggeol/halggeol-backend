@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.halggeol.backend.survey.mapper.SurveyMapper">
+
+  <update id="updateKnowledgeByEmail">
+    UPDATE users SET user_klg = #{userKlg} WHERE email = #{email}
+  </update>
+
+  <update id="updateTendencyByEmail">
+    UPDATE users
+    SET risk = #{risk},
+      yield_score = #{yieldScore},
+      risk_score = #{riskScore},
+      cost_score = #{costScore},
+      liquidity_score = #{liquidityScore},
+      complexity_score = #{complexityScore}
+    WHERE email = #{email}
+  </update>
+
+</mapper>

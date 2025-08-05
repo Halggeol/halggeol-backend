@@ -1,16 +1,18 @@
 package com.halggeol.backend.insight.controller;
 
 import com.halggeol.backend.insight.dto.ExchangeRateDTO;
-import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
+import com.halggeol.backend.insight.dto.InsightDetailResponseDTO;
+import com.halggeol.backend.insight.dto.RegretSurveyRequestDTO;
+import com.halggeol.backend.insight.service.InsightDetailService;
 import com.halggeol.backend.insight.service.InsightService;
-import com.halggeol.backend.recommend.service.RecommendServiceImpl;
+import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -22,6 +24,7 @@ import java.util.*;
 public class InsightController {
 
     private final InsightService insightService;
+    private final InsightDetailService insightDetailService;
 
     @GetMapping
     public List<InsightDTO> getInsightList(
@@ -41,6 +44,36 @@ public class InsightController {
         } else {
             throw new IllegalArgumentException("잘못된 요청입니다. 쿼리 파라미터를 확인하세요.");
         }
+    }
+
+    @GetMapping("/details")
+    public ResponseEntity<?> getInsightDetail(
+        @RequestParam Integer round,
+        @RequestParam String productId,
+        @AuthenticationPrincipal CustomUser user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            InsightDetailResponseDTO response = insightDetailService.getInsightDetail(round, productId, user);
+            if (response == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/details")
+    public ResponseEntity<Void> updateRegretSurvey(
+        @AuthenticationPrincipal CustomUser user,
+        @RequestBody RegretSurveyRequestDTO request) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        insightDetailService.updateRegretSurvey(user, request);
+        return ResponseEntity.ok().build();
     }
 
     // api/insight/exchange-rate?date=2025-07-29 (특정 날짜 조회) , /api/insight/exchange-rate (date 파라미터 없으면 오늘 날짜 기준)
@@ -83,29 +116,29 @@ public class InsightController {
         }
     }
 
-    @GetMapping("/compare-forex")
-    public List<ForexCompareDTO> compareForexByUser(
-            @RequestParam Long userId,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+//    @GetMapping("/compare-forex")
+//    public List<ForexCompareDTO> compareForexByUser(
+//            @RequestParam Long userId,
+//            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+//
+//        if (date != null) {
+//            return insightService.compareForexRegretItems(userId, date);
+//        } else {
+//            return insightService.getUserForexCompareList(userId);
+//        }
+//    }
 
-        if (date != null) {
-            return insightService.compareForexRegretItems(userId, date);
-        } else {
-            return insightService.getUserForexCompareList(userId);
-        }
-    }
-
-    @GetMapping("/compare-forex/grouped")
-    public Map<Long, List<ForexCompareDTO>> compareForexGrouped(
-            @RequestParam Long userId) {
-        return insightService.getUserForexCompareGrouped(userId);
-    }
+//    @GetMapping("/compare-forex/grouped")
+//    public Map<Long, List<ForexCompareDTO>> compareForexGrouped(
+//            @RequestParam Long userId) {
+//        return insightService.getUserForexCompareGrouped(userId);
+//    }
 
     //유사도 측정
-    @GetMapping("/similar-products")
-    public List<RecommendServiceImpl.Recommendation> getSimilarProducts(@RequestParam String productId) {
-        return insightService.getSimilarProductsForInsight(productId);
-    }
+//    @GetMapping("/similar-products")
+//    public List<RecommendServiceImpl.Recommendation> getSimilarProducts(@RequestParam String productId) {
+//        return insightService.getSimilarProductsForInsight(productId);
+//    }
     /**
      * 사용 가능한 환율 데이터 날짜 찾기 (컨트롤러용 헬퍼 메서드)
      */

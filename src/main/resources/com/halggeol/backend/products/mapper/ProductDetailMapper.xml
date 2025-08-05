@@ -17,8 +17,8 @@
     <result property="joinMember" column="d_join_member"/>
     <result property="joinDeny" column="d_join_deny"/>
     <result property="bonusCondition" column="d_bonus_condition"/>
-    <result property="saveTerm" column="d_save_term"/>
-    <result property="minimumCost" column="d_minimum_cost"/>
+    <result property="rateType" column="d_rate_type"/>
+    <result property="minLimit" column="d_min_limit"/>
     <result property="company" column="d_company"/>
     <result property="score" column="d_score"/>
     <result property="risk" column="d_risk"/>
@@ -28,7 +28,11 @@
     <result property="scrapCnt" column="d_scrap_cnt"/>
     <result property="regretCnt" column="d_regret_cnt"/>
 
-    <result property="matchScore" column="pd_match_score"/>
+    <result property="minSaveTerm" column="d_min_save_term"/>
+    <result property="maxSaveTerm" column="d_max_save_term"/>
+
+    <result property="description" column="d_description"/>
+
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
     <result property="isScraped" column="is_scraped"/>
@@ -46,8 +50,8 @@
       d.join_member AS d_join_member,
       d.join_deny AS d_join_deny,
       d.bonus_condition AS d_bonus_condition,
-      d.save_term AS d_save_term,
-      d.minimum_cost AS d_minimum_cost,
+      d.rate_type AS d_rate_type,
+      d.min_limit AS d_min_limit,
       d.company AS d_company,
       d.score AS d_score,
       d.risk AS d_risk,
@@ -56,9 +60,12 @@
       d.view_cnt AS d_view_cnt,
       d.scrap_cnt AS d_scrap_cnt,
       d.regret_cnt AS d_regret_cnt,
-      d.algo_code AS d_algo_code,
 
-      pd.match_score AS pd_match_score,
+      d.min_save_term AS d_min_save_term,
+      d.max_save_term AS d_max_save_term,
+
+      d.description AS d_description,
+
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
@@ -82,11 +89,11 @@
     <result property="primeRate" column="s_prime_rate"/>
     <result property="joinWay" column="s_join_way"/>
     <result property="endDate" column="s_end_date"/>
+    <result property="minLimit" column="s_min_limit"/>
     <result property="maxLimit" column="s_max_limit"/>
     <result property="joinMember" column="s_join_member"/>
     <result property="joinDeny" column="s_join_deny"/>
     <result property="bonusCondition" column="s_bonus_condition"/>
-    <result property="saveTerm" column="s_save_term"/>
     <result property="rateType" column="s_rate_type"/>
     <result property="saveType" column="s_save_type"/>
     <result property="company" column="s_company"/>
@@ -97,7 +104,12 @@
     <result property="viewCnt" column="s_view_cnt"/>
     <result property="scrapCnt" column="s_scrap_cnt"/>
     <result property="regretCnt" column="s_regret_cnt"/>
-    <result property="matchScore" column="pd_match_score"/>
+
+    <result property="minSaveTerm" column="s_min_save_term"/>
+    <result property="maxSaveTerm" column="s_max_save_term"/>
+
+    <result property="description" column="s_description"/>
+
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
     <result property="isScraped" column="is_scraped"/>
@@ -110,11 +122,11 @@
       s.prime_rate AS s_prime_rate,
       s.join_way AS s_join_way,
       s.end_date AS s_end_date,
+      s.min_limit AS s_min_limit,
       s.max_limit AS s_max_limit,
       s.join_member AS s_join_member,
       s.join_deny AS s_join_deny,
       s.bonus_condition AS s_bonus_condition,
-      s.save_term AS s_save_term,
       s.rate_type AS s_rate_type,
       s.save_type AS s_save_type,
       s.company AS s_company,
@@ -126,7 +138,11 @@
       s.scrap_cnt AS s_scrap_cnt,
       s.regret_cnt AS s_regret_cnt,
 
-      pd.match_score AS pd_match_score,
+      s.min_save_term AS s_min_save_term,
+      s.max_save_term AS s_max_save_term,
+
+      s.description AS s_description,
+
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
@@ -156,7 +172,7 @@
     <result property="investmentWarningGrade" column="f_investment_warning_grade"/>
     <result property="upfrontFee" column="f_upfront_fee"/>
     <result property="managementFee" column="f_management_fee"/>
-    <result property="minimumCost" column="f_minimum_cost"/>
+    <result property="minLimit" column="f_min_limit"/>
     <result property="target" column="f_target"/>
     <result property="investmentType" column="f_investment_type"/>
     <result property="company" column="f_company"/>
@@ -168,7 +184,8 @@
     <result property="scrapCnt" column="f_scrap_cnt"/>
     <result property="regretCnt" column="f_regret_cnt"/>
 
-    <result property="matchScore" column="pd_match_score"/>
+    <result property="description" column="f_description"/>
+
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
     <result property="isScraped" column="is_scraped"/>
@@ -187,7 +204,7 @@
       f.investment_warning_grade AS f_investment_warning_grade,
       f.upfront_fee AS f_upfront_fee,
       f.management_fee AS f_management_fee,
-      f.minimum_cost AS f_minimum_cost,
+      f.min_limit AS f_min_limit,
       f.target AS f_target,
       f.investment_type AS f_investment_type,
       f.company AS f_company,
@@ -199,7 +216,8 @@
       f.scrap_cnt AS f_scrap_cnt,
       f.regret_cnt AS f_regret_cnt,
 
-      pd.match_score AS pd_match_score,
+      f.description AS f_description,
+
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
@@ -217,56 +235,69 @@
 
   <!-- 외화 -->
   <resultMap id="forexDetailResponseDTOMap" type="com.halggeol.backend.products.dto.ForexDetailResponseDTO">
-    <id property="id" column="f_id"/>
-    <result property="name" column="f_name"/>
-    <result property="rate" column="f_rate"/>
-    <result property="description" column="f_description"/>
-    <result property="currency" column="f_currency"/>
-    <result property="regFund" column="f_reg_fund"/>
-    <result property="regLimitDate" column="f_reg_limit_date"/>
-    <result property="autoRenew" column="f_auto_renew"/>
-    <result property="extraDeposit" column="f_extra_deposit"/>
-    <result property="rateGiveWay" column="f_rate_give_way"/>
-    <result property="taxRefund" column="f_tax_refund"/>
-    <result property="protect" column="f_protect"/>
-    <result property="company" column="f_company"/>
-    <result property="score" column="f_score"/>
-    <result property="risk" column="f_risk"/>
-    <result property="regLink" column="f_reg_link"/>
-    <result property="caution" column="f_caution"/>
-    <result property="viewCnt" column="f_view_cnt"/>
-    <result property="scrapCnt" column="f_scrap_cnt"/>
-    <result property="regretCnt" column="f_regret_cnt"/>
+    <id property="id" column="fx_id"/>
+    <result property="name" column="fx_name"/>
+    <result property="rate" column="fx_rate"/>
+    <result property="description" column="fx_description"/>
+    <result property="currency" column="fx_currency"/>
 
-    <result property="matchScore" column="pd_match_score"/>
+    <result property="minLimit" column="fx_min_limit"/>
+    <result property="maxLimit" column="fx_max_limit"/>
+
+    <result property="regLimitDate" column="fx_reg_limit_date"/>
+    <result property="autoRenew" column="fx_auto_renew"/>
+    <result property="extraDeposit" column="fx_extra_deposit"/>
+    <result property="rateGiveWay" column="fx_rate_give_way"/>
+    <result property="taxRefund" column="fx_tax_refund"/>
+    <result property="protect" column="fx_protect"/>
+    <result property="company" column="fx_company"/>
+    <result property="score" column="fx_score"/>
+    <result property="risk" column="fx_risk"/>
+    <result property="regLink" column="fx_reg_link"/>
+    <result property="caution" column="fx_caution"/>
+    <result property="viewCnt" column="fx_view_cnt"/>
+    <result property="scrapCnt" column="fx_scrap_cnt"/>
+    <result property="regretCnt" column="fx_regret_cnt"/>
+
+    <result property="rateType" column="fx_rate_type"/>
+    <result property="minSaveTerm" column="fx_min_save_term"/>
+    <result property="maxSaveTerm" column="fx_max_save_term"/>
+
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
     <result property="isScraped" column="is_scraped"/>
   </resultMap>
   <select id="selectForexDetailById" resultMap="forexDetailResponseDTOMap">
     SELECT
-      fx.id AS f_id,
-      fx.name AS f_name,
-      fx.rate AS f_rate,
-      fx.description AS f_description,
-      fx.currency AS f_currency,
-      fx.reg_fund AS f_reg_fund,
-      fx.reg_limit_date AS f_reg_limit_date,
-      fx.auto_renew AS f_auto_renew,
-      fx.extra_deposit AS f_extra_deposit,
-      fx.rate_give_way AS f_rate_give_way,
-      fx.tax_refund AS f_tax_refund,
-      fx.protect AS f_protect,
-      fx.company AS f_company,
-      fx.score AS f_score,
-      fx.risk AS f_risk,
-      fx.reg_link AS f_reg_link,
-      fx.caution AS f_caution,
-      fx.view_cnt AS f_view_cnt,
-      fx.scrap_cnt AS f_scrap_cnt,
-      fx.regret_cnt AS f_regret_cnt,
+      fx.id AS fx_id,
+      fx.name AS fx_name,
+      fx.rate AS fx_rate,
 
-      pd.match_score AS pd_match_score,
+      fx.currency AS fx_currency,
+
+      fx.min_limit AS fx_min_limit,
+      fx.max_limit AS fx_max_limit,
+
+      fx.reg_limit_date AS fx_reg_limit_date,
+      fx.auto_renew AS fx_auto_renew,
+      fx.extra_deposit AS fx_extra_deposit,
+      fx.rate_give_way AS fx_rate_give_way,
+      fx.tax_refund AS fx_tax_refund,
+      fx.protect AS fx_protect,
+      fx.company AS fx_company,
+      fx.score AS fx_score,
+      fx.risk AS fx_risk,
+      fx.reg_link AS fx_reg_link,
+      fx.caution AS fx_caution,
+      fx.view_cnt AS fx_view_cnt,
+      fx.scrap_cnt AS fx_scrap_cnt,
+      fx.regret_cnt AS fx_regret_cnt,
+
+      fx.description AS fx_description,
+      fx.rate_type AS fx_rate_type,
+      fx.min_save_term AS fx_min_save_term,
+      fx.max_save_term AS fx_max_save_term,
+
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
@@ -287,10 +318,10 @@
     <id property="id" column="p_id"/>
     <result property="name" column="p_name"/>
     <result property="rate" column="p_rate"/>
+    <result property="pensionPriceMovement" column="p_pension_price_movement"/>
     <result property="pensionKind" column="p_pension_kind"/>
     <result property="pensionType" column="p_pension_type"/>
     <result property="minGuaranteeRate" column="p_min_guarantee_rate"/>
-    <result property="lastYearProfitRate" column="p_last_year_profit_rate"/>
     <result property="endDate" column="p_end_date"/>
     <result property="company" column="p_company"/>
     <result property="score" column="p_score"/>
@@ -300,7 +331,14 @@
     <result property="viewCnt" column="p_view_cnt"/>
     <result property="scrapCnt" column="p_scrap_cnt"/>
     <result property="regretCnt" column="p_regret_cnt"/>
-    <result property="matchScore" column="pd_match_score"/>
+
+    <result property="saveTerm" column="p_save_term"/>
+    <result property="rateType" column="p_rate_type"/>
+    <result property="minLimit" column="p_min_limit"/>
+    <result property="maxLimit" column="p_max_limit"/>
+
+    <result property="description" column="p_description"/>
+
     <result property="advantage" column="pd_advantage"/>
     <result property="disadvantage" column="pd_disadvantage"/>
     <result property="isScraped" column="is_scraped"/>
@@ -311,10 +349,10 @@
       pn.id AS p_id,
       pn.name AS p_name,
       pn.rate AS p_rate,
+      pn.pension_price_movement AS p_pension_price_movement,
       pn.pension_kind AS p_pension_kind,
       pn.pension_type AS p_pension_type,
       pn.min_guarantee_rate AS p_min_guarantee_rate,
-      pn.last_year_profit_rate AS p_last_year_profit_rate,
       pn.end_date AS p_end_date,
       pn.company AS p_company,
       pn.score AS p_score,
@@ -325,7 +363,13 @@
       pn.scrap_cnt AS p_scrap_cnt,
       pn.regret_cnt AS p_regret_cnt,
 
-      pd.match_score AS pd_match_score,
+      pn.save_term AS p_save_term,
+      pn.rate_type AS p_rate_type,
+      pn.min_limit AS p_min_limit,
+      pn.max_limit AS p_max_limit,
+
+      pn.description AS p_description,
+
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped

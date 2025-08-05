@@ -12,13 +12,13 @@ public class PensionDetailResponseDTO {
 
     private Double rate; // 금리
 
+    private Double pensionPriceMovement; // 연금 기준가 추이 (3개월)
+
     private String pensionKind; // 연금 종류
 
     private Boolean pensionType; // 금리 고정 여부
 
     private Double minGuaranteeRate; // 최저 보증 이율
-
-    private Double lastYearProfitRate; // 작년 수익률
 
     private Date endDate; // 공시 종료일
 
@@ -38,7 +38,16 @@ public class PensionDetailResponseDTO {
 
     private Long regretCnt; // 후회수
 
-    private String matchScore;      // ENUM('상','중','하')
+    private Integer saveTerm;
+    private String rateType; // 금리 유형
+    private Integer maxSaveTerm; // 최대 저축 기간
+    private Integer minSaveTerm; // 최소 저축 기간
+
+    private String description;
+
+    private Long minLimit; // 최소 비용
+    private Long maxLimit; // 최소 비용
+
     private String advantage;       // 장점 설명
     private String disadvantage;    // 단점 설명
     private Boolean isScraped;      // 스크랩 여부

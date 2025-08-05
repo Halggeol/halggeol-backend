@@ -1,15 +1,24 @@
 package com.halggeol.backend.insight.service;
 
 import com.halggeol.backend.insight.domain.ProductType;
+import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDetailResponseDTO;
 import com.halggeol.backend.insight.dto.ProfitCalculationInput;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
 import com.halggeol.backend.insight.dto.RegretSurveyRequestDTO;
 import com.halggeol.backend.insight.mapper.InsightDetailMapper;
-import com.halggeol.backend.insight.service.calculator.ProfitCalculator;
-import com.halggeol.backend.insight.service.calculator.RegretInsightCalculator;
+import com.halggeol.backend.insight.util.calculator.ProfitCalculator;
+import com.halggeol.backend.insight.util.calculator.RegretInsightCalculator;
+import com.halggeol.backend.insight.service.strategy.InsightDetailFactory;
+import com.halggeol.backend.insight.service.strategy.InsightDetailStrategy;
+import com.halggeol.backend.recommend.service.RecommendService;
+import com.halggeol.backend.recommend.service.RecommendServiceImpl.Recommendation;
 import com.halggeol.backend.security.domain.CustomUser;
-import java.util.Collections;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,21 +33,36 @@ import org.springframework.transaction.annotation.Transactional;
 public class InsightDetailServiceImpl implements InsightDetailService {
 
     private final InsightDetailMapper mapper;
+    private final RecommendService recommendService;
+    private final InsightDetailFactory factory;
 
     @Override
     @Transactional(readOnly = true)
     public InsightDetailResponseDTO getInsightDetail(Integer round, String productId, CustomUser user) {
         int userId = user.getUser().getId();
-        InsightDetailResponseDTO insightResponse = fetchProductInfoByType(round, productId, userId);
-        String recDate = insightResponse.getRecDate();
-        String anlzDate = insightResponse.getAnlzDate();
-
         ProductType productType = ProductType.fromProductId(productId);
-        List<ProfitSimulationDTO> simulation = fetchSimulationByType(productType, round, productId, userId, recDate, anlzDate);
-        if (insightResponse == null) {
-            log.warn("No insight detail found for productId={}, userId={}, recDate={}, anlzDate={}", productId, userId, recDate, anlzDate);
-            throw new IllegalArgumentException("해당 상품에 대한 상세정보가 없습니다.");
+        InsightDetailStrategy strategy = factory.getStrategy(productType);
+
+        InsightDetailResponseDTO insightResponse = strategy.fetchProductInfo(round, productId, userId);
+
+        LocalDate recDate = insightResponse.getRecDate();
+        LocalDate anlzDate = insightResponse.getAnlzDate();
+
+        // 외환 인사이트
+        if(productType == ProductType.FOREX) {
+            List<ForexCompareDTO> forexInfo = getForexCompare(userId, insightResponse.getCurrency(), recDate, anlzDate);
+            insightResponse.setForexInfo(forexInfo);
+
+            RegretInsightCalculator.RegretInsight regret = RegretInsightCalculator.calculateForex(forexInfo);
+
+            insightResponse.setRegretScore((int) regret.getRegretScore());
+            insightResponse.setMissAmount((int) regret.getMissAmount());
+
+            return insightResponse;
         }
+
+        // 외환 제외 인사이트
+        List<ProfitSimulationDTO> simulation = strategy.fetchSimulation(round, productId, userId, recDate, anlzDate);
         insightResponse.setProfits(simulation);
 
         // 수익 시뮬레이션 계산
@@ -52,28 +76,42 @@ public class InsightDetailServiceImpl implements InsightDetailService {
         insightResponse.setRegretScore((int) regret.getRegretScore());
         insightResponse.setMissAmount((int) regret.getMissAmount());
 
+        // 유사도 측정
+        List<Recommendation> similarProducts = recommendService.getSimilarProducts(productId);
+        insightResponse.setSimilarProducts(similarProducts);
+
         return insightResponse;
     }
 
-    // 외환은 추후 합쳐야 함
-    private InsightDetailResponseDTO fetchProductInfoByType(int round, String productId, int userId) {
-        ProductType type = ProductType.fromProductId(productId);
-        return switch (type) {
-            case DEPOSIT -> mapper.getDepositInfo(round, productId, userId);
-            case SAVINGS -> mapper.getSavingsInfo(round, productId, userId);
-            case CONSERVATIVE -> mapper.getConservativePensionInfo(round, productId, userId);
-            case AGGRESSIVE -> mapper.getAggressivePensionInfo(round, productId, userId);
-            case FUND -> mapper.getFundInfo(round, productId, userId);
-        };
-    }
-    private List<ProfitSimulationDTO> fetchSimulationByType(ProductType productType, int round, String productId, int userId, String recDate, String anlzDate) {
-        return switch (productType) {
-            case DEPOSIT -> mapper.getProfitSimulation(round, productId, userId, "deposit", recDate, anlzDate);
-            case SAVINGS -> mapper.getProfitSimulation(round, productId, userId, "savings", recDate, anlzDate);
-            case CONSERVATIVE -> mapper.getProfitSimulation(round, productId, userId, "conservative", recDate, anlzDate);
-            case AGGRESSIVE -> mapper.getProfitSimulation(round, productId, userId, "aggressive", recDate, anlzDate);
-            case FUND -> mapper.getProfitSimulation(round, productId, userId, "fund", recDate, anlzDate);
-        };
+    private List<ForexCompareDTO> getForexCompare(int userId, String currencies, LocalDate recDate, LocalDate anlzDate) {
+        List<ForexCompareDTO> forexInfo = new ArrayList<>();
+        String[] currencyArray = currencies.split(",\\s*");
+        List<String> currencyList = Arrays.asList(currencyArray);
+
+        Long asset = mapper.getAsset(userId, recDate);
+
+        for(String currency : currencyList) {
+            BigDecimal pastRate = mapper.getExchangeRate(currency, recDate);
+            BigDecimal currRate = mapper.getExchangeRate(currency, anlzDate);
+
+            BigDecimal diff = currRate.subtract(pastRate);
+            BigDecimal diffPercent = diff
+                .divide(pastRate, 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
+
+            ForexCompareDTO dto = new ForexCompareDTO();
+            dto.setAsset(asset);
+            dto.setCurUnit(currency);
+            dto.setRecDate(recDate);
+            dto.setPastRate(pastRate);
+            dto.setAnlzDate(anlzDate);
+            dto.setCurrentRate(currRate);
+            dto.setDiff(diff);
+            dto.setDiffPercent(diffPercent);
+
+            forexInfo.add(dto);
+        }
+        return forexInfo;
     }
 
     @Override

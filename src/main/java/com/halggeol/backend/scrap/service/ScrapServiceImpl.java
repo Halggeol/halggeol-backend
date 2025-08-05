@@ -4,8 +4,10 @@ import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByCo
 
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
+import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
 import com.halggeol.backend.security.domain.CustomUser;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -70,5 +72,13 @@ public class ScrapServiceImpl implements ScrapService {
             scrapMapper::decrementPensionScrapCount);
     }
 
+    @Override
+    public List<ScrappedProductResponseDTO> getScrappedProducts(CustomUser user, List<String> types,
+        String sort) {
+        if (user == null) {
+            throw new IllegalArgumentException("User not authenticated.");
+        }
+        return scrapMapper.selectScrappedProducts(user.getUser().getId(), types, sort);
+    }
 
 }

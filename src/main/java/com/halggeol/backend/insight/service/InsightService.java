@@ -18,18 +18,18 @@ public interface InsightService {
 
     List<ExchangeRateDTO> getExchangeRates(String searchDate);
 
-    List<ForexCompareDTO> compareForexRegretItems(Long userId);
+//    List<ForexCompareDTO> compareForexRegretItems(Long userId);
 
     //기존 : 특정 날짜 기준 외환 비교
-    List<ForexCompareDTO> compareForexRegretItems(Long userId, LocalDate date);
+//    List<ForexCompareDTO> compareForexRegretItems(Long userId, LocalDate date);
 
     // 추가: userId만으로 모든 recId 회차의 ForexCompareDTO 리스트 반환
-    List<ForexCompareDTO> getUserForexCompareList(Long userId);
+//    List<ForexCompareDTO> getUserForexCompareList(Long userId);
 
-    Map<Long, List<ForexCompareDTO>> getUserForexCompareGrouped(Long userId);
+//    Map<Long, List<ForexCompareDTO>> getUserForexCompareGrouped(Long userId);
 
     //유사도 측정
-    List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId);
+//    List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId);
 
     //스케줄러 수동
     void fetchAndSaveExchangeRates();

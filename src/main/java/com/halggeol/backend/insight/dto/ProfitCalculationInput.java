@@ -1,5 +1,6 @@
 package com.halggeol.backend.insight.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -8,8 +9,8 @@ import lombok.Data;
 @Builder
 public class ProfitCalculationInput {
     private Integer round; // 회차
-    private String recDate; // 후회 날짜
-    private String anlzDate; // 분석 날짜
+    private LocalDate recDate; // 후회 날짜
+    private LocalDate anlzDate; // 분석 날짜
     private String productId;
     private Long maxLimit; // 최대 가입 금액
     private Boolean isCompound; // D,S,C의 단리/복리 확인

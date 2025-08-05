@@ -69,4 +69,8 @@ public class Fund {
     private Double liquidityScore; // 유동성 점수
 
     private Double complexityScore; // 복잡성 점수
+
+    private Integer fSector; // 금융권 구분 (1: 1금융권, 2: 2금융권)
+
+    private String description; // 상품 설명
 }

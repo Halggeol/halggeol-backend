@@ -25,6 +25,15 @@ public interface RecommendMapper {
     List<ProductVectorResponseDTO> getProductVectors();
     List<UserVectorResponseDTO> getUserVectors();
 
+    Double getMaxRate();
+    Double getMinRate();
+    Integer getMaxSaveTerm();
+    Integer getMinSaveTerm();
+    Double getMaxFundPriceMovement();
+    Double getMinFundPriceMovement();
+    Double getMaxFundTER();
+    Double getMinFundTER();
+
     ProductVectorResponseDTO getProductVectorById(@Param("id") String productId);
     User getUserById(@Param("userId") Integer userId);
 
@@ -50,6 +59,7 @@ public interface RecommendMapper {
         @Param("costScore") double costScore,
         @Param("liquidityScore") double liquidityScore,
         @Param("complexityScore") double complexityScore);
+
     int updatePensionAlgoCodeById(@Param("pid") String productId,
         @Param("algoCode") double algoCode,
         @Param("riskScore") double riskScore,
@@ -57,6 +67,7 @@ public interface RecommendMapper {
         @Param("costScore") double costScore,
         @Param("liquidityScore") double liquidityScore,
         @Param("complexityScore") double complexityScore);
+
     int updateForexAlgoCodeById(@Param("pid") String productId,
         @Param("algoCode") double algoCode,
         @Param("riskScore") double riskScore,

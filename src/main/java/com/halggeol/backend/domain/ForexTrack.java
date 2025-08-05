@@ -22,5 +22,7 @@ public class ForexTrack {
 
     private LocalDateTime trackingDate; // 추종일자
 
-    private Integer price;
+    private Double price;
+
+    private String currency; // 거래 통화
 }

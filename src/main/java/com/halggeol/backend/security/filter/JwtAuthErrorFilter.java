@@ -32,33 +32,26 @@ public class JwtAuthErrorFilter extends OncePerRequestFilter {
         try {
             super.doFilter(request, response, chain);
         } catch (ExpiredJwtException exception) {
-            message = "토큰이 만료되었습니다.";
+            message = "토큰이 만료되었습니다: " + exception.getMessage();
             status = HttpStatus.UNAUTHORIZED;
-            log.error(exception.getMessage());
         } catch (SignatureException exception) {
-            message = "토큰 서명이 유효하지 않습니다.";
+            message = "토큰 서명이 유효하지 않습니다: " + exception.getMessage();
             status = HttpStatus.UNAUTHORIZED;
-            log.error(exception.getMessage());
         } catch (SecurityException | IllegalArgumentException exception) {
-            message = "유효하지 않은 토큰입니다.";
+            message = "유효하지 않은 토큰입니다: " + exception.getMessage();
             status = HttpStatus.UNAUTHORIZED;
-            log.error(exception.getMessage());
-        } catch (ServletException exception) {
-            message = "인증에 실패했습니다.";
-            status = HttpStatus.UNAUTHORIZED;
-            log.error(exception.getMessage());
         } catch (MalformedJwtException exception) {
-            message = "토큰 형식이 잘못되었습니다.";
+            message = "토큰 형식이 잘못되었습니다: " + exception.getMessage();
             status = HttpStatus.BAD_REQUEST;
-            log.error(exception.getMessage());
         } catch (UnsupportedJwtException exception) {
-            message = "지원되지 않는 토큰입니다.";
+            message = "지원되지 않는 토큰입니다: " + exception.getMessage();
             status = HttpStatus.BAD_REQUEST;
-            log.error(exception.getMessage());
+        } catch (ServletException exception) {
+            message = "요청 처리 중 오류가 발생했습니다: " + exception.getMessage();
+            status = HttpStatus.BAD_REQUEST;
         } catch (Exception exception) {
-            message = "서버 내부 오류가 발생했습니다.";
+            message = "서버 내부 오류가 발생했습니다: " + exception.getMessage();
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            log.error(exception.getMessage());
         }
 
         if (message != null) {

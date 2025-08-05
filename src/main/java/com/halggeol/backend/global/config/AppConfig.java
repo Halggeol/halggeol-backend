@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
         @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RestController.class)
     }
 )
+
 @Slf4j
 @EnableTransactionManagement
 public class AppConfig {

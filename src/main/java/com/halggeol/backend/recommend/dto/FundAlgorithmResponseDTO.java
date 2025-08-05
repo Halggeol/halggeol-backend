@@ -13,10 +13,11 @@ public class FundAlgorithmResponseDTO {
     private Float fundPrice; // 펀드 가격
     private Float TER; // 총보수
     private String investmentWarningGrade; // 투자경고등급
+    private Integer risk; // 위험등급
     private Float upfrontFee; // 선취수수료
     private Float managementFee; // 운용보수
     private String investmentType; // 투자유형
     private Float fundPriceMovement; // 펀드 가격 변동
-    private String minimumCost; // 최소 가입금액
-    private String theme; // 테마
+    private Long minLimit; // 최소 가입금액
+    private String category; // 테마
 }

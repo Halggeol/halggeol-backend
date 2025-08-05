@@ -25,14 +25,16 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         HttpServletResponse response,
         AuthenticationException exception
     ) throws IOException, ServletException {
-        String message = "로그인에 실패했습니다.";
+        String message = "로그인에 실패했습니다: ";
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         if (exception instanceof BadCredentialsException) {
-            message = "아이디 또는 비밀번호가 올바르지 않습니다.";
+            message = "아이디 또는 비밀번호가 올바르지 않습니다: ";
         }
 
-        JsonResponse.sendError(response, status, Map.of("message", message));
-        log.error(exception.getMessage());
+        JsonResponse.sendError(response, status, Map.of(
+            "message",
+            message + exception.getMessage()
+        ));
     }
 }

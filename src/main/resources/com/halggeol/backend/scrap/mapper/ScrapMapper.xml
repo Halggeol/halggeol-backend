@@ -55,4 +55,149 @@
   <update id="decrementPensionScrapCount">
     UPDATE pension SET scrap_cnt = scrap_cnt - 1 WHERE id = #{productId}
   </update>
+
+  <!--  관심상품 조회-->
+  <resultMap id="scrappedProductResultMap" type="com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO">
+    <id property="productId" column="productId"/>
+    <result property="name" column="name"/>
+    <result property="company" column="company"/>
+    <result property="type" column="type"/>
+    <result property="tag1" column="tag1"/>
+    <result property="tag2" column="tag2"/>
+    <result property="tag3" column="tag3"/>
+    <result property="title" column="title"/>
+    <result property="subTitle" column="subTitle"/>
+    <result property="viewCnt" column="view_cnt"/>
+    <result property="scrapCnt" column="scrap_cnt"/>
+  </resultMap>
+
+  <select id="selectScrappedProducts" resultMap="scrappedProductResultMap">
+    <trim suffixOverrides="UNION ALL">
+      <!-- DEPOSIT -->
+      <if test="types == null or types.contains('deposit')">
+        SELECT
+        d.id AS productId,
+        d.name,
+        d.company,
+        'deposit' AS type,
+        CAST(d.min_save_term AS CHAR) AS tag1,
+        CAST(d.max_save_term AS CHAR) AS tag2,
+        NULL AS tag3,
+        CAST(d.prime_rate AS DECIMAL(10, 5)) AS title,
+        CAST(d.rate AS CHAR) AS subTitle,
+        d.view_cnt,
+        d.scrap_cnt
+        FROM deposit d
+        JOIN scrap s ON d.id = s.product_id
+        WHERE s.user_id = #{userId}
+        UNION ALL
+      </if>
+
+      <!-- SAVINGS -->
+      <if test="types == null or types.contains('savings')">
+        SELECT
+        s.id AS productId,
+        s.name,
+        s.company,
+        'savings' AS type,
+        CAST(s.min_save_term AS CHAR) AS tag1,
+        CAST(s.max_save_term AS CHAR) AS tag2,
+        NULL AS tag3,
+        CAST(s.prime_rate AS DECIMAL(10, 5)) AS title,
+        CAST(s.rate AS CHAR) AS subTitle,
+        s.view_cnt,
+        s.scrap_cnt
+        FROM savings s
+        JOIN scrap sc ON s.id = sc.product_id
+        WHERE sc.user_id = #{userId}
+        UNION ALL
+      </if>
+
+      <!-- PENSION -->
+      <if test="types == null or types.contains('pension')">
+        SELECT
+        p.id AS productId,
+        p.name,
+        p.company,
+        'pension' AS type,
+        CAST(p.pension_type AS CHAR) AS tag1,
+        p.pension_kind AS tag2,
+        CAST(p.risk AS CHAR) AS tag3,
+        CAST(
+        CASE
+        WHEN p.pension_type = 1 THEN p.rate
+        ELSE p.pension_price_movement
+        END AS DECIMAL(10, 5)
+        ) AS title,
+        CAST(
+        CASE
+        WHEN p.pension_type = 1 THEN p.min_guarantee_rate
+        ELSE NULL
+        END AS CHAR
+        ) AS subTitle,
+        p.view_cnt,
+        p.scrap_cnt
+        FROM pension p
+        JOIN scrap s ON p.id = s.product_id
+        WHERE s.user_id = #{userId}
+        UNION ALL
+      </if>
+
+      <!-- FUND -->
+      <if test="types == null or types.contains('fund')">
+        SELECT
+        f.id AS productId,
+        f.name,
+        f.company,
+        'fund' AS type,
+        f.category AS tag1,
+        f.theme AS tag2,
+        f.investment_warning_grade AS tag3,
+        CAST(f.rate AS DECIMAL(10, 5)) AS title,
+        NULL AS subTitle,
+        f.view_cnt,
+        f.scrap_cnt
+        FROM fund f
+        JOIN scrap s ON f.id = s.product_id
+        WHERE s.user_id = #{userId}
+        UNION ALL
+      </if>
+
+      <!-- FOREX -->
+      <if test="types == null or types.contains('forex')">
+        SELECT
+        fx.id AS productId,
+        fx.name,
+        fx.company,
+        'forex' AS type,
+        fx.currency AS tag1,
+        NULL AS tag2,
+        NULL AS tag3,
+        CAST(fx.rate AS DECIMAL(10, 5)) AS title,
+        CAST(fx.rate_give_way AS CHAR) AS subTitle,
+        fx.view_cnt,
+        fx.scrap_cnt
+        FROM forex fx
+        JOIN scrap s ON fx.id = s.product_id
+        WHERE s.user_id = #{userId}
+        UNION ALL
+      </if>
+    </trim>
+
+    <include refid="sortCondition"/>
+  </select>
+
+  <sql id="sortCondition">
+    <choose>
+      <when test="sort != null and sort == 'rateDesc'">
+        ORDER BY title DESC
+      </when>
+      <when test="sort != null and sort == 'popularDesc'">
+        ORDER BY (view_cnt + scrap_cnt * 2) DESC
+      </when>
+      <otherwise>
+        ORDER BY (view_cnt + scrap_cnt * 2) DESC
+      </otherwise>
+    </choose>
+  </sql>
 </mapper>

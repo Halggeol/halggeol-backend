@@ -1,13 +1,16 @@
 package com.halggeol.backend.scrap.controller;
 
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
+import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import com.halggeol.backend.scrap.service.ScrapService;
 import com.halggeol.backend.security.domain.CustomUser;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +44,22 @@ public class ScrapController {
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ScrappedProductResponseDTO>> getScrapedProducts(
+        @AuthenticationPrincipal CustomUser user,
+        @RequestParam(required = false) List<String> types,
+        @RequestParam(required = false) String sort
+    ){
+        try{
+            List<ScrappedProductResponseDTO> scrappedProducts = scrapService.getScrappedProducts(user, types, sort);
+            return ResponseEntity.ok(scrappedProducts);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

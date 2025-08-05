@@ -27,7 +27,9 @@ public class Forex {
     // Todo: Enum 변환
     private String currency; // 거래 가능 통화
 
-    private Long regFund; // 가입 가능 금액
+    private Long minLimit; // 최소 가입금액
+
+    private Long maxLimit; // 최고 한도
 
     private LocalDateTime regLimitDate; // 가입 가능 기간
 
@@ -68,4 +70,12 @@ public class Forex {
     private Double liquidityScore; // 유동성 점수
 
     private Double complexityScore; // 복잡성 점수
+
+    private Integer fSector; // 금융권 구분 (1: 1금융권, 2: 2금융권)
+
+    private String rateType; // 금리 타입 (예: "단리", "복리")
+
+    private Integer minSaveTerm; // 최소 저축 기간 (개월 단위)
+
+    private Integer maxSaveTerm; // 최대 저축 기간 (개월 단위)
 }
