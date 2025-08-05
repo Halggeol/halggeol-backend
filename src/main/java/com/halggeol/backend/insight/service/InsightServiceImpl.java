@@ -149,8 +149,10 @@ public class InsightServiceImpl implements InsightService {
         BufferedReader reader = null;
 
         try {
-            String apiUrl = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey="
+            // 변경된 한국수출입은행 url 수정
+            String apiUrl = "https://oapi.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey="
                     + API_KEY + "&searchdate=" + searchDate + "&data=AP01";
+
             URL url = new URL(apiUrl);
             connection = (HttpURLConnection) url.openConnection();
 

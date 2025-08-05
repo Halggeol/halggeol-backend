@@ -253,7 +253,6 @@
         SELECT name FROM forex WHERE id = #{productId}
     </select>
 
-
     <select id="getForexRegretItemsByDate" resultType="com.halggeol.backend.insight.dto.RegretItemDTO" parameterType="map">
         SELECT tmp.rec_id, tmp.product_id, tmp.rec_date, f.currency
         FROM (
