@@ -33,13 +33,13 @@ public class InsightDetailResponseDTO {
     private Integer missAmount; // 놓친 금액
 
     // 상품 정보 관련
-    private String name; // 사용자 이름
     // 현재는 비동기 처리로 사용하는 중
     private String description; // ai 한 줄 요약, d.description
     private String advantage; // ai 장점, d.advantage
     private String disadvantage; // ai 단점, d.disadvantage
 
     // 후회 피드백 관련
+    private String name; // 사용자 이름
     private Boolean isSurveyed; // 피드백 설문 여부
     private Boolean isRegretted; // 피드백 설문 후회 여부
     private Integer regrettedReason; // 피드백 설문 후회 이유(1~4)
