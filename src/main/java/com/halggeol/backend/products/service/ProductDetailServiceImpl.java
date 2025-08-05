@@ -13,7 +13,6 @@ import com.halggeol.backend.products.mapper.ProductDetailMapper;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
