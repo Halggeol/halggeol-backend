@@ -18,6 +18,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Value("${mailgun.apiKey}")
     private String apiKey;
 
@@ -63,18 +66,18 @@ public class MailServiceImpl implements MailService {
             case SIGNUP:
                 subject = "Signup to Halggeol";
                 body = "<p>아래 링크를 클릭하여 회원가입을 완료해주세요:</p>\n"
-                    + "<a href=\"http://localhost:3000/signup?token=" + token
+                    + "<a href=\"" + frontendUrl + "/signup?token=" + token
                     + "\">회원가입 링크</a>"
-                    + "\n(http://localhost:3000/signup?token="
+                    + "\n(" + frontendUrl + "/signup?token="
                     + token + ")";
                 break;
 
             case PASSWORD_RESET:
                 subject = "Password Reset for Halggeol";
                 body = "<p>아래 링크를 클릭하여 비밀번호 재설정을 완료해주세요:</p>\n"
-                    + "<a href=\"http://localhost:3000/find/password/reset?token=" + token
+                    + "<a href=\"" + frontendUrl + "/find/password/reset?token=" + token
                     + "\">비밀번호 재설정 링크</a>"
-                    + "\n(http://localhost:3000/find/password/reset?token="
+                    + "\n(" + frontendUrl + "/find/password/reset?token="
                     + token + ")";
                 break;
 
