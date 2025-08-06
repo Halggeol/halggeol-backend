@@ -20,6 +20,7 @@ public class InsightScheduler {
     public void fetchDailyExchangeRate() {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         System.out.println("[스케줄러] 환율 조회·저장 시작: " + today);
-        ((InsightServiceImpl) insightService).fetchAndSaveExchangeRates(today);
+        // 형변환 없이 인터페이스 메서드 호출!
+        insightService.fetchAndSaveExchangeRates();
     }
 }

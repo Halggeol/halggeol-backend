@@ -5,6 +5,7 @@ import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
 import com.halggeol.backend.insight.mapper.InsightMapper;
 import com.halggeol.backend.recommend.service.RecommendService;
+import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 
 import org.json.simple.JSONArray;
@@ -34,7 +35,6 @@ import java.util.stream.Collectors;
 public class InsightServiceImpl implements InsightService {
 
     private final InsightMapper insightMapper;
-    private final RecommendService recommendService;
 
     // application.properties에 저장해둔 인증키
     private static String API_KEY = "ATw64SDmn6zzCgPUzOxDkXqya2O8RMSm";
@@ -74,8 +74,9 @@ public class InsightServiceImpl implements InsightService {
     private final Map<String, Map<String, BigDecimal>> cachedRateMap = new ConcurrentHashMap<>();
 
     @Override
-    public List<InsightDTO> getTop3MissedProducts(int month, int year) {
-        return insightMapper.getTop3MissedProducts(month, year);
+    public List<InsightDTO> getTop3MissedProducts(int round, CustomUser user) {
+        int userId = user.getUser().getId();
+        return insightMapper.getTop3MissedProducts(round, userId);
     }
 
     @Override
@@ -107,9 +108,7 @@ public class InsightServiceImpl implements InsightService {
         return result;
     }
 
-    /**
-     * 재시도 로직을 포함한 환율 데이터 조회
-     */
+    /*** 재시도 로직을 포함한 환율 데이터 조회*/
     private List<ExchangeRateDTO> fetchExchangeRatesWithRetry(String searchDate) {
         int maxRetries = 3;
         int retryDelay = 2000; // 2초
@@ -138,9 +137,7 @@ public class InsightServiceImpl implements InsightService {
         return new ArrayList<>();
     }
 
-    /**
-     * 실제 API 호출 메서드
-     */
+    /*** 실제 API 호출 메서드*/
     private List<ExchangeRateDTO> callExchangeRateApi(String searchDate) throws Exception {
         List<ExchangeRateDTO> list = new ArrayList<>();
         disableSSLCertificateChecking();
@@ -238,9 +235,7 @@ public class InsightServiceImpl implements InsightService {
         return list;
     }
 
-    /**
-     * API 호출 실패 시 대체 데이터 조회 (이전 날짜들 시도)
-     */
+    /*** API 호출 실패 시 대체 데이터 조회 (이전 날짜들 시도)*/
     private List<ExchangeRateDTO> fetchFallbackData(String originalDate) {
         System.out.println("대체 데이터 조회 시작: " + originalDate);
 
@@ -288,9 +283,7 @@ public class InsightServiceImpl implements InsightService {
         return new ArrayList<>();
     }
 
-    /**
-     * Map을 List로 변환하는 헬퍼 메서드
-     */
+    /*** Map을 List로 변환하는 헬퍼 메서드*/
     private List<ExchangeRateDTO> convertMapToList(Map<String, BigDecimal> rateMap, String baseDate) {
         List<ExchangeRateDTO> result = new ArrayList<>();
         rateMap.forEach((cur, rate) -> {
@@ -303,9 +296,7 @@ public class InsightServiceImpl implements InsightService {
         return result;
     }
 
-    /**
-     * 개선된 getTodayRatesMap - 대체 데이터 로직 포함
-     */
+    /*** 개선된 getTodayRatesMap - 대체 데이터 로직 포함*/
     private Map<String, BigDecimal> getTodayRatesMap(String date) {
         // 먼저 캐시에서 확인
         Map<String, BigDecimal> existingRates = cachedRateMap.get(date);
@@ -331,73 +322,7 @@ public class InsightServiceImpl implements InsightService {
         return new HashMap<>();
     }
 
-    /**
-     * 개선된 compareForexRegretItems - 어제 날짜부터 시도
-     */
-//    @Override
-//    public List<ForexCompareDTO> compareForexRegretItems(Long userId) {
-////        List<RegretItemDTO> regretItems = insightMapper.getForexRegretItems(userId);
-//        List<ForexCompareDTO> result = new ArrayList<>();
-//
-//        // 오늘부터 최대 3일 전까지 사용 가능한 환율 데이터 찾기
-//        String usableDate = findUsableExchangeRateDate();
-//        Map<String, BigDecimal> todayRates = getTodayRatesMap(usableDate);
-//
-//        if (todayRates.isEmpty()) {
-//            System.err.println("사용 가능한 환율 데이터를 찾을 수 없습니다.");
-//            return result;
-//        }
-//
-//        for (RegretItemDTO item : regretItems) {
-//            String productId = item.getProductId();
-//            LocalDate recDate = item.getRecDate();
-//            String currencyStr = item.getCurrency();
-//
-//            if (currencyStr == null || currencyStr.isEmpty()) continue;
-//
-//            String[] currencies = currencyStr.split(",\\s*");
-//
-//            for (String currency : currencies) {
-//                currency = currency.trim();
-//                BigDecimal todayRate = todayRates.get(currency);
-//
-//                if (todayRate == null) {
-//                    todayRate = getLatestRateFromApi(currency, usableDate);
-//                }
-//
-//                if (todayRate == null) continue;
-//
-//                BigDecimal pastRate = insightMapper.getForexRateOnDate(productId, recDate, currency);
-//                if (pastRate == null) {
-//                    pastRate = insightMapper.getLatestForexRateBeforeDate(productId, currency, recDate);
-//                }
-//
-//                if (pastRate == null) continue;
-//
-//                BigDecimal diff = todayRate.subtract(pastRate);
-//                BigDecimal diffPercent = diff
-//                        .divide(pastRate, 4, RoundingMode.HALF_UP)
-//                        .multiply(BigDecimal.valueOf(100));
-//
-//                ForexCompareDTO dto = new ForexCompareDTO();
-////                dto.setRound(item.getRound());
-////                dto.setProductName(productName);
-//                dto.setCurUnit(currency);
-//                dto.setPastRate(pastRate);
-//                dto.setCurrentRate(todayRate);
-//                dto.setRecDate(recDate.toString());
-//                dto.setDiff(diff);
-//                dto.setDiffPercent(diffPercent);
-//
-//                result.add(dto);
-//            }
-//        }
-//        return result;
-//    }
-
-    /**
-     * 사용 가능한 환율 데이터 날짜 찾기
-     */
+    /*** 사용 가능한 환율 데이터 날짜 찾기 */
     private String findUsableExchangeRateDate() {
         LocalDate today = LocalDate.now();
 
@@ -433,63 +358,6 @@ public class InsightServiceImpl implements InsightService {
         return today.minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-//    @Override
-//    public List<ForexCompareDTO> compareForexRegretItems(Long userId, LocalDate date) {
-////        List<RegretItemDTO> regretItems = insightMapper.getForexRegretItemsByDate(userId, date);
-//
-//        List<ForexCompareDTO> result = new ArrayList<>();
-//
-//        String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
-//        Map<String, BigDecimal> todayRates = getTodayRatesMap(today);
-//
-//        for (RegretItemDTO item : regretItems) {
-//            String productId = item.getProductId();
-////            String productName = insightMapper.getForexProductNameById(productId); // ✅ 상품명 조회
-//            LocalDate recDate = item.getRecDate();
-//            String currencyStr = item.getCurrency();
-//
-//            if (currencyStr == null || currencyStr.isEmpty()) continue;
-//
-//            String[] currencies = currencyStr.split(",\\s*");
-//
-//            for (String currency : currencies) {
-//                currency = currency.trim();
-//                BigDecimal todayRate = todayRates.get(currency);
-//
-//                if (todayRate == null) {
-//                    todayRate = getLatestRateFromApi(currency, today);
-//                }
-//
-//                if (todayRate == null) continue;
-//
-//                BigDecimal pastRate = insightMapper.getForexRateOnDate(productId, recDate, currency);
-//                if (pastRate == null) {
-//                    pastRate = insightMapper.getLatestForexRateBeforeDate(productId, currency, recDate);
-//                }
-//
-//                if (pastRate == null) continue;
-//
-//                BigDecimal diff = todayRate.subtract(pastRate);
-//                BigDecimal diffPercent = diff
-//                        .divide(pastRate, 4, RoundingMode.HALF_UP)
-//                        .multiply(BigDecimal.valueOf(100));
-//
-//                ForexCompareDTO dto = new ForexCompareDTO();
-////                dto.setRound(item.getRound()); // ✅ 이 한 줄 추가
-////                dto.setProductName(productName); // ✅ 세팅
-//                dto.setCurUnit(currency);
-//                dto.setPastRate(pastRate);
-//                dto.setCurrentRate(todayRate);
-//                dto.setRecDate(recDate.toString());
-//                dto.setDiff(diff);
-//                dto.setDiffPercent(diffPercent);
-//
-//                result.add(dto);
-//            }
-//        }
-//        return result;
-//    }
-
     private BigDecimal getLatestRateFromApi(String currency, String date) {
         List<ExchangeRateDTO> rates = getExchangeRates(date);
         for (ExchangeRateDTO dto : rates) {
@@ -499,26 +367,6 @@ public class InsightServiceImpl implements InsightService {
         }
         return null;
     }
-
-//    @Override
-//    public Map<Long, List<ForexCompareDTO>> getUserForexCompareGrouped(Long userId) {
-//        List<ForexCompareDTO> list = getUserForexCompareList(userId);
-//
-//        return list.stream()
-//                .collect(Collectors.groupingBy(dto -> Long.valueOf(dto.getRound()), LinkedHashMap::new, Collectors.toList()));
-//    }
-
-//    @Override
-//    public List<ForexCompareDTO> getUserForexCompareList(Long userId) {
-//        // 기존 compareForexRegretItems(userId) 메서드의 내용을 재사용
-//        return compareForexRegretItems(userId);
-//    }
-
-    //유사도 측정
-//    @Override
-//    public List<RecommendServiceImpl.Recommendation> getSimilarProductsForInsight(String productId) {
-//        return recommendService.getSimilarProducts(productId);
-//    }
 
     //환율 OPEN API 스케줄러 코드
     @Transactional
@@ -548,20 +396,23 @@ public class InsightServiceImpl implements InsightService {
         System.out.println("[환율 저장 완료] " + searchDate + " (" + rates.size() + " 건)");
     }
 
-        @Override
+    @Override
     //오늘 날짜 기준으로 환율 데이터 조회하고 저장하는 기능
     public void fetchAndSaveExchangeRates() {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         fetchAndSaveExchangeRates(today); // 기존 메서드 재활용
     }
 
-//    수동으로 환율 open api 호출해서 forex_track에 저장
+////    수동으로 환율 open api 호출해서 forex_track에 저장
 //    @Override
 //    public void fetchAndSaveExchangeRates() {
-//        String targetDate = LocalDate.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+////        현재 날짜 기준으로 몇일전
+////        String targetDate = LocalDate.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//
+////        날짜 직접 지정
+//        String targetDate = "20250601";
 //        fetchAndSaveExchangeRates(targetDate);
 //    }
-
 
 }
 
