@@ -29,7 +29,7 @@ public class SurveyServiceImpl implements SurveyService {
         int userKlg = 0; // TODO: surveyResult로 점수 내기
 
         surveyMapper.updateKnowledgeByEmail(email, userKlg);
-        return Map.of("Message", "금융 이해도 설정이 완료되었습니다.");
+        return Map.of("message", "금융 이해도 설정이 완료되었습니다.");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SurveyServiceImpl implements SurveyService {
         int userKlg = 0; // TODO: surveyResult로 점수 내기
 
         surveyMapper.updateKnowledgeByEmail(email, userKlg);
-        return Map.of("Message", "금융 이해도 갱신이 완료되었습니다.");
+        return Map.of("message", "금융 이해도 갱신이 완료되었습니다.");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SurveyServiceImpl implements SurveyService {
 //            scores.getLiquidityScore(),
 //            scores.getComplexityScore()
 //        );
-        return Map.of("Message", "투자 성향 설정이 완료되었습니다.");
+        return Map.of("message", "투자 성향 설정이 완료되었습니다.");
     }
 
     @Override
@@ -91,7 +91,7 @@ public class SurveyServiceImpl implements SurveyService {
 //            scores.getLiquidityScore(),
 //            scores.getComplexityScore()
 //        );
-        return Map.of("Message", "투자 성향 갱신이 완료되었습니다.");
+        return Map.of("message", "투자 성향 갱신이 완료되었습니다.");
     }
 
     @Override
