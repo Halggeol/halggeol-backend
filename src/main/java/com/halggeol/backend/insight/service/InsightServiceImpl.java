@@ -1,8 +1,6 @@
 package com.halggeol.backend.insight.service;
 
-import com.halggeol.backend.insight.dto.ExchangeRateDTO;
-import com.halggeol.backend.insight.dto.ForexCompareDTO;
-import com.halggeol.backend.insight.dto.InsightDTO;
+import com.halggeol.backend.insight.dto.*;
 import com.halggeol.backend.insight.mapper.InsightMapper;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.security.domain.CustomUser;
@@ -409,10 +407,33 @@ public class InsightServiceImpl implements InsightService {
 ////        현재 날짜 기준으로 몇일전
 ////        String targetDate = LocalDate.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //
-////        날짜 직접 지정
-//        String targetDate = "20250601";
+
+    /// /        날짜 직접 지정
+//        String targetDate = "20250706";
 //        fetchAndSaveExchangeRates(targetDate);
 //    }
+
+
+    // 처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기
+    @Override
+    public List<InsightRoundDTO> getAllInsightRoundsByUser(Long userId) {
+        return insightMapper.getAllInsightRoundsByUser(userId);
+    }
+
+    public List<InsightRoundWithProductsDTO> getAllRoundsWithProductsByUser(Long userId) {
+        // 1) 라운드별 상품ID 목록 가져오기
+        List<InsightRoundDTO> rounds = getAllInsightRoundsByUser(userId);
+
+        // 2) 라운드별 상품 상세 리스트로 변환
+        List<InsightRoundWithProductsDTO> result = new ArrayList<>();
+
+        for (InsightRoundDTO roundDTO : rounds) {
+            int round = roundDTO.getRound();
+            List<InsightDTO> products = insightMapper.getAllProductsByRoundAndUser(round, userId);
+            result.add(new InsightRoundWithProductsDTO(round, products));
+        }
+        return result;
+    }
 
 }
 

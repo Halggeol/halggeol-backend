@@ -15,6 +15,7 @@ public class InsightDetailResponseDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate anlzDate; // 분석 날짜
     private String id; // 상품 id
+    private String productName; //상품명
     private Double interestRate; // 최대 금리 또는 수익률
     private List<ProfitSimulationDTO> profits; // 상품 수익 시뮬레이션
     private Boolean isCompound; // 이자 계산 복리 여부
