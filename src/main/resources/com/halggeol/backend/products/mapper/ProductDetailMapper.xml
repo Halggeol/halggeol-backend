@@ -71,14 +71,14 @@
       CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       deposit d
-        JOIN
+        LEFT JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND d.id = pd.product_id
         LEFT JOIN
       scrap s ON u.id = s.user_id AND d.id = s.product_id
     WHERE
-      d.id = #{depositId} AND d.id LIKE 'D%'
+      d.id = #{depositId}
   </select>
 
   <!-- 적금 -->
@@ -148,7 +148,7 @@
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       savings s
-        JOIN
+        LEFT JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND s.id = pd.product_id
@@ -156,7 +156,7 @@
       scrap sc ON u.id = sc.user_id AND s.id = sc.product_id
 
     WHERE
-      s.id = #{savingsId} AND s.id LIKE 'S%'
+      s.id = #{savingsId}
   </select>
 
   <!-- 펀드 -->
@@ -223,14 +223,14 @@
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       fund f
-        JOIN
+        LEFT JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND f.id = pd.product_id
         LEFT JOIN
       scrap sc ON u.id = sc.user_id AND f.id = sc.product_id
     WHERE
-      f.id = #{fundId} AND f.id LIKE 'F%'
+      f.id = #{fundId}
   </select>
 
   <!-- 외화 -->
@@ -303,14 +303,14 @@
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       forex fx
-        JOIN
+        LEFT JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND fx.id = pd.product_id
         LEFT JOIN
       scrap sc ON u.id = sc.user_id AND fx.id = sc.product_id
     WHERE
-      fx.id = #{forexId} AND fx.id LIKE 'X%'
+      fx.id = #{forexId}
   </select>
 
   <!-- 연금 -->
@@ -375,7 +375,7 @@
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
     FROM
       pension pn
-        JOIN
+        LEFT JOIN
       users u ON u.id = #{userId}
         LEFT JOIN
       personalized_description pd ON u.algo_code = pd.algo_code AND pn.id = pd.product_id
@@ -453,28 +453,28 @@
   </update>
 
   <select id="selectProductStatus" resultType="java.lang.String">
-  SELECT
-    CASE
-      WHEN T.product1_id = #{productId} THEN T.product1_status
-      WHEN T.product2_id = #{productId} THEN T.product2_status
-      WHEN T.product3_id = #{productId} THEN T.product3_status
-      WHEN T.product4_id = #{productId} THEN T.product4_status
-      WHEN T.product5_id = #{productId} THEN T.product5_status
-      ELSE NULL
-      END AS product_status
-  FROM
-    rec_item T
-  WHERE
-    T.user_id = #{userId}
-    AND (
-    T.product1_id = #{productId} OR
-    T.product2_id = #{productId} OR
-    T.product3_id = #{productId} OR
-    T.product4_id = #{productId} OR
-    T.product5_id = #{productId}
-    )
-  ORDER BY
-    T.rec_date DESC, T.rec_id DESC
+    SELECT
+      CASE #{productId}
+        WHEN T.product1_id THEN T.product1_status
+        WHEN T.product2_id THEN T.product2_status
+        WHEN T.product3_id THEN T.product3_status
+        WHEN T.product4_id THEN T.product4_status
+        WHEN T.product5_id THEN T.product5_status
+        ELSE NULL
+        END AS product_status
+    FROM
+      rec_item T
+    WHERE
+      T.user_id = #{userId}
+      AND (
+      T.product1_id = #{productId} OR
+      T.product2_id = #{productId} OR
+      T.product3_id = #{productId} OR
+      T.product4_id = #{productId} OR
+      T.product5_id = #{productId}
+      )
+    ORDER BY
+      T.rec_date DESC, T.rec_id DESC
     LIMIT 1;
 </select>
 </mapper>

@@ -20,100 +20,72 @@
 
     SELECT
       ulmp.product_id AS productId,
-      d.name,
-      d.company,
-      CAST(d.min_save_term AS CHAR) AS tag1,
-      CAST(d.max_save_term AS CHAR) AS tag2,
-      NULL AS tag3,
-      d.prime_rate AS title,
-      d.rate AS subTitle,
-      ulmp.amount,
-      CASE WHEN s.product_id IS NOT NULL THEN true ELSE false END AS isScraped
-    FROM UserLatestMyProducts ulmp
-    JOIN deposit d ON ulmp.product_id = d.id
-    LEFT JOIN scrap s ON s.user_id = #{userId} AND s.product_id = ulmp.product_id
-    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'D'
-
-    UNION ALL
-
-    SELECT
-      ulmp.product_id AS productId,
-      s.name,
-      s.company,
-      CAST(s.min_save_term AS CHAR) AS tag1,
-      CAST(s.max_save_term AS CHAR) AS tag2,
-      NULL AS tag3,
-      s.prime_rate AS title,
-      s.rate AS subTitle,
-      ulmp.amount,
-      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
-    FROM UserLatestMyProducts ulmp
-    JOIN savings s ON ulmp.product_id = s.id
-    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
-    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'S'
-
-    UNION ALL
-
-    SELECT
-      ulmp.product_id AS productId,
-      p.name,
-      p.company,
-      p.pension_kind AS tag1,
-      CAST(p.risk AS CHAR) AS tag2,
-      NULL AS tag3,
-      CASE
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN p.pension_price_movement
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN p.rate
+      CASE SUBSTRING(ulmp.product_id, 1, 1)
+        WHEN 'D' THEN d.name
+        WHEN 'S' THEN s.name
+        WHEN 'A' THEN p_a.name
+        WHEN 'C' THEN p_c.name
+        WHEN 'F' THEN f.name
+        WHEN 'X' THEN fx.name
         ELSE NULL
-      END AS title,
-      CASE
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'A' THEN NULL
-        WHEN SUBSTRING(ulmp.product_id, 1, 1) = 'C' THEN p.min_guarantee_rate
+        END AS name,
+      CASE SUBSTRING(ulmp.product_id, 1, 1)
+        WHEN 'D' THEN d.company
+        WHEN 'S' THEN s.company
+        WHEN 'A' THEN p_a.company
+        WHEN 'C' THEN p_c.company
+        WHEN 'F' THEN f.company
+        WHEN 'X' THEN fx.company
         ELSE NULL
-      END AS subTitle,
+        END AS company,
+      CASE SUBSTRING(ulmp.product_id, 1, 1)
+        WHEN 'D' THEN CAST(d.min_save_term AS CHAR)
+        WHEN 'S' THEN CAST(s.min_save_term AS CHAR)
+        WHEN 'A' THEN p_a.pension_kind
+        WHEN 'C' THEN p_c.pension_kind
+        WHEN 'F' THEN f.category
+        WHEN 'X' THEN fx.currency
+        ELSE NULL
+        END AS tag1,
+      CASE SUBSTRING(ulmp.product_id, 1, 1)
+        WHEN 'D' THEN CAST(d.max_save_term AS CHAR)
+        WHEN 'S' THEN CAST(s.max_save_term AS CHAR)
+        WHEN 'A' THEN CAST(p_a.risk AS CHAR)
+        WHEN 'C' THEN CAST(p_c.risk AS CHAR)
+        WHEN 'F' THEN f.theme
+        ELSE NULL
+        END AS tag2,
+      CASE SUBSTRING(ulmp.product_id, 1, 1)
+        WHEN 'F' THEN CAST(f.risk AS CHAR)
+        ELSE NULL
+        END AS tag3,
+      CASE SUBSTRING(ulmp.product_id, 1, 1)
+        WHEN 'D' THEN d.prime_rate
+        WHEN 'S' THEN s.prime_rate
+        WHEN 'A' THEN p_a.pension_price_movement
+        WHEN 'C' THEN p_c.rate
+        WHEN 'F' THEN f.rate
+        WHEN 'X' THEN fx.rate
+        ELSE NULL
+        END AS title,
+      CASE SUBSTRING(ulmp.product_id, 1, 1)
+        WHEN 'D' THEN d.rate
+        WHEN 'S' THEN s.rate
+        WHEN 'C' THEN p_c.min_guarantee_rate
+        WHEN 'F' THEN f.fund_price_movement
+        WHEN 'X' THEN fx.rate_give_way
+        ELSE NULL
+        END AS subTitle,
       ulmp.amount,
-      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
+      CASE WHEN sc.product_id IS NOT NULL THEN TRUE ELSE FALSE END AS isScraped
     FROM UserLatestMyProducts ulmp
-    JOIN pension p ON ulmp.product_id = p.id
-    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
-    WHERE SUBSTRING(ulmp.product_id, 1, 1) IN ('A', 'C')
-
-    UNION ALL
-
-    SELECT
-      ulmp.product_id AS productId,
-      f.name,
-      f.company,
-      f.category AS tag1,
-      f.theme AS tag2,
-      CAST(f.risk AS CHAR) AS tag3,
-      f.rate AS title,
-      f.fund_price_movement AS subTitle,
-      ulmp.amount,
-      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
-    FROM UserLatestMyProducts ulmp
-    JOIN fund f ON ulmp.product_id = f.id
-    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
-    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'F'
-
-    UNION ALL
-
-    SELECT
-      ulmp.product_id AS productId,
-      fx.name,
-      fx.company,
-      fx.currency AS tag1,
-      NULL AS tag2,
-      NULL AS tag3,
-      fx.rate AS title,
-      fx.rate_give_way AS subTitle,
-      ulmp.amount,
-      CASE WHEN sc.product_id IS NOT NULL THEN true ELSE false END AS isScraped
-    FROM UserLatestMyProducts ulmp
-    JOIN forex fx ON ulmp.product_id = fx.id
-    LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
-    WHERE SUBSTRING(ulmp.product_id, 1, 1) = 'X'
-    
+           LEFT JOIN deposit d ON ulmp.product_id = d.id
+           LEFT JOIN savings s ON ulmp.product_id = s.id
+           LEFT JOIN pension p_a ON ulmp.product_id = p_a.id AND ulmp.product_id LIKE 'A%'
+           LEFT JOIN pension p_c ON ulmp.product_id = p_c.id AND ulmp.product_id LIKE 'C%'
+           LEFT JOIN fund f ON ulmp.product_id = f.id
+           LEFT JOIN forex fx ON ulmp.product_id = fx.id
+           LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
     ORDER BY productId ASC;
   </select>
 </mapper>

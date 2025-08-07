@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
         userMapper.updatePasswordByEmail(user.getUsername(), passwordEncoder.encode(passwords.getNewPassword()));
-        return Map.of("Message", "비밀번호가 변경되었습니다.");
+        return Map.of("message", "비밀번호가 변경되었습니다.");
     }
 
     @Override
@@ -93,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
                                         .build());
         }
 
-        return Map.of("Message", "비밀번호 변경 이메일이 전송되었습니다.");
+        return Map.of("message", "비밀번호 변경 이메일이 전송되었습니다.");
     }
 
     @Override
@@ -105,7 +105,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
         userMapper.updatePasswordByEmail(jwtManager.getEmail(token), passwordEncoder.encode(passwords.getNewPassword()));
-        return Map.of("Message", "비밀번호가 변경되었습니다.");
+        return Map.of("message", "비밀번호가 변경되었습니다.");
     }
 
     private String maskEmail(String email) {

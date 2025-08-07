@@ -43,65 +43,69 @@
       asset
     FROM mydata
     WHERE user_id = #{userId}
-      AND collect_date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 YEAR) AND CURDATE()
+    AND collect_date <![CDATA[ >= ]]> DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+    AND collect_date <![CDATA[ <= ]]> CURDATE()
     ORDER BY collect_date ASC;
   </select>
   <select id="getPortfolioByUserId" resultType="com.halggeol.backend.dashboard.dto.DashboardPortfolioResponseDTO">
-    WITH LatestMydata AS (
+    SELECT
+      CASE
+        WHEN mp.product_id LIKE 'D%' THEN 'deposit'
+        WHEN mp.product_id LIKE 'S%' THEN 'savings'
+        WHEN mp.product_id LIKE 'A%' OR mp.product_id LIKE 'C%' THEN 'pension'
+        WHEN mp.product_id LIKE 'F%' THEN 'fund'
+        WHEN mp.product_id LIKE 'X%' THEN 'forex'
+        ELSE 'unknown'
+        END AS type,
+      CAST(
+        SUM(mp.amount) * 1.0 / (
+          SELECT SUM(mp2.amount)
+          FROM myproduct mp2
+          WHERE mp2.mydata_id = (
+            SELECT id
+            FROM mydata
+            WHERE user_id = #{userId}
+            ORDER BY collect_date DESC, id DESC
+        LIMIT 1
+        )
+    ) AS CHAR
+  ) AS ratio
+    FROM myproduct mp
+    WHERE mp.mydata_id = (
       SELECT id
       FROM mydata
       WHERE user_id = #{userId}
       ORDER BY collect_date DESC, id DESC
       LIMIT 1
-      ),
-      TotalAssetForLatestMydata AS (
-    SELECT SUM(mp.amount) AS total_amount
-    FROM myproduct mp
-      JOIN LatestMydata lm ON mp.mydata_id = lm.id
-      ),
-      TypedProductsForLatestMydata AS (
-    SELECT
-      CASE
-      WHEN SUBSTRING(mp.product_id, 1, 1) = 'D' THEN 'deposit'
-      WHEN SUBSTRING(mp.product_id, 1, 1) = 'S' THEN 'savings'
-      WHEN SUBSTRING(mp.product_id, 1, 1) IN ('A', 'C') THEN 'pension'
-      WHEN SUBSTRING(mp.product_id, 1, 1) = 'F' THEN 'fund'
-      WHEN SUBSTRING(mp.product_id, 1, 1) = 'X' THEN 'forex'
-      ELSE 'unknown'
-      END AS product_type,
-      mp.amount
-    FROM myproduct mp
-      JOIN LatestMydata lm ON mp.mydata_id = lm.id
       )
-    SELECT
-      tp.product_type AS type,
-      -- 오류 해결: ta.total_amount를 MAX()로 감싸 집계 함수로 만듭니다.
-      CAST(SUM(tp.amount) * 1.0 / MAX(ta.total_amount) AS CHAR) AS ratio
-    FROM TypedProductsForLatestMydata tp, TotalAssetForLatestMydata ta
-    GROUP BY tp.product_type
-    ORDER BY tp.product_type ASC;
+    GROUP BY type
+    ORDER BY type ASC;
     </select>
 
   <select id="getFeedbackRatioByUserId" resultType="java.lang.Double">
     SELECT
-      CASE 
+      CASE
         WHEN total_products = 0 THEN 0.0
-        ELSE CAST(feedback_products AS DECIMAL(10,2)) / CAST(total_products AS DECIMAL(10,2))
-      END AS feedback_ratio
+        ELSE CAST(feedback_products AS DECIMAL(10,2)) / total_products
+        END AS feedback_ratio
     FROM (
-      SELECT
-        SUM(CASE WHEN product1_status = '회고' THEN 1 ELSE 0 END +
-            CASE WHEN product2_status = '회고' THEN 1 ELSE 0 END +
-            CASE WHEN product3_status = '회고' THEN 1 ELSE 0 END +
-            CASE WHEN product4_status = '회고' THEN 1 ELSE 0 END +
-            CASE WHEN product5_status = '회고' THEN 1 ELSE 0 END) AS feedback_products,
-        SUM(CASE WHEN product1_status IS NOT NULL THEN 1 ELSE 0 END +
-            CASE WHEN product2_status IS NOT NULL THEN 1 ELSE 0 END +
-            CASE WHEN product3_status IS NOT NULL THEN 1 ELSE 0 END +
-            CASE WHEN product4_status IS NOT NULL THEN 1 ELSE 0 END +
-            CASE WHEN product5_status IS NOT NULL THEN 1 ELSE 0 END) AS total_products
-      FROM rec_item
-      WHERE user_id = #{userId}
-    ) AS feedback_stats;
+           SELECT
+             SUM(
+               (product1_status = '회고') +
+               (product2_status = '회고') +
+               (product3_status = '회고') +
+               (product4_status = '회고') +
+               (product5_status = '회고')
+             ) AS feedback_products,
+             SUM(
+               (product1_status IS NOT NULL) +
+               (product2_status IS NOT NULL) +
+               (product3_status IS NOT NULL) +
+               (product4_status IS NOT NULL) +
+               (product5_status IS NOT NULL)
+             ) AS total_products
+           FROM rec_item
+           WHERE user_id = #{userId}
+         ) AS feedback_stats;
   </select>
 </mapper>

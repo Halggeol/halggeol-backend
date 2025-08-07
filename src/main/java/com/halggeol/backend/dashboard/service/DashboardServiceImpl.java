@@ -31,7 +31,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "userDashboardDataCache", key = "#user.getUser().getId()") // 캐시 적용
+    @Cacheable(value = "userDashboardDataCache", key = "#user?.getUser()?.getId() != null ? #user.getUser().getId() : 'anonymous'")
     public DashboardResponseDTO getDashboardData(@AuthenticationPrincipal CustomUser user) {
         DashboardResponseDTO dashboardResponse = new DashboardResponseDTO();
 
