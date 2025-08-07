@@ -9,6 +9,7 @@ import com.halggeol.backend.scrap.mapper.ScrapMapper;
 import com.halggeol.backend.security.domain.CustomUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
@@ -73,12 +74,12 @@ public class ScrapServiceImpl implements ScrapService {
     }
 
     @Override
-    public List<ScrappedProductResponseDTO> getScrappedProducts(CustomUser user, List<String> types,
+    public ResponseEntity<?> getScrappedProducts(CustomUser user, List<String> types,
         String sort) {
         if (user == null) {
-            throw new IllegalArgumentException("User not authenticated.");
+            return ResponseEntity.internalServerError().body("User not authenticated");
         }
-        return scrapMapper.selectScrappedProducts(user.getUser().getId(), types, sort);
+        return ResponseEntity.ok().body(scrapMapper.selectScrappedProducts(user.getUser().getId(), types, sort));
     }
 
 }

@@ -139,9 +139,10 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15to18:1.70'
 
     // Elasticsearch
-    implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13"
-    implementation "org.elasticsearch:elasticsearch:7.17.13"
-    implementation "org.elasticsearch.client:elasticsearch-rest-client:7.17.13"
+//    implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.13"
+//    implementation "org.elasticsearch:elasticsearch:7.17.13"
+//    implementation "org.elasticsearch.client:elasticsearch-rest-client:7.17.13"
+    implementation "co.elastic.clients:elasticsearch-java:8.12.2"
     implementation "org.springframework.data:spring-data-elasticsearch:4.4.15"
     implementation "co.elastic.clients:elasticsearch-java:8.12.2" // 선택사항
 
@@ -151,7 +152,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    
+
     // 빌드 성능 최적화
     maxParallelForks = Runtime.runtime.availableProcessors()
     testLogging {
@@ -168,7 +169,7 @@ war {
     exclude '**/Thumbs.db'
     exclude '**/.DS_Store'
     exclude '**/application.yml'
-    
+
     // 압축 최적화
     entryCompression = ZipEntryCompression.DEFLATED
 }

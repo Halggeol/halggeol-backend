@@ -4,7 +4,29 @@
       "korean": {
         "type": "custom",
         "tokenizer": "nori_tokenizer",
-        "filter": [ "lowercase", "nori_part_of_speech", "nori_readingform", "nori_number" ]
+        "filter": [ "lowercase", "nori_pos_filter", "nori_readingform", "nori_number" ]
+      },
+      "korean_ngram": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "filter": [ "lowercase", "nori_pos_filter", "edge_ngram_filter" ]
+      }
+    },
+    "filter": {
+      "edge_ngram_filter": {
+        "type": "edge_ngram",
+        "min_gram": 2,
+        "max_gram": 10
+      },
+      "nori_pos_filter": {
+        "type": "nori_part_of_speech",
+        "stoptags": [ "E", "IC", "J", "MAG", "MAJ", "MM", "SP", "SSC", "SSO", "SC", "SE", "XPN", "XSA", "XSN", "XSV", "UNA", "NA", "VSV" ]
+      }
+    },
+    "tokenizer": {
+      "nori_tokenizer": {
+        "type": "nori_tokenizer",
+        "decompound_mode": "mixed"
       }
     }
   }
