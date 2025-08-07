@@ -13,7 +13,6 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate() {
         CloseableHttpClient httpClient = HttpClients.custom()
-//            .disableRedirectHandling()  // 자동 리다이렉트를 막는 함수
             .build();
 
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);

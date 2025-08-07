@@ -13,10 +13,10 @@ public class ProductSearchResponseDTO {
     private String tag1;
     private String tag2;
     private String tag3;
-    private List<String> type;
+    private String type;
     private Double title;
     private String subTitle;
-    private List<Integer> fSector;
+    private Integer fSector;
     private Integer saveTerm;
     private Integer minSaveTerm;
     private Integer maxSaveTerm;
