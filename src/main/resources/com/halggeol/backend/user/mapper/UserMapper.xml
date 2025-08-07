@@ -22,7 +22,7 @@
   </select>
 
   <select id="getUserProfileByUserId" resultType="com.halggeol.backend.user.dto.UserProfileResponseDTO">
-    SELECT id, email, name, phone, birth, reg_date, klg_renew_date, risk_renew_date, docu_renew_date
+    SELECT email, name, phone, birth, risk, user_klg, klg_renew_date, risk_renew_date, docu_renew_date
     FROM users WHERE id = #{id}
   </select>
 

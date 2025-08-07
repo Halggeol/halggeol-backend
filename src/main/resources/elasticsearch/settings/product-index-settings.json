@@ -5,24 +5,6 @@
         "type": "custom",
         "tokenizer": "nori_tokenizer",
         "filter": [ "lowercase", "nori_part_of_speech", "nori_readingform", "nori_number" ]
-      },
-      "korean_ngram": {
-        "type": "custom",
-        "tokenizer": "nori_tokenizer",
-        "filter": [ "lowercase", "nori_part_of_speech", "edge_ngram_filter" ]
-      }
-    },
-    "filter": {
-      "edge_ngram_filter": {
-        "type": "edge_ngram",
-        "min_gram": 1,
-        "max_gram": 10
-      }
-    },
-    "tokenizer": {
-      "nori_tokenizer": {
-        "type": "nori_tokenizer",
-        "decompound_mode": "mixed"
       }
     }
   }

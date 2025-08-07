@@ -1,5 +1,6 @@
 package com.halggeol.backend.dashboard.dto;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DashboardPortfolioResponseDTO {
+public class DashboardPortfolioResponseDTO implements Serializable {
 
     private String type;
     private Double ratio;

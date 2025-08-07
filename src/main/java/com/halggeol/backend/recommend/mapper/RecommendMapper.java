@@ -1,5 +1,6 @@
 package com.halggeol.backend.recommend.mapper;
 
+import com.halggeol.backend.recommend.dto.ProductVectorUpdateResponseDTO;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.security.domain.User;
 import com.halggeol.backend.recommend.dto.DepositAlgorithmResponseDTO;
@@ -35,46 +36,10 @@ public interface RecommendMapper {
     Double getMinFundTER();
 
     ProductVectorResponseDTO getProductVectorById(@Param("id") String productId);
+    UserVectorResponseDTO getUserVectorById(@Param("id") Integer userId);
     User getUserById(@Param("userId") Integer userId);
 
-    int updateDepositAlgoCodeById(@Param("pid") String productId,
-        @Param("algoCode") double algoCode,
-        @Param("riskScore") double riskScore,
-        @Param("yieldScore") double yieldScore,
-        @Param("costScore") double costScore,
-        @Param("liquidityScore") double liquidityScore,
-        @Param("complexityScore") double complexityScore);
-    int updateSavingsAlgoCodeById(@Param("pid") String productId,
-        @Param("algoCode") double algoCode,
-        @Param("riskScore") double riskScore,
-        @Param("yieldScore") double yieldScore,
-        @Param("costScore") double costScore,
-        @Param("liquidityScore") double liquidityScore,
-        @Param("complexityScore") double complexityScore);
-
-    int updateFundAlgoCodeById(@Param("pid") String productId,
-        @Param("algoCode") double algoCode,
-        @Param("riskScore") double riskScore,
-        @Param("yieldScore") double yieldScore,
-        @Param("costScore") double costScore,
-        @Param("liquidityScore") double liquidityScore,
-        @Param("complexityScore") double complexityScore);
-
-    int updatePensionAlgoCodeById(@Param("pid") String productId,
-        @Param("algoCode") double algoCode,
-        @Param("riskScore") double riskScore,
-        @Param("yieldScore") double yieldScore,
-        @Param("costScore") double costScore,
-        @Param("liquidityScore") double liquidityScore,
-        @Param("complexityScore") double complexityScore);
-
-    int updateForexAlgoCodeById(@Param("pid") String productId,
-        @Param("algoCode") double algoCode,
-        @Param("riskScore") double riskScore,
-        @Param("yieldScore") double yieldScore,
-        @Param("costScore") double costScore,
-        @Param("liquidityScore") double liquidityScore,
-        @Param("complexityScore") double complexityScore);
+    int updateProductVectorById(@Param("productVector") ProductVectorUpdateResponseDTO productVector);
 
     int saveRecommendations(@Param("userId") Integer userId,
         @Param("product1Id") String product1Id,
