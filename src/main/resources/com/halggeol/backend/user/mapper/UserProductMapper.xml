@@ -82,7 +82,7 @@
            LEFT JOIN deposit d ON ulmp.product_id = d.id
            LEFT JOIN savings s ON ulmp.product_id = s.id
            LEFT JOIN pension p_a ON ulmp.product_id = p_a.id AND ulmp.product_id LIKE 'A%'
-           LEFT JOIN pension p_c ON ulmp.product_id = p_c.id AND SUBSTRING(ulmp.product_id, 1, 1) = 'C'
+           LEFT JOIN pension p_c ON ulmp.product_id = p_c.id AND ulmp.product_id LIKE 'C%'
            LEFT JOIN fund f ON ulmp.product_id = f.id
            LEFT JOIN forex fx ON ulmp.product_id = fx.id
            LEFT JOIN scrap sc ON sc.user_id = #{userId} AND sc.product_id = ulmp.product_id
