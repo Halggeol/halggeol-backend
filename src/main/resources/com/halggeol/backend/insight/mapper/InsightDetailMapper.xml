@@ -69,7 +69,7 @@
            CASE WHEN p.rate_type = '복리' THEN TRUE ELSE FALSE END           AS isCompound,
            ri.rec_date, ri.anlz_date,
            CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
-           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN FALSE ELSE TRUE END AS isRegretted,
            CASE
              WHEN ri.survey_result = '관심이 없어서' THEN 1
              WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
@@ -94,7 +94,7 @@
            CASE WHEN p.rate_type = '복리' THEN TRUE ELSE FALSE END           AS isCompound,
            ri.rec_date, ri.anlz_date,
            CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
-           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN FALSE ELSE TRUE END AS isRegretted,
            CASE
              WHEN ri.survey_result = '관심이 없어서' THEN 1
              WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
@@ -120,7 +120,7 @@
            p.currency,
            ri.rec_date, ri.anlz_date,
            CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
-           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN FALSE ELSE TRUE END AS isRegretted,
            CASE
              WHEN ri.survey_result = '관심이 없어서' THEN 1
              WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
@@ -145,7 +145,7 @@
            p.save_term,
            ri.rec_date, ri.anlz_date,
            CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
-           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN FALSE ELSE TRUE END AS isRegretted,
            CASE
              WHEN ri.survey_result = '관심이 없어서' THEN 1
              WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
@@ -170,7 +170,7 @@
            p.TER,
            CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
            ri.rec_date, ri.anlz_date,
-           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN FALSE ELSE TRUE END AS isRegretted,
            CASE
              WHEN ri.survey_result = '관심이 없어서' THEN 1
              WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
@@ -197,7 +197,7 @@
            ri.miss_amount,
            CASE WHEN ri.survey_result IS NULL THEN FALSE ELSE TRUE END     AS isSurveyed,
            ri.rec_date, ri.anlz_date,
-           CASE WHEN ri.survey_result = '후회하지 않음' THEN TRUE ELSE FALSE END AS isRegretted,
+           CASE WHEN ri.survey_result = '후회하지 않음' THEN FALSE ELSE TRUE END AS isRegretted,
            CASE
              WHEN ri.survey_result = '관심이 없어서' THEN 1
              WHEN ri.survey_result = '상품 설명이 부족하거나 복잡해서' THEN 2
