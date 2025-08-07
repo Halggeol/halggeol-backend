@@ -15,6 +15,7 @@ import com.halggeol.backend.recommend.dto.SavingsAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
 import com.halggeol.backend.recommend.mapper.RecommendMapper;
 import com.halggeol.backend.recommend.service.calculater.ScoreCalculator;
+import com.halggeol.backend.survey.dto.TendencySurveyRequestDTO;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -204,4 +205,9 @@ public class RecommendServiceImpl implements RecommendService {
         return null; //해당 상품이 추천 목록에 없는 경우 null 반환
     }
 
+    public UserVectorResponseDTO initUserVector(TendencySurveyRequestDTO survey) {
+        int yieldScore, riskScore, costScore, liquidityScore, complexityScore;
+        //투자 성향 설문 결과를 기반으로 유저 벡터를 초기화
+        return null;
+    }
 }

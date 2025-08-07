@@ -1,6 +1,7 @@
 package com.halggeol.backend.survey.service;
 
 import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
+import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.survey.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.survey.dto.TendencyExperienceItemDTO;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class SurveyServiceImpl implements SurveyService {
     private final SurveyMapper surveyMapper;
     private final UserService userService;
+    private final RecommendService recommendService;
 
     @Override
     public Map<String, String> initKnowledge(KnowledgeSurveyRequestDTO surveyResult) {
@@ -54,17 +56,18 @@ public class SurveyServiceImpl implements SurveyService {
             calculateRisk(surveyResult),
             surveyResult.getInvestmentPeriodOption()
         );
-        UserVectorResponseDTO scores = null; // TODO: 5개 user score 점수 내기
 
-//        surveyMapper.updateTendencyByEmail(
-//            email,
-//            risk,
-//            scores.getYieldScore(),
-//            scores.getRiskScore(),
-//            scores.getCostScore(),
-//            scores.getLiquidityScore(),
-//            scores.getComplexityScore()
-//        );
+        UserVectorResponseDTO scores = recommendService.initUserVector(surveyResult); // TODO: 5개 user score 점수 내기
+
+        surveyMapper.updateTendencyByEmail(
+            email,
+            risk,
+            scores.getYieldScore(),
+            scores.getRiskScore(),
+            scores.getCostScore(),
+            scores.getLiquidityScore(),
+            scores.getComplexityScore()
+        );
         return Map.of("message", "투자 성향 설정이 완료되었습니다.");
     }
 
