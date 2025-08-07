@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         List<String> email = userMapper.findEmailByNameAndPhone(info.getName(), info.getPhone());
 
         if (email == null || email.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+            return Map.of("message", "일치하는 사용자 정보가 없습니다.");
         }
 
         List<String> maskedEmail = email.stream()

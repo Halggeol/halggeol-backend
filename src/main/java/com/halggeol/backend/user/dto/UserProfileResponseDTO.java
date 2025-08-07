@@ -19,7 +19,6 @@ public class UserProfileResponseDTO {
     private LocalDateTime birth; // 생일
     private int risk; // 위험도
     private int userKlg; // 금융 이해도
-    private LocalDateTime regDate; // 가입일자
     private LocalDateTime klgRenewDate; // 금융 이해도 검사일
     private LocalDateTime riskRenewDate; // 위험도/투자 성향 검사일
     private LocalDateTime docuRenewDate; // 개인정보 동의일자
@@ -29,11 +28,10 @@ public class UserProfileResponseDTO {
 
         map.put("email", email);
         map.put("name", name);
-        map.put("phone", phone);
+        map.put("phone", formatPhoneString(phone));
         map.put("birth", dateToString(birth));
-        map.put("risk", risk);
-        map.put("userKlg", userKlg);
-        map.put("regDate", dateToString(regDate));
+        map.put("risk", riskToString(risk));
+        map.put("userKlg", knowledgeToString(userKlg));
         map.put("klgRenewDate", dateToString(klgRenewDate));
         map.put("riskRenewDate", dateToString(riskRenewDate));
         map.put("docuRenewDate", dateToString(docuRenewDate));
@@ -43,5 +41,32 @@ public class UserProfileResponseDTO {
 
     private String dateToString(LocalDateTime date) {
         return date != null ? date.toLocalDate().toString() : "";
+    }
+
+    private String riskToString(int risk) {
+        return switch (risk) {
+            case 1 -> "공격투자형";
+            case 2 -> "적극투자형";
+            case 3 -> "위험중립형";
+            case 4 -> "안전추구형";
+            case 5 -> "안정형";
+            default -> "";
+        };
+    }
+
+    private String knowledgeToString(int userKlg) {
+        return "상";
+//        if (0 <= userKlg && userKlg < 0.3) return "하";
+//        if (0.3 <= userKlg && userKlg < 0.6) return "중";
+//        if (0.6 <= userKlg && userKlg <= 1) return "상";
+//        return "";
+    }
+
+    private String formatPhoneString(String phone) {
+        if (phone.length() == 10)
+            return phone.replaceFirst("(\\d{3})(\\d{3})(\\d{4})", "$1-$2-$3");
+        if (phone.length() == 11)
+            return phone.replaceFirst("(\\d{3})(\\d{4})(\\d{4})", "$1-$2-$3");
+        return phone;
     }
 }
