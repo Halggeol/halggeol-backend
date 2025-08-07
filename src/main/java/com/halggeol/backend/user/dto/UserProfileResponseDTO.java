@@ -55,11 +55,10 @@ public class UserProfileResponseDTO {
     }
 
     private String knowledgeToString(int userKlg) {
-        return "상";
-//        if (0 <= userKlg && userKlg < 0.3) return "하";
-//        if (0.3 <= userKlg && userKlg < 0.6) return "중";
-//        if (0.6 <= userKlg && userKlg <= 1) return "상";
-//        return "";
+        if (0 <= userKlg && userKlg < 30) return "하";
+        if (30 <= userKlg && userKlg < 60) return "중";
+        if (60 <= userKlg && userKlg <= 100) return "상";
+        return "";
     }
 
     private String formatPhoneString(String phone) {
