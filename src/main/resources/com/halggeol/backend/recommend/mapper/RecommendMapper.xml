@@ -232,6 +232,7 @@
   <select id="getProductVectors" resultMap="ProductVectorResponseDTOMap">
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
@@ -241,6 +242,7 @@
     union all
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
@@ -250,6 +252,7 @@
     union all
     SELECT
       id,
+      name,
       fund.yield_score,
       risk_score,
       cost_score,
@@ -259,6 +262,7 @@
     union all
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
@@ -268,6 +272,7 @@
     union all
     SELECT
       id,
+      name,
       yield_score,
       risk_score,
       cost_score,
@@ -389,9 +394,9 @@
       LEFT JOIN forex fx ON ri.product1_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product1_id IS NOT NULL
-      
+
       UNION ALL
-      
+
       SELECT
         ri.product2_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
@@ -403,9 +408,9 @@
       LEFT JOIN forex fx ON ri.product2_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product2_id IS NOT NULL
-      
+
       UNION ALL
-      
+
       SELECT
         ri.product3_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
@@ -417,9 +422,9 @@
       LEFT JOIN forex fx ON ri.product3_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product3_id IS NOT NULL
-      
+
       UNION ALL
-      
+
       SELECT
         ri.product4_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name
@@ -431,9 +436,9 @@
       LEFT JOIN forex fx ON ri.product4_id = fx.id
       WHERE ri.user_id = #{userId} AND ri.rec_id = (SELECT MAX(rec_id) FROM rec_item WHERE user_id = #{userId})
         AND ri.product4_id IS NOT NULL
-      
+
       UNION ALL
-      
+
       SELECT
         ri.product5_id AS product_id,
         COALESCE(d.name, s.name, f.name, p.name, fx.name) AS product_name

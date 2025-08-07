@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="7d2e3a71-68f4-49e2-971d-de7a69d9c40d" name="@halggeol-db-identifier.cng8icy88ojm.us-east-1.rds.amazonaws.com [2] Mapping">
+      <data-sources db="8e66342a-9441-4395-a789-cb6da82a5120" />
+      <scope>
+        <node kind="schema" qname="my_db" />
+      </scope>
+    </mapping>
+  </component>
+</project>

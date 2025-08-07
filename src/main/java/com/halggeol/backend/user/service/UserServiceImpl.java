@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
                                     .mailType(MailType.SIGNUP)
                                     .build());
 
-        return Map.of("Message", "본인 인증 이메일이 전송되었습니다.");
+        return Map.of("message", "본인 인증 이메일이 전송되었습니다.");
     }
 
     @Transactional
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
 
-        return Map.of("Message", "회원가입이 완료되었습니다.");
+        return Map.of("message", "회원가입이 완료되었습니다.");
     }
 
     @Override
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> viewProfile(CustomUser user, String scope) {
         UserProfileResponseDTO profile = userMapper.getUserProfileByUserId(user.getUser().getId());
         return Map.of(
-            "Message", "유저 정보 조회에 성공했습니다.",
+            "message", "유저 정보 조회에 성공했습니다.",
             "profile", profile.toMap()
         );
     }
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, String> updateProfile(CustomUser user, UpdateProfileDTO info) {
         userMapper.updateProfileById(user.getUser().getId(), info.getPhone());
-        return Map.of("Message", "사용자 정보 수정이 완료되었습니다.");
+        return Map.of("message", "사용자 정보 수정이 완료되었습니다.");
     }
 
     @Override
@@ -113,13 +113,13 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 재확인되지 않았습니다.");
         }
         userMapper.deleteUserById(user.getUser().getId());
-        return Map.of("Message", "회원탈퇴가 완료되었습니다.");
+        return Map.of("message", "회원탈퇴가 완료되었습니다.");
     }
 
     @Override
     public Map<String, String> updateInsightCycle(CustomUser user, UpdateCycleRequestDTO cycle) {
         cycle.validateCycleType();
         userMapper.updateInsightCycleById(user.getUser().getId(), cycle.getCycle());
-        return Map.of("Message", "인사이트 주기 변경이 완료되었습니다.");
+        return Map.of("message", "인사이트 주기 변경이 완료되었습니다.");
     }
 }
