@@ -1,12 +1,9 @@
 package com.halggeol.backend.insight.service;
 
 import com.halggeol.backend.insight.dto.*;
-import com.halggeol.backend.recommend.service.RecommendServiceImpl;
 import com.halggeol.backend.security.domain.CustomUser;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 public interface InsightService {
     List<InsightDTO> getTop3MissedProducts(int round, CustomUser user);

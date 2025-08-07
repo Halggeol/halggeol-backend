@@ -48,30 +48,28 @@ public class InsightDetailServiceImpl implements InsightDetailService {
         LocalDate recDate = insightResponse.getRecDate();
         LocalDate anlzDate = insightResponse.getAnlzDate();
 
+        RegretInsightCalculator.RegretInsight regret;
+
         // 외환 인사이트
         if(productType == ProductType.FOREX) {
             List<ForexCompareDTO> forexInfo = getForexCompare(userId, insightResponse.getCurrency(), recDate, anlzDate);
             insightResponse.setForexInfo(forexInfo);
 
-            RegretInsightCalculator.RegretInsight regret = RegretInsightCalculator.calculateForex(forexInfo);
+            // 수익 시뮬레이션+후회지수 계산
+            regret = RegretInsightCalculator.calculateForex(forexInfo);
 
-            insightResponse.setRegretScore((int) regret.getRegretScore());
-            insightResponse.setMissAmount((int) regret.getMissAmount());
+        } else {
+            List<ProfitSimulationDTO> simulation = strategy.fetchSimulation(round, productId, userId, recDate, anlzDate);
+            insightResponse.setProfits(simulation);
 
-            return insightResponse;
+            // 수익 시뮬레이션 계산
+            ProfitCalculationInput input = ProfitCalculationInput.from(insightResponse);
+            List<ProfitSimulationDTO> profits = ProfitCalculator.calculateProfitSimulations(input);
+            insightResponse.setProfits(profits);
+
+            // 후회지수 계산
+            regret = RegretInsightCalculator.calculate(insightResponse.getProfits());
         }
-
-        // 외환 제외 인사이트
-        List<ProfitSimulationDTO> simulation = strategy.fetchSimulation(round, productId, userId, recDate, anlzDate);
-        insightResponse.setProfits(simulation);
-
-        // 수익 시뮬레이션 계산
-        ProfitCalculationInput input = ProfitCalculationInput.from(insightResponse);
-        List<ProfitSimulationDTO> profits = ProfitCalculator.calculateProfitSimulations(input);
-        insightResponse.setProfits(profits);
-
-        // 후회지수 계산
-        RegretInsightCalculator.RegretInsight regret = RegretInsightCalculator.calculate(insightResponse.getProfits());
 
         insightResponse.setRegretScore((int) regret.getRegretScore());
         insightResponse.setMissAmount((int) regret.getMissAmount());

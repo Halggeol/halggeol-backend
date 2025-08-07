@@ -2,7 +2,6 @@ package com.halggeol.backend.insight.service;
 
 import com.halggeol.backend.insight.dto.*;
 import com.halggeol.backend.insight.mapper.InsightMapper;
-import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 
@@ -16,10 +15,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;

@@ -29,7 +29,7 @@ public class SurveyServiceImpl implements SurveyService {
         int userKlg = 0; // TODO: surveyResult로 점수 내기
 
         surveyMapper.updateKnowledgeByEmail(email, userKlg);
-        return Map.of("Message", "금융 이해도 설정이 완료되었습니다.");
+        return Map.of("message", "금융 이해도 설정이 완료되었습니다.");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SurveyServiceImpl implements SurveyService {
         int userKlg = 0; // TODO: surveyResult로 점수 내기
 
         surveyMapper.updateKnowledgeByEmail(email, userKlg);
-        return Map.of("Message", "금융 이해도 갱신이 완료되었습니다.");
+        return Map.of("message", "금융 이해도 갱신이 완료되었습니다.");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SurveyServiceImpl implements SurveyService {
 //            scores.getLiquidityScore(),
 //            scores.getComplexityScore()
 //        );
-        return Map.of("Message", "투자 성향 설정이 완료되었습니다.");
+        return Map.of("message", "투자 성향 설정이 완료되었습니다.");
     }
 
     @Override
@@ -91,7 +91,7 @@ public class SurveyServiceImpl implements SurveyService {
 //            scores.getLiquidityScore(),
 //            scores.getComplexityScore()
 //        );
-        return Map.of("Message", "투자 성향 갱신이 완료되었습니다.");
+        return Map.of("message", "투자 성향 갱신이 완료되었습니다.");
     }
 
     @Override
@@ -102,16 +102,15 @@ public class SurveyServiceImpl implements SurveyService {
 
     @Override
     public int calculateTotalScore(List<TendencySurveyItemDTO> answers) {
-        // 8번 문항 제외한 나머지 문항은 모두 점수 합산
+        // 1~7번 문항 점수 합산
         return answers.stream()
-            .filter(answer -> answer.getNumber() != 8)
             .mapToInt(TendencySurveyItemDTO::getOptionScore)
             .sum();
     }
 
     @Override
     public int calculateMaxExperienceScore(List<TendencyExperienceItemDTO> answers) {
-        // 3번 문항(투자경험) 및 기간 문항은 중복 선택 시 최고 점수만 반영
+        // 8번 문항(투자경험)은 중복 선택 시 최고 점수만 반영
         if (answers == null || answers.isEmpty() || answers.get(0).getOption() == 1) {
             return 0;
         }
@@ -131,7 +130,7 @@ public class SurveyServiceImpl implements SurveyService {
         final int INVESTMENT_TYPE_SAFETY_SEEKING = 4;
         final int INVESTMENT_TYPE_STABLE = 5;
 
-        // 투자 예정 기간 기준 재분류
+        // 9번 문항(투자 예정 기간) 기준 재분류
         if (risk >= 30) {
             if (investmentPeriodOption == 1) return INVESTMENT_TYPE_RISK_NEUTRAL;
             return INVESTMENT_TYPE_AGGRESSIVE;

@@ -20,7 +20,7 @@ import java.util.*;
 public class InsightController {
 
     private final InsightService insightService;
-    private final InsightDetailService insightDetailService;
+    private final InsightDetailService InsightDetailService;
 
     @GetMapping
     public List<InsightDTO> getInsightList(
@@ -40,7 +40,6 @@ public class InsightController {
         }
     }
 
-
     @GetMapping("/details")
     public ResponseEntity<?> getInsightDetail(
         @RequestParam Integer round,
@@ -50,7 +49,7 @@ public class InsightController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         try {
-            InsightDetailResponseDTO response = insightDetailService.getInsightDetail(round, productId, user);
+            InsightDetailResponseDTO response = InsightDetailService.getInsightDetail(round, productId, user);
             if (response == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
@@ -67,7 +66,7 @@ public class InsightController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        insightDetailService.updateRegretSurvey(user, request);
+        InsightDetailService.updateRegretSurvey(user, request);
         return ResponseEntity.ok().build();
     }
 
@@ -111,7 +110,6 @@ public class InsightController {
         }
     }
 
-    /*** 사용 가능한 환율 데이터 날짜 찾기 (컨트롤러용 헬퍼 메서드)*/
     private String findUsableExchangeRateDate() {
         LocalDate today = LocalDate.now();
 
