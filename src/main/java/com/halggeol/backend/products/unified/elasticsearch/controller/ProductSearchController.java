@@ -1,6 +1,5 @@
 package com.halggeol.backend.products.unified.elasticsearch.controller;
 
-import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
 import com.halggeol.backend.products.unified.elasticsearch.service.ProductSearchService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class ProductSearchController {
     private final ProductSearchService searchService;
 
     @GetMapping
-    public ResponseEntity<List<ProductSearchResponseDTO>> getProducts(
+    public ResponseEntity<?> getProducts(
         @RequestParam(required = false) String sort,
         @RequestParam(required = false) String keyword,
         @RequestParam(required = false) List<Integer> fSectors,
@@ -28,16 +27,6 @@ public class ProductSearchController {
         @RequestParam(required = false) String minAmount,
         @RequestParam(required = false) Integer saveTerm
     ) {
-        log.info("Product search request - sort: {}, keyword: {}, fSector: {}, type: {}, minAmount: {}, saveTerm: {}",
-            sort, keyword, fSectors, types, minAmount, saveTerm);
-        try {
-            List<ProductSearchResponseDTO> results = searchService.searchProducts(sort, keyword,
-                fSectors,
-                types, minAmount, saveTerm);
-            return ResponseEntity.ok(results);
-        } catch (Exception e) {
-            log.error("Error during getting products search results", e);
-            return ResponseEntity.status(500).build();
-        }
+        return searchService.searchProducts(sort, keyword, fSectors, types, minAmount, saveTerm);
     }
 }
