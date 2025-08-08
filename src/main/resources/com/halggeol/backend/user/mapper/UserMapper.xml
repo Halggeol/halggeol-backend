@@ -21,6 +21,10 @@
     SELECT email FROM users WHERE name = #{name} AND phone = #{phone}
   </select>
 
+  <select id="findPasswordByEmail" resultType="java.lang.String">
+    SELECT password FROM users WHERE email = #{email}
+  </select>
+
   <select id="getUserProfileByUserId" resultType="com.halggeol.backend.user.dto.UserProfileResponseDTO">
     SELECT email, name, phone, birth, risk, user_klg, klg_renew_date, risk_renew_date, docu_renew_date
     FROM users WHERE id = #{id}

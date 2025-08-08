@@ -16,6 +16,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -79,6 +80,9 @@ public class AuthServiceImpl implements AuthService {
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
+        if (passwordEncoder.matches(passwords.getNewPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
+        }
         userMapper.updatePasswordByEmail(user.getUsername(), passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("message", "비밀번호가 변경되었습니다.");
     }
@@ -104,7 +108,13 @@ public class AuthServiceImpl implements AuthService {
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
-        userMapper.updatePasswordByEmail(jwtManager.getEmail(token), passwordEncoder.encode(passwords.getNewPassword()));
+
+        String email = jwtManager.getEmail(token);
+        if (passwordEncoder.matches(passwords.getNewPassword(), userMapper.findPasswordByEmail(email))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
+        }
+
+        userMapper.updatePasswordByEmail(email, passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("message", "비밀번호가 변경되었습니다.");
     }
 
