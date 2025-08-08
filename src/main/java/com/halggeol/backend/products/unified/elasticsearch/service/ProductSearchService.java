@@ -15,6 +15,8 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
 import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
+import io.micrometer.core.instrument.search.Search;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -41,131 +43,42 @@ public class ProductSearchService {
         Integer saveTerm
     ) {
         try {
-            // BoolQuery 빌더를 더 명시적으로 구성
+            // BoolQuery 빌더 생성
             BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
-
-            // 키워드 검색 - must 조건
-            if (keyword != null && !keyword.isBlank()) {
-                log.info("Adding keyword search for: {}", keyword);
-                boolQueryBuilder.must(Query.of(q -> q
-                    .bool(b -> b
-                        .should(Query.of(s -> s.match(m -> m
-                            .field("name")
-                            .query(FieldValue.of(keyword))
-                        )))
-                        .should(Query.of(s -> s.match(m -> m
-                            .field("name.ngram")
-                            .query(FieldValue.of(keyword))
-                        )))
-                        .minimumShouldMatch("1")
-                    )
-                ));
-            }
-
-            // 타입 필터
-            if (types != null && !types.isEmpty()) {
-                log.info("Adding type filter: {}", types);
-                List<FieldValue> typeValues = types.stream()
-                    .map(FieldValue::of)
-                    .collect(Collectors.toList());
-
-                boolQueryBuilder.filter(Query.of(q -> q
-                    .terms(t -> t
-                        .field("type.keyword")
-                        .terms(tv -> tv.value(typeValues))
-                    )
-                ));
-            }
-
-            // fSector 필터
-            if (fSectors != null && !fSectors.isEmpty()) {
-                log.info("Adding fSector filter: {}", fSectors);
-                List<FieldValue> sectorValues = fSectors.stream()
-                    .map(v -> FieldValue.of(Long.valueOf(v)))
-                    .collect(Collectors.toList());
-
-                boolQueryBuilder.filter(Query.of(q -> q
-                    .terms(t -> t
-                        .field("fsector")
-                        .terms(tv -> tv.value(sectorValues))
-                    )
-                ));
-            }
-
-            // minAmount 필터
-            if (minAmount != null && !minAmount.isBlank()) {
-                try {
-                    long min = Long.parseLong(minAmount.trim());
-                    log.info("Adding minAmount filter: {}", min);
-                    boolQueryBuilder.filter(Query.of(q -> q
-                        .range(r -> r
-                            .field("minamount")
-                            .gte(JsonData.of(min))
-                        )
-                    ));
-                } catch (NumberFormatException e) {
-                    log.warn("Invalid minAmount: {}", minAmount);
-                }
-            }
-
-            // saveTerm 필터
-            if (saveTerm != null) {
-                log.info("Adding saveTerm filter: {}", saveTerm);
-                boolQueryBuilder.filter(Query.of(q -> q
-                    .bool(b -> b
-                        .should(Query.of(s -> s
-                            .term(t -> t
-                                .field("saveterm")
-                                .value(FieldValue.of(saveTerm))
-                            )
-                        ))
-                        .should(Query.of(s -> s
-                            .bool(sub -> sub
-                                .must(Query.of(q1 -> q1
-                                    .range(r -> r
-                                        .field("min_save_term")
-                                        .lte(JsonData.of(saveTerm))
-                                    )
-                                ))
-                                .must(Query.of(q2 -> q2
-                                    .range(r -> r
-                                        .field("max_save_term")
-                                        .gte(JsonData.of(saveTerm))
-                                    )
-                                ))
-                            )
-                        ))
-                        .minimumShouldMatch("1")
-                    )
-                ));
-            }
-
-            // 최종 쿼리 생성
-            Query finalQuery = Query.of(q -> q.bool(boolQueryBuilder.build()));
-
+            
+            // 각 조건에 맞는 쿼리를 빌더에 추가
+            addKeywordQuery(boolQueryBuilder, keyword);
+            addTypeFilter(boolQueryBuilder, types);
+            addFSectorFilter(boolQueryBuilder, fSectors);
+            addMinAmountFilter(boolQueryBuilder, minAmount);
+            addSaveTermFilter(boolQueryBuilder, saveTerm);
+            
+            // 최종 쿼리 및 정렬 옵션 생성
+            Query finalQuery = Query.of(q->q.bool(boolQueryBuilder.build()));
             SortOptions sortOptions = getSortOptions(sort);
-
-            SearchRequest request = SearchRequest.of(s -> s
+            
+            // 검색 요청 생성 및 실행
+            SearchRequest request = SearchRequest.of(s->s
                 .index("products_index")
                 .query(finalQuery)
                 .sort(sortOptions)
                 .size(MAX_RESULTS_LIMIT)
             );
 
-            // 디버깅을 위한 로그
             log.info("Executing search request with query");
-
             SearchResponse<ProductDocument> response = esClient.search(request, ProductDocument.class);
-
+            log.info("Search response: {}", response);
             log.info("Search completed. Total hits: {}",
                 response.hits().total() != null ? response.hits().total().value() : 0);
 
+            // 결과 처리 및 반환
             List<ProductSearchResponseDTO> results = response.hits().hits().stream()
                 .map(Hit::source)
                 .filter(Objects::nonNull)
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
+            log.info("Search results: {}", results);
             log.info("Returning {} results", results.size());
             return ResponseEntity.ok(results);
 
@@ -174,6 +87,61 @@ public class ProductSearchService {
                 e.getClass().getSimpleName(), e.getMessage(), e);
             return ResponseEntity.status(500).body("검색 실패: " + e.getMessage());
         }
+    }
+
+    // 키워드 검색 조건
+    private void addKeywordQuery(BoolQuery.Builder boolQueryBuilder, String keyword) {
+        if (keyword != null && !keyword.isBlank()) {
+            log.info("Adding keyword query: {}", keyword);
+            boolQueryBuilder.must(Query.of(q->q
+                .bool(b->b
+                    .should(Query.of(s->s.match(m->m
+                        .field("name")
+                        .query(FieldValue.of(keyword))
+                    )))
+                    .minimumShouldMatch("1")
+                )
+            ));
+        }
+    }
+
+    // 상품 타입 필터 조건
+    private void addTypeFilter(BoolQuery.Builder boolQueryBuilder, List<String> types) {
+        if(types != null && !types.isEmpty()){
+            log.info("Adding type filter: {}", types);
+            List<FieldValue> typeValues = types.stream()
+                .map(FieldValue::of)
+                .collect(Collectors.toList());
+
+            boolQueryBuilder.filter(Query.of(q->q
+                .terms(t->t
+                    .field("type.keyword")
+                    .terms(tv->tv.value(typeValues))
+                )
+            ));
+        }
+    }
+
+    // 금융권 필터 조건
+    private void addFSectorFilter(BoolQuery.Builder boolQueryBuilder, List<String> fSectors) {
+        if(fSectors != null && !fSectors.isEmpty()){
+            log.info("Adding fSector filter: {}", fSectors);
+            List<FieldValue> fSectorValues = fSectors.stream()
+                .map(v->FieldValue.of(Long.valueOf(v)))
+                .collect(Collectors.toList());
+
+            boolQueryBuilder.filter(Query.of(q->q
+                .terms(t->t
+                    .field("fSector")
+                    .terms(tv->tv.value(fSectorValues))
+                )
+            ));
+        }
+    }
+
+    // 최소 가입 금액 필터 조건
+    private void addMinAmountFilter(BoolQuery.Builder boolQueryBuilder, Integer minAmount) {
+        if (minAmount != null && m) {}
     }
 
     private SortOptions getSortOptions(String sort) {
