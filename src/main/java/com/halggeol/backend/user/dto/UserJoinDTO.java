@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Builder
 public class UserJoinDTO {
     private String email;
+    private final String DEFAULT_INSIGHT_CYCLE = "MONTHLY_1";
 
     @NotBlank // null값은 정규식에서 판단하지 않아서 필요함
     @Pattern(regexp = RegexConstants.NAME_PATTERN)
@@ -65,7 +66,7 @@ public class UserJoinDTO {
             .password(password)
             .phone(phone)
             .birth(LocalDateTime.parse(birth + "T00:00:00"))
-            .insightCycle("MONTHLY_1")
+            .insightCycle(DEFAULT_INSIGHT_CYCLE)
             .build();
     }
 }
