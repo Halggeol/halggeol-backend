@@ -10,4 +10,7 @@ public class RegexConstants {
 
     // 최소 2자 이상의 한글로 구성
     public static final String NAME_PATTERN = "^[가-힣]{2,}$";
+
+    // yyyy-MM-dd 형식, 월 01~12, 일 01~31 검사
+    public static final String BIRTH_PATTERN = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$";
 }

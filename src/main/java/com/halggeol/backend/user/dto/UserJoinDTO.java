@@ -3,12 +3,15 @@ package com.halggeol.backend.user.dto;
 import com.halggeol.backend.security.domain.User;
 import com.halggeol.backend.security.util.RegexConstants;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Data
 @NoArgsConstructor
@@ -34,10 +37,15 @@ public class UserJoinDTO {
 
     // 만 14세 이상
     @NotBlank
+    @Pattern(regexp = RegexConstants.BIRTH_PATTERN)
     private String birth;
 
     public LocalDateTime getBirth() {
-        return LocalDateTime.parse(birth + "T00:00:00");
+        try {
+            return LocalDateTime.parse(birth + "T00:00:00");
+        } catch (DateTimeParseException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 날짜입니다.");
+        }
     }
 
     public boolean isValidAge() {
