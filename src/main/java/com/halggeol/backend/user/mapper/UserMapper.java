@@ -19,8 +19,6 @@ public interface UserMapper {
         @Param("phone") String phone
     );
 
-    String findPasswordByEmail(String email);
-
     UserProfileResponseDTO getUserProfileByUserId(int id);
 
     int insert(User user);
