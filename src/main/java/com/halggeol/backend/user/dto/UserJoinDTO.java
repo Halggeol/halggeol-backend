@@ -57,6 +57,7 @@ public class UserJoinDTO {
             .password(password)
             .phone(phone)
             .birth(LocalDateTime.parse(birth + "T00:00:00"))
+            .insightCycle("MONTHLY_1")
             .build();
     }
 }
