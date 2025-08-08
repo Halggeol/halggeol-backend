@@ -79,13 +79,16 @@ public class AuthServiceImpl implements AuthService {
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
+        if (passwordEncoder.matches(passwords.getNewPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
+        }
         userMapper.updatePasswordByEmail(user.getUsername(), passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("message", "비밀번호가 변경되었습니다.");
     }
 
     @Override
     public Map<String, String> requestResetPassword(EmailDTO email) {
-        if (userService.findByEmail(email.getEmail())) {
+        if (userService.findByEmail(email.getEmail()) != null) {
             mailService.sendMail(MailDTO.builder()
                                         .email(email.getEmail())
                                         .token(jwtManager.generateVerifyToken(email.getEmail()))
@@ -104,7 +107,13 @@ public class AuthServiceImpl implements AuthService {
         if (!passwords.isPasswordConfirmed()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
         }
-        userMapper.updatePasswordByEmail(jwtManager.getEmail(token), passwordEncoder.encode(passwords.getNewPassword()));
+
+        String email = jwtManager.getEmail(token);
+        if (passwordEncoder.matches(passwords.getNewPassword(), userMapper.findByEmail(email).getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
+        }
+
+        userMapper.updatePasswordByEmail(email, passwordEncoder.encode(passwords.getNewPassword()));
         return Map.of("message", "비밀번호가 변경되었습니다.");
     }
 
