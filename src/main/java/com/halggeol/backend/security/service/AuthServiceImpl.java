@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Map<String, String> requestResetPassword(EmailDTO email) {
-        if (userService.findByEmail(email.getEmail())) {
+        if (userService.findByEmail(email.getEmail()) != null) {
             mailService.sendMail(MailDTO.builder()
                                         .email(email.getEmail())
                                         .token(jwtManager.generateVerifyToken(email.getEmail()))
@@ -110,7 +110,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String email = jwtManager.getEmail(token);
-        if (passwordEncoder.matches(passwords.getNewPassword(), userMapper.findPasswordByEmail(email))) {
+        if (passwordEncoder.matches(passwords.getNewPassword(), userMapper.findByEmail(email).getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.");
         }
 
