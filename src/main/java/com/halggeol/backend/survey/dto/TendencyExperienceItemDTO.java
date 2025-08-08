@@ -26,7 +26,6 @@ public class TendencyExperienceItemDTO {
     @Range(min = 1, max = 3)
     private Integer period; // 투자 경험 당 기간
 
-    @NotNull
     @Range(min = 1, max = 5)
     private Integer periodScore; // 기간 배점
 }

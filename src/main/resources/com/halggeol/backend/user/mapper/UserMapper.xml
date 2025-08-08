@@ -27,8 +27,12 @@
   </select>
 
   <insert id="insert">
-    INSERT INTO users (email, name, password, phone, birth, reg_date, klg_renew_date, risk_renew_date, docu_renew_date)
-    VALUES(#{email}, #{name}, #{password}, #{phone}, #{birth}, now(), now(), now(), now())
+    INSERT INTO users (
+        email, name, password, phone, birth,
+        reg_date, klg_renew_date, risk_renew_date, docu_renew_date, insight_cycle)
+    VALUES(
+        #{email}, #{name}, #{password}, #{phone}, #{birth},
+        now(), now(), now(), now(), #{insightCycle})
   </insert>
 
   <update id="updatePasswordByEmail">
