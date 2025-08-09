@@ -22,6 +22,7 @@ public class UserProfileResponseDTO {
     private LocalDateTime klgRenewDate; // 금융 이해도 검사일
     private LocalDateTime riskRenewDate; // 위험도/투자 성향 검사일
     private LocalDateTime docuRenewDate; // 개인정보 동의일자
+    private String insightCycle;
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -35,6 +36,7 @@ public class UserProfileResponseDTO {
         map.put("klgRenewDate", dateToString(klgRenewDate));
         map.put("riskRenewDate", dateToString(riskRenewDate));
         map.put("docuRenewDate", dateToString(docuRenewDate));
+        map.put("insightCycle", insightCycle);
 
         return map;
     }

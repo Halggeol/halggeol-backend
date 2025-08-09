@@ -14,26 +14,26 @@
         p.name,
         p.company,
         'saving' AS type,
-        tmp.miss_amount
+        tmp.miss_amount,
+        tmp.round
         FROM (
-        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round, user_id FROM rec_item
         WHERE product1_status = '회고'
         UNION ALL
-        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        SELECT product2_id, product2_miss_amount, round ,user_id FROM rec_item
         WHERE product2_status = '회고'
         UNION ALL
-        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        SELECT product3_id, product3_miss_amount, round ,user_id FROM rec_item
         WHERE product3_status = '회고'
         UNION ALL
-        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
         WHERE product4_status = '회고'
         UNION ALL
-        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        SELECT product5_id, product5_miss_amount, round ,user_id FROM rec_item
         WHERE product5_status = '회고'
         ) tmp
         JOIN savings p ON tmp.product_id = p.id
-        WHERE MONTH(tmp.rec_date) = #{month}
-        AND YEAR(tmp.rec_date) = #{year}
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
 
         UNION
 
@@ -43,26 +43,26 @@
         p.name,
         p.company,
         'fund' AS type,
-        tmp.miss_amount
+        tmp.miss_amount,
+        tmp.round
         FROM (
-        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
         WHERE product1_status = '회고'
         UNION ALL
-        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
         WHERE product2_status = '회고'
         UNION ALL
-        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
         WHERE product3_status = '회고'
         UNION ALL
-        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
         WHERE product4_status = '회고'
         UNION ALL
-        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
         WHERE product5_status = '회고'
         ) tmp
         JOIN fund p ON tmp.product_id = p.id
-        WHERE MONTH(tmp.rec_date) = #{month}
-        AND YEAR(tmp.rec_date) = #{year}
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
 
         UNION
 
@@ -72,26 +72,26 @@
         p.name,
         p.company,
         'pension' AS type,
-        tmp.miss_amount
+        tmp.miss_amount,
+        tmp.round
         FROM (
-        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
         WHERE product1_status = '회고'
         UNION ALL
-        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
         WHERE product2_status = '회고'
         UNION ALL
-        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
         WHERE product3_status = '회고'
         UNION ALL
-        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
         WHERE product4_status = '회고'
         UNION ALL
-        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
         WHERE product5_status = '회고'
         ) tmp
         JOIN pension p ON tmp.product_id = p.id
-        WHERE MONTH(tmp.rec_date) = #{month}
-        AND YEAR(tmp.rec_date) = #{year}
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
 
         UNION
 
@@ -101,26 +101,26 @@
         p.name,
         p.company,
         'deposit' AS type,
-        tmp.miss_amount
+        tmp.miss_amount,
+        tmp.round
         FROM (
-        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
         WHERE product1_status = '회고'
         UNION ALL
-        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
         WHERE product2_status = '회고'
         UNION ALL
-        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
         WHERE product3_status = '회고'
         UNION ALL
-        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
         WHERE product4_status = '회고'
         UNION ALL
-        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
         WHERE product5_status = '회고'
         ) tmp
         JOIN deposit p ON tmp.product_id = p.id
-        WHERE MONTH(tmp.rec_date) = #{month}
-        AND YEAR(tmp.rec_date) = #{year}
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
 
         UNION
 
@@ -130,26 +130,178 @@
         p.name,
         p.company,
         'forex' AS type,
-        tmp.miss_amount
+        tmp.miss_amount,
+        tmp.round
         FROM (
-        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, rec_date FROM rec_item
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
         WHERE product1_status = '회고'
         UNION ALL
-        SELECT product2_id, product2_miss_amount, rec_date FROM rec_item
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
         WHERE product2_status = '회고'
         UNION ALL
-        SELECT product3_id, product3_miss_amount, rec_date FROM rec_item
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
         WHERE product3_status = '회고'
         UNION ALL
-        SELECT product4_id, product4_miss_amount, rec_date FROM rec_item
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
         WHERE product4_status = '회고'
         UNION ALL
-        SELECT product5_id, product5_miss_amount, rec_date FROM rec_item
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
         WHERE product5_status = '회고'
         ) tmp
         JOIN forex p ON tmp.product_id = p.id
-        WHERE MONTH(tmp.rec_date) = #{month}
-        AND YEAR(tmp.rec_date) = #{year}
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
+
+        ) all_products
+        ORDER BY miss_amount DESC
+        LIMIT 3
+    </select>
+
+
+    <select id="getAllProductsByRoundAndUser" resultType="com.halggeol.backend.insight.dto.InsightDTO">
+        SELECT *
+        FROM (
+        <!-- saving -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'saving' AS type,
+        tmp.miss_amount,
+        tmp.round
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round, user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, round ,user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, round ,user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, round ,user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN savings p ON tmp.product_id = p.id
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- fund -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'fund' AS type,
+        tmp.miss_amount,
+        tmp.round
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN fund p ON tmp.product_id = p.id
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- pension -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'pension' AS type,
+        tmp.miss_amount,
+        tmp.round
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN pension p ON tmp.product_id = p.id
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- deposit -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'deposit' AS type,
+        tmp.miss_amount,
+        tmp.round
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN deposit p ON tmp.product_id = p.id
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- forex -->
+        SELECT
+        p.id AS product_id,
+        p.name,
+        p.company,
+        'forex' AS type,
+        tmp.miss_amount,
+        tmp.round
+        FROM (
+        SELECT product1_id AS product_id, product1_miss_amount AS miss_amount, round,user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT product2_id, product2_miss_amount, round,user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT product3_id, product3_miss_amount, round,user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT product4_id, product4_miss_amount, round,user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT product5_id, product5_miss_amount, round,user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN forex p ON tmp.product_id = p.id
+        WHERE tmp.round = #{round} AND tmp.user_id = #{userId}
 
         ) all_products
         ORDER BY miss_amount DESC
@@ -205,26 +357,6 @@
         ORDER BY tmp.miss_amount DESC
     </select>
 
-<!--    &lt;!&ndash; 외환 비교  &ndash;&gt;-->
-<!--    <select id="getForexRegretItems" resultType="com.halggeol.backend.insight.dto.RegretItemDTO" parameterType="long">-->
-<!--        SELECT tmp.round, tmp.product_id, tmp.rec_date, f.currency-->
-<!--        FROM (-->
-<!--                 SELECT round, user_id, product1_id AS product_id, product1_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT round, user_id, product2_id AS product_id, product2_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT round, user_id, product3_id AS product_id, product3_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT round, user_id, product4_id AS product_id, product4_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT round, user_id, product5_id AS product_id, product5_status AS status, rec_date FROM rec_item-->
-<!--             ) tmp-->
-<!--                 JOIN forex f ON tmp.product_id = f.id-->
-<!--        WHERE tmp.status = '회고'-->
-<!--          AND tmp.product_id IN (SELECT id FROM forex)-->
-<!--          AND tmp.user_id = #{userId}-->
-<!--    </select>-->
-
     <!--정확한 날짜의 환율만 있을 때 사용-->
     <select id="getForexRateOnDate" resultType="java.math.BigDecimal">
         SELECT price
@@ -254,25 +386,45 @@
     </select>
 
 
-<!--    <select id="getForexRegretItemsByDate" resultType="com.halggeol.backend.insight.dto.RegretItemDTO" parameterType="map">-->
-<!--        SELECT tmp.rec_id, tmp.product_id, tmp.rec_date, f.currency-->
-<!--        FROM (-->
-<!--                 SELECT rec_id, user_id, product1_id AS product_id, product1_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT rec_id, user_id, product2_id AS product_id, product2_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT rec_id, user_id, product3_id AS product_id, product3_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT rec_id, user_id, product4_id AS product_id, product4_status AS status, rec_date FROM rec_item-->
-<!--                 UNION ALL-->
-<!--                 SELECT rec_id, user_id, product5_id AS product_id, product5_status AS status, rec_date FROM rec_item-->
-<!--             ) tmp-->
-<!--                 JOIN forex f ON tmp.product_id = f.id-->
-<!--        WHERE tmp.status = '회고'-->
-<!--          AND tmp.product_id IN (SELECT id FROM forex)-->
-<!--          AND tmp.rec_date = #{date}-->
-<!--          AND tmp.user_id = #{userId}-->
-<!--    </select>-->
-<!--    <select id="getForexCompareListByUserId" resultType="com.halggeol.backend.insight.dto.ForexCompareDTO"></select>-->
+    <!-- 환율 OPEN API 스케줄러 코드 삽입 전,후 중복 방지-->
+    <select id="existsExchangeRate" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM forex_track
+        WHERE currency = #{curUnit}
+          AND tracking_date = #{baseDate}
+    </select>
+
+    <!-- 스케줄러 후 삽입 -->
+    <insert id="insertExchangeRate" parameterType="com.halggeol.backend.insight.dto.ExchangeRateDTO">
+        INSERT INTO forex_track (currency, price, tracking_date)
+        VALUES (#{curUnit}, #{dealBasR}, #{baseDate})
+    </insert>
+
+    <!-- 처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기  -->
+    <select id="getAllInsightRoundsByUser" resultMap="InsightRoundMap">
+        SELECT
+            round,
+            product_id
+        FROM (
+                 SELECT round, product1_id AS product_id, product1_status AS status, user_id FROM rec_item
+                 UNION ALL
+                 SELECT round, product2_id, product2_status, user_id FROM rec_item
+                 UNION ALL
+                 SELECT round, product3_id, product3_status, user_id FROM rec_item
+                 UNION ALL
+                 SELECT round, product4_id, product4_status, user_id FROM rec_item
+                 UNION ALL
+                 SELECT round, product5_id, product5_status, user_id FROM rec_item
+             ) tmp
+        WHERE status = '회고' AND user_id = #{userId}
+        ORDER BY round
+    </select>
+
+    <resultMap id="InsightRoundMap" type="com.halggeol.backend.insight.dto.InsightRoundDTO">
+        <result property="round" column="round"/>
+        <collection property="productIds" ofType="string">
+            <result column="product_id"/>
+        </collection>
+    </resultMap>
 
 </mapper>

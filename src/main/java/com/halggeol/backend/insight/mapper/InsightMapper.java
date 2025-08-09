@@ -1,7 +1,10 @@
 package com.halggeol.backend.insight.mapper;
 
+import com.halggeol.backend.insight.dto.ExchangeRateDTO;
 import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
+import com.halggeol.backend.insight.dto.InsightRoundDTO;
+import com.halggeol.backend.security.domain.CustomUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,8 +14,8 @@ import java.util.List;
 
 @Mapper
 public interface InsightMapper {
-    //특정 월/년도에 놓친 상위 3개 상품 조회
-    List<InsightDTO> getTop3MissedProducts(@Param("month") int month, @Param("year") int year);
+
+    List<InsightDTO> getTop3MissedProducts(@Param("round") int round, @Param("userId") int userId);
 
     //펀드 관련 인사이트 조회
     List<InsightDTO> getFundInsight();
@@ -25,14 +28,6 @@ public interface InsightMapper {
                                   @Param("recDate") LocalDate recDate,
                                   @Param("currency") String currency);
 
-    // userId로 추천+회고한 외환 상품의 과거 환율 정보 가져오기 (ex : 해당 사용자가 추천받았지만 가입하지 않은 모든 외환 상품 ) -> 해결
-//    List<RegretItemDTO> getForexRegretItems(@Param("userId") Long userId);
-
-    // forex 테이블에서 product_id로 거래가능통화 조회
-//    String getForexCurrencyByProductId(@Param("productId") String productId);
-
-    // productId로 외환 상품명 조회
-//    String getForexProductNameById(@Param("productId") String productId);
 
     // 특정 날짜 이전의 가장 최근 환율 조회
     BigDecimal getLatestForexRateBeforeDate(
@@ -41,10 +36,16 @@ public interface InsightMapper {
             @Param("recDate") LocalDate recDate
     );
 
-    // ex : 2024/3/15일에 추천 받았던 외환 상품들만 확인
-//    List<RegretItemDTO> getForexRegretItemsByDate(@Param("userId") Long userId,
-//                                                  @Param("date") LocalDate date);
+    //환율 OPEN API 스케줄러 코드 존재 여부 확인
+    boolean existsExchangeRate(@Param("curUnit") String curUnit,
+                               @Param("baseDate") String baseDate);
 
-    // userId로 모든 recId별 ForexCompareDTO 리스트 조회
-//    List<ForexCompareDTO> getForexCompareListByUserId(@Param("userId") Long userId);
+    // 저장 INSERT, 환율 OPEN API 스케줄러 코드
+    void insertExchangeRate(ExchangeRateDTO dto);
+
+    // 처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기
+    List<InsightRoundDTO> getAllInsightRoundsByUser(Long userId);
+
+    List<InsightDTO> getAllProductsByRoundAndUser(@Param("round") int round, @Param("userId") Long userId);
+
 }

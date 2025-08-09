@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Builder
 public class UserJoinDTO {
     private String email;
-    private final String DEFAULT_INSIGHT_CYCLE = "MONTHLY_1";
+    private static final String DEFAULT_INSIGHT_CYCLE = "MONTHLY_1";
 
     @NotBlank // null값은 정규식에서 판단하지 않아서 필요함
     @Pattern(regexp = RegexConstants.NAME_PATTERN)
