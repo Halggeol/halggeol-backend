@@ -15,8 +15,6 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
 import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
-import io.micrometer.core.instrument.search.Search;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +37,7 @@ public class ProductSearchService {
         String keyword,
         List<Integer> fSectors,
         List<String> types,
-        String minAmount,
+        Integer minAmount,
         Integer saveTerm
     ) {
         try {
@@ -123,7 +121,7 @@ public class ProductSearchService {
     }
 
     // 금융권 필터 조건
-    private void addFSectorFilter(BoolQuery.Builder boolQueryBuilder, List<String> fSectors) {
+    private void addFSectorFilter(BoolQuery.Builder boolQueryBuilder, List<Integer> fSectors) {
         if(fSectors != null && !fSectors.isEmpty()){
             log.info("Adding fSector filter: {}", fSectors);
             List<FieldValue> fSectorValues = fSectors.stream()
@@ -132,7 +130,7 @@ public class ProductSearchService {
 
             boolQueryBuilder.filter(Query.of(q->q
                 .terms(t->t
-                    .field("fSector")
+                    .field("fsector")
                     .terms(tv->tv.value(fSectorValues))
                 )
             ));
@@ -141,7 +139,53 @@ public class ProductSearchService {
 
     // 최소 가입 금액 필터 조건
     private void addMinAmountFilter(BoolQuery.Builder boolQueryBuilder, Integer minAmount) {
-        if (minAmount != null && m) {}
+        if (minAmount != null) {
+            try{
+                log.info("Adding minimum amount filter: {}", minAmount);
+                boolQueryBuilder.filter(Query.of(q->q
+                    .range(r->r
+                        .field("minamount")
+                        .gte(JsonData.of(minAmount))
+                    )
+                ));
+            } catch (NumberFormatException e){
+                log.warn("Could not parse minimum amount filter", e);
+            }
+        }
+    }
+
+    // 저축 기간 필터 조건 - 고정 기간 또는 기간 범위 내의 상품 모두 검색
+    private void addSaveTermFilter(BoolQuery.Builder boolQueryBuilder, Integer saveTerm) {
+        if (saveTerm != null) {
+            log.info("Adding save term filter: {}", saveTerm);
+            boolQueryBuilder.filter(Query.of(q->q
+                .bool(b->b
+                    .should(Query.of(s->s // 조건1 : saveterm이 정확히 일치
+                        .term(t->t
+                            .field("saveterm")
+                            .value(FieldValue.of(saveTerm))
+                        )
+                    ))
+                    .should(Query.of(s->s
+                        .bool(sub->sub
+                            .must(Query.of(q1->q1 // 조건2 : min/max_save_term 사이에 포함
+                                .range(r->r
+                                    .field("min_save_term")
+                                    .lte(JsonData.of(saveTerm))
+                                )
+                            ))
+                            .must(Query.of(q2->q2
+                                .range(r->r
+                                    .field("max_save_term")
+                                    .gte(JsonData.of(saveTerm))
+                                )
+                            ))
+                        )
+                    ))
+                    .minimumShouldMatch("1")
+                )
+            ));
+        }
     }
 
     private SortOptions getSortOptions(String sort) {
