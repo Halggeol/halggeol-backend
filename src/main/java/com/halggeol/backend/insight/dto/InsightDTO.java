@@ -12,4 +12,5 @@ public class InsightDTO {
     private String name; //상품 이름
     private String company; //회사
     private String type; //상품 종류 (fund,saving,pension...등)
+    private int round;
 }
