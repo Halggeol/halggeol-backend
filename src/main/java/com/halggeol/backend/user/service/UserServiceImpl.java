@@ -31,9 +31,8 @@ public class UserServiceImpl implements UserService {
     private final Argon2PasswordEncoder passwordEncoder;
 
     @Override
-    public boolean findByEmail(String email) {
-        User user = userMapper.findByEmail(email);
-        return user != null;
+    public User findByEmail(String email) {
+        return userMapper.findByEmail(email);
     }
 
     @Override
@@ -41,7 +40,7 @@ public class UserServiceImpl implements UserService {
         if (email == null || email.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 입력되지 않았습니다.");
         }
-        if (!findByEmail(email)) {
+        if (findByEmail(email) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
         }
     }
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
         // 검증 실패 시 MethodArgumentNotValidException 예외 발생
         // 스프링 MVC에서 자동으로 400 Bad Request로 응답함
 
-        if (findByEmail(email.getEmail())) {
+        if (findByEmail(email.getEmail()) != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
         }
 
