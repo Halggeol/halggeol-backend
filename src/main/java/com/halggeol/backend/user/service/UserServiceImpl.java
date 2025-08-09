@@ -107,11 +107,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> deleteUser(CustomUser user, String bearerToken) {
+    public Map<String, String> markAsDeleted(CustomUser user, String bearerToken) {
         if (!jwtManager.isReverified(jwtManager.parseBearerToken(bearerToken))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 재확인되지 않았습니다.");
         }
-        userMapper.deleteUserById(user.getUser().getId());
+        userMapper.updateDeletedDateById(user.getUser().getId());
         return Map.of("message", "회원탈퇴가 완료되었습니다.");
     }
 

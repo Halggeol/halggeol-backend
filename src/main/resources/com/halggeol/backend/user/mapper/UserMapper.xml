@@ -47,8 +47,8 @@
     UPDATE users SET insight_cycle = #{insightCycle} WHERE id = #{id}
   </update>
 
-  <delete id="deleteUserById">
-    DELETE FROM users WHERE id = #{id}
+  <delete id="updateDeletedDateById">
+    UPDATE users SET deleted_date = now() WHERE id = #{id}
   </delete>
 
 </mapper>

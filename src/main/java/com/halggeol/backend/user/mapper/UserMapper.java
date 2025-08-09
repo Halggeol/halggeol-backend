@@ -38,5 +38,5 @@ public interface UserMapper {
         @Param("insightCycle") String insightCycle
     );
 
-    int deleteUserById(int id);
+    int updateDeletedDateById(int id);
 }

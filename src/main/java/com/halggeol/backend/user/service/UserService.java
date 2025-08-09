@@ -23,7 +23,7 @@ public interface UserService {
 
     Map<String, String> updateProfile(CustomUser user, UpdateProfileDTO info);
 
-    Map<String, String> deleteUser(CustomUser user, String bearerToken);
+    Map<String, String> markAsDeleted(CustomUser user, String bearerToken);
 
     Map<String, String> updateInsightCycle(CustomUser user, UpdateCycleRequestDTO cycle);
 }

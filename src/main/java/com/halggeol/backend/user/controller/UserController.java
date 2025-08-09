@@ -66,12 +66,12 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Map<String, String>> deleteUser(
+    public ResponseEntity<Map<String, String>> markAsDeleted(
         @AuthenticationPrincipal CustomUser user,
         @RequestHeader("Authorization") String bearerToken
     ) {
         // 회원 탈퇴
-        return ResponseEntity.ok(userService.deleteUser(user, bearerToken));
+        return ResponseEntity.ok(userService.markAsDeleted(user, bearerToken));
     }
 
     @PatchMapping("/me/update/cycle")
