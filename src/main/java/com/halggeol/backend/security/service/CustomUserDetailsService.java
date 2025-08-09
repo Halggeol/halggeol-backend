@@ -21,6 +21,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userDetailsMapper.get(email);
         if (user == null) {
+            log.error("존재하지 않는 사용자입니다.");
+            throw new UsernameNotFoundException(email);
+        }
+        if (user.getDeletedDate() != null) {
+            log.error("탈퇴한 사용자입니다.");
             throw new UsernameNotFoundException(email);
         }
         return new CustomUser(user);
