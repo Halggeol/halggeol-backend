@@ -166,6 +166,4 @@ public class InsightController {
         List<InsightRoundWithProductsDTO> data = insightService.getAllRoundsWithProductsByUser(userId);
         return ResponseEntity.ok(data);
     }
-
-
 }
