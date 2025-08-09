@@ -6,7 +6,10 @@
 <mapper namespace="com.halggeol.backend.survey.mapper.SurveyMapper">
 
   <update id="updateKnowledgeByEmail">
-    UPDATE users SET user_klg = #{userKlg} WHERE email = #{email}
+    UPDATE users
+    SET user_klg = #{userKlg},
+      klg_renew_date = NOW()
+    WHERE email = #{email}
   </update>
 
   <update id="updateTendencyByEmail">
@@ -16,7 +19,8 @@
       risk_score = #{riskScore},
       cost_score = #{costScore},
       liquidity_score = #{liquidityScore},
-      complexity_score = #{complexityScore}
+      complexity_score = #{complexityScore},
+      risk_renew_date = NOW()
     WHERE email = #{email}
   </update>
 
