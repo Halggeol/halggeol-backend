@@ -5,6 +5,7 @@ import com.halggeol.backend.insight.mapper.InsightMapper;
 import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -32,7 +33,8 @@ public class InsightServiceImpl implements InsightService {
     private final InsightMapper insightMapper;
 
     // application.properties에 저장해둔 인증키
-    private static String API_KEY = "ATw64SDmn6zzCgPUzOxDkXqya2O8RMSm";
+    @Value("${exchange.apiKey}")
+    private String API_KEY ;
 
     // SSL 인증서 문제 해결을 위한 메서드
     private static void disableSSLCertificateChecking() {
