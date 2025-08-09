@@ -1,9 +1,6 @@
 package com.halggeol.backend.insight.controller;
 
-import com.halggeol.backend.insight.dto.ExchangeRateDTO;
-import com.halggeol.backend.insight.dto.InsightDTO;
-import com.halggeol.backend.insight.dto.InsightDetailResponseDTO;
-import com.halggeol.backend.insight.dto.RegretSurveyRequestDTO;
+import com.halggeol.backend.insight.dto.*;
 import com.halggeol.backend.insight.service.InsightDetailService;
 import com.halggeol.backend.insight.service.InsightService;
 import com.halggeol.backend.security.domain.CustomUser;
@@ -20,26 +17,23 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/insight")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173") // Vue 개발 서버 허용
 public class InsightController {
 
     private final InsightService insightService;
-    private final InsightDetailService insightDetailService;
+    private final InsightDetailService InsightDetailService;
 
     @GetMapping
     public List<InsightDTO> getInsightList(
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer year,
+            @AuthenticationPrincipal CustomUser user,
+            @RequestParam(required = false) Integer round,
             @RequestParam(required = false) String type
     ) {
-        if (month != null && year != null) {
-            // 월/연도 기준으로 놓친 수익 Top 3 상품 조회
-            return insightService.getTop3MissedProducts(month, year);
+        if (round != null) {
+            // 회차 기준으로 놓친 수익 Top 3 상품 조회
+            return insightService.getTop3MissedProducts(round,user);
         } else if ("fund".equals(type)) {
-            // 펀드 상품 전체 조회 (회고 상태 기준)
             return insightService.getFundInsight();
         } else if ("aggressive_pension".equals(type)) {
-            // 공격형 연금 상품 전체 조회 (회고 상태 + 연금 ID A로 시작)
             return insightService.getAggressivePensionInsight();
         } else {
             throw new IllegalArgumentException("잘못된 요청입니다. 쿼리 파라미터를 확인하세요.");
@@ -55,7 +49,7 @@ public class InsightController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         try {
-            InsightDetailResponseDTO response = insightDetailService.getInsightDetail(round, productId, user);
+            InsightDetailResponseDTO response = InsightDetailService.getInsightDetail(round, productId, user);
             if (response == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
@@ -72,7 +66,7 @@ public class InsightController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        insightDetailService.updateRegretSurvey(user, request);
+        InsightDetailService.updateRegretSurvey(user, request);
         return ResponseEntity.ok().build();
     }
 
@@ -116,32 +110,6 @@ public class InsightController {
         }
     }
 
-//    @GetMapping("/compare-forex")
-//    public List<ForexCompareDTO> compareForexByUser(
-//            @RequestParam Long userId,
-//            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-//
-//        if (date != null) {
-//            return insightService.compareForexRegretItems(userId, date);
-//        } else {
-//            return insightService.getUserForexCompareList(userId);
-//        }
-//    }
-
-//    @GetMapping("/compare-forex/grouped")
-//    public Map<Long, List<ForexCompareDTO>> compareForexGrouped(
-//            @RequestParam Long userId) {
-//        return insightService.getUserForexCompareGrouped(userId);
-//    }
-
-    //유사도 측정
-//    @GetMapping("/similar-products")
-//    public List<RecommendServiceImpl.Recommendation> getSimilarProducts(@RequestParam String productId) {
-//        return insightService.getSimilarProductsForInsight(productId);
-//    }
-    /**
-     * 사용 가능한 환율 데이터 날짜 찾기 (컨트롤러용 헬퍼 메서드)
-     */
     private String findUsableExchangeRateDate() {
         LocalDate today = LocalDate.now();
 
@@ -177,4 +145,27 @@ public class InsightController {
 
         return yesterday.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
+
+    //스케줄(자동)을 수동으로 open api 연결 해보기
+    @GetMapping("/fetch-exchange")
+    public ResponseEntity<String> fetchExchangeManually() {
+        insightService.fetchAndSaveExchangeRates();
+        return ResponseEntity.ok("환율 데이터 수동 저장 완료");
+    }
+
+
+    //처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기
+    @GetMapping("/with-products")
+    public ResponseEntity<List<InsightRoundWithProductsDTO>> getInsightRoundsWithProducts(
+            @AuthenticationPrincipal CustomUser user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long userId = (long) user.getUser().getId();  // ✅ 내부의 user 객체에서 꺼내야 함
+        List<InsightRoundWithProductsDTO> data = insightService.getAllRoundsWithProductsByUser(userId);
+        return ResponseEntity.ok(data);
+    }
+
+
 }

@@ -63,6 +63,7 @@
   <!--  depositInfo  -->
   <select id="getDepositInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
     SELECT p.id,
+           p.name AS productName,
            p.prime_rate                                                    AS interestRate,
            p.min_limit,
            p.max_limit,
@@ -88,6 +89,7 @@
   <!--  savingsInfo  -->
   <select id="getSavingsInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
     SELECT p.id,
+           p.name AS productName,
            p.prime_rate                                                    AS interestRate,
            p.min_limit,
            p.max_limit,
@@ -113,6 +115,7 @@
   <!--  forexInfo  -->
   <select id="getForexInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
     SELECT p.id,
+           p.name AS productName,
            p.rate                                                          AS interestRate,
            p.min_limit,
            p.max_limit,
@@ -138,6 +141,7 @@
   <!--  conservativePensionInfo  -->
   <select id="getConservativePensionInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
     SELECT p.id,
+           p.name AS productName,
            p.rate                                                          AS interestRate,
            p.min_limit,
            p.max_limit,
@@ -164,6 +168,7 @@
   <!--  aggressivePensionInfo  -->
   <select id="getAggressivePensionInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
     SELECT p.id,
+           p.name AS productName,
            p.rate                                                          AS interestRate,
            p.min_limit,
            p.max_limit,
@@ -189,6 +194,7 @@
   <!--  fundInfo  -->
   <select id="getFundInfo" resultType="com.halggeol.backend.insight.dto.InsightDetailResponseDTO">
     SELECT p.id,
+           p.name AS productName,
            p.rate                                                          AS interestRate,
            p.min_limit,
            p.TER,
