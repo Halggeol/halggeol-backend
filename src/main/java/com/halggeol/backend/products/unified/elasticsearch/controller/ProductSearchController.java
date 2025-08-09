@@ -24,7 +24,7 @@ public class ProductSearchController {
         @RequestParam(required = false) String keyword,
         @RequestParam(required = false) List<Integer> fSectors,
         @RequestParam(required = false) List<String> types,
-        @RequestParam(required = false) String minAmount,
+        @RequestParam(required = false) Integer minAmount,
         @RequestParam(required = false) Integer saveTerm
     ) {
         return searchService.searchProducts(sort, keyword, fSectors, types, minAmount, saveTerm);
