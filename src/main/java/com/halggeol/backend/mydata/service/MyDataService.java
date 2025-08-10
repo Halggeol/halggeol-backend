@@ -31,7 +31,7 @@ import java.net.URI;
 public class MyDataService {
 
     private final RestTemplate restTemplate;
-    private MyDataMapper myDataMapper;
+    private final MyDataMapper myDataMapper;
     private String baseUrl;
     private String version;
     private String industry;
@@ -40,12 +40,14 @@ public class MyDataService {
     @Autowired
     public MyDataService(
         RestTemplate restTemplate,
+        MyDataMapper myDataMapper,
         @Value("${mydata.api.base-url}") String baseUrl,
         @Value("${mydata.api.version}") String version,
         @Value("${mydata.api.industry}") String industry,
         @Value("${mydata.api.org-code}") String orgCode
     ) {
         this.restTemplate = restTemplate;
+        this.myDataMapper = myDataMapper;
         this.baseUrl = baseUrl;
         this.version = version;
         this.industry = industry;
@@ -68,20 +70,20 @@ public class MyDataService {
 
             Mydata mydata = Mydata.builder()
                 .collectDate(LocalDateTime.now())
-                .asset(response.getAccount_cnt())
+                .asset(response.getAccountCnt())
                 .userId(userId)
                 .build();
             myDataMapper.insertMydata(mydata);
 
             int mydataId = mydata.getId();
 
-            for (MyDataAccount account : response.getAccount_list()) {
+            for (MyDataAccount account : response.getAccountList()) {
                 MyProduct myProduct = MyProduct.builder()
                     .mydataId(mydataId)
-                    .amount(parseBalanceAmount(account.getBalance_amount()))
+                    .amount(parseBalanceAmount(account.getBalanceAmount()))
                     .regDate(LocalDateTime.now())
                     .endDate(null)
-                    .productId(mapAccountTypeToProductId(account.getAccount_type()))
+                    .productId(mapAccountTypeToProductId(account.getAccountType()))
                     .build();
                 myDataMapper.insertMyProduct(myProduct);
             }
@@ -115,7 +117,7 @@ public class MyDataService {
 
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
-//        System.out.println("실제 API 호출: " + uri);
+        log.info("Calling MyData API: {}", uri);
 
         ResponseEntity<MyDataAccountListResponseDTO> response = restTemplate.exchange(
             uri,
@@ -132,7 +134,7 @@ public class MyDataService {
         try {
             return Integer.parseInt(balanceAmount);
         } catch (NumberFormatException e) {
-            System.err.println("잔액 변환 오류: " + balanceAmount);
+            log.error("잔액 변환 오류: {}", balanceAmount, e);
             return 0;
         }
     }

@@ -12,17 +12,17 @@ import lombok.ToString;
 @ToString
 public class MyDataAccountListResponseDTO {
     @JsonProperty("rsp_code")
-    private String rsp_code;
+    private String rspCode;
     @JsonProperty("rsp_msg")
-    private String rsp_msg;
+    private String rspMsg;
     @JsonProperty("search_timestamp")
-    private String search_timestamp;
+    private String searchTimestamp;
     @JsonProperty("reg_date")
-    private String reg_date;
+    private String regDate;
     @JsonProperty("next_page")
-    private String next_page;
+    private String nextPage;
     @JsonProperty("account_cnt")
-    private Integer account_cnt;
+    private Integer accountCnt;
     @JsonProperty("account_list")
-    private List<MyDataAccount> account_list;
+    private List<MyDataAccount> accountList;
 }

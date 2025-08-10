@@ -35,7 +35,7 @@ public class NaverController {
             // 로그인 성공 후 바로 네이버 인증서 발급/확인 흐름으로 리다이렉트
             return new RedirectView(naverAuthService.getNaverCertificateAuthorizeUrl());
         } else {
-            return new RedirectView("/auth/naver/error");
+            return redirectToErrorPage();
 
         }
     }
@@ -55,5 +55,9 @@ public class NaverController {
         } else {
             return ResponseEntity.status(400).build();
         }
+    }
+
+    private RedirectView redirectToErrorPage() {
+        return new RedirectView("/auth/naver/error");
     }
 }

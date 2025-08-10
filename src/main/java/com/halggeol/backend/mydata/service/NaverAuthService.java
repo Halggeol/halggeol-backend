@@ -38,7 +38,7 @@ public class NaverAuthService {
     @Value("${naver.auth.user-info-uri}")
     private String userInfoUri;
 
-    private String state = "halggeol";
+    private static final String STATE = "halggeol";
 
     private final RestTemplate restTemplate;
 
@@ -77,11 +77,13 @@ public class NaverAuthService {
     }
 
     public String getNaverAuthorizeUrl() {
-        return authorizeUri + "?response_type=code&client_id=" + clientId + "&redirect_uri=" + redirectUri + "&state=" + state;
+        return String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s",
+            authorizeUri, clientId, redirectUri, STATE);
     }
 
     public String getNaverCertificateAuthorizeUrl() {
-        return authorizeUri + "?response_type=code&client_id=" + clientId + "&redirect_uri=" + certificateRedirectUri + "&state=" + state + "&scope=auth_age,auth_birthdate,auth_gender,auth_name,auth_mobile";
+        return String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s&scope=auth_age,auth_birthdate,auth_gender,auth_name,auth_mobile",
+            authorizeUri, clientId, certificateRedirectUri, STATE);
     }
 
     public NaverUserInfo getUserInfo(String accessToken) {

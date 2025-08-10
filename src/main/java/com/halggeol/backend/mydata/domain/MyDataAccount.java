@@ -10,23 +10,23 @@ import lombok.ToString;
 @ToString
 public class MyDataAccount {
     @JsonProperty("account_num")
-    private String account_num;
+    private String accountNum;
     @JsonProperty("is_consent")
-    private Boolean is_consent;
+    private Boolean isConsent;
     @JsonProperty("seqno")
     private Integer seqno;
     @JsonProperty("is_foreign_deposit")
-    private Boolean is_foreign_deposit;
+    private Boolean isForeignDeposit;
     @JsonProperty("prod_name")
-    private String prod_name;
+    private String prodName;
     @JsonProperty("is_minus")
-    private Boolean is_minus;
+    private Boolean isMinus;
     @JsonProperty("account_type")
-    private String account_type;
+    private String accountType;
     @JsonProperty("account_status")
-    private String account_status;
+    private String accountStatus;
     @JsonProperty("balance_amount")
-    private String balance_amount;
+    private String balanceAmount;
     @JsonProperty("currency_code")
-    private String currency_code;
+    private String currencyCode;
 }
