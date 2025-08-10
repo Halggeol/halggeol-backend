@@ -15,9 +15,11 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
 import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
+import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 public class ProductSearchService {
 
     private final ElasticsearchClient esClient;
+    private final SearchLogService searchLogService;
 
     private static final int MAX_RESULTS_LIMIT = 10000;
 
@@ -38,14 +41,15 @@ public class ProductSearchService {
         List<Integer> fSectors,
         List<String> types,
         Integer minAmount,
-        Integer saveTerm
+        Integer saveTerm,
+        CustomUser user
     ) {
         try {
             // BoolQuery 빌더 생성
             BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
             
             // 각 조건에 맞는 쿼리를 빌더에 추가
-            addKeywordQuery(boolQueryBuilder, keyword);
+            addKeywordQuery(boolQueryBuilder, keyword, user);
             addTypeFilter(boolQueryBuilder, types);
             addFSectorFilter(boolQueryBuilder, fSectors);
             addMinAmountFilter(boolQueryBuilder, minAmount);
@@ -88,8 +92,12 @@ public class ProductSearchService {
     }
 
     // 키워드 검색 조건
-    private void addKeywordQuery(BoolQuery.Builder boolQueryBuilder, String keyword) {
+    private void addKeywordQuery(BoolQuery.Builder boolQueryBuilder, String keyword, CustomUser user) {
         if (keyword != null && !keyword.isBlank()) {
+            Integer userId = (user != null) ? user.getUser().getId() : -1;
+            searchLogService.saveRecentSearch(keyword, userId);
+            searchLogService.incrementPopularSearchCount(keyword);
+
             log.info("Adding keyword query: {}", keyword);
             boolQueryBuilder.must(Query.of(q->q
                 .bool(b->b

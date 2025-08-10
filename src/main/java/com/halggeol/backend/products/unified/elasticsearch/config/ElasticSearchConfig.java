@@ -3,6 +3,9 @@ package com.halggeol.backend.products.unified.elasticsearch.config;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -39,8 +42,15 @@ public class ElasticSearchConfig {
                 return httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
             })
             .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        JacksonJsonpMapper jsonpMapper = new JacksonJsonpMapper(mapper);
+
         ElasticsearchTransport transport = new RestClientTransport(
-            restClient, new JacksonJsonpMapper());
+            restClient, jsonpMapper);
 
         return new ElasticsearchClient(transport);
 
