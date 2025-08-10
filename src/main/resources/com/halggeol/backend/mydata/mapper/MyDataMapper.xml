@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.halggeol.backend.mydata.mapper.MyDataMapper">
+
+  <insert id="insertMydata" parameterType="com.halggeol.backend.domain.Mydata" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO mydata (collect_date, asset, user_id)
+    VALUES (#{collectDate}, #{asset}, #{userId})
+  </insert>
+
+  <insert id="insertMyProduct" parameterType="com.halggeol.backend.domain.MyProduct">
+    INSERT INTO myproduct (mydata_id, amount, reg_date, end_date, product_id)
+    VALUES (#{mydataId}, #{amount}, #{regDate}, #{endDate}, #{productId})
+  </insert>
+
+</mapper>

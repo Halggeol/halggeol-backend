@@ -109,6 +109,8 @@ dependencies {
     implementation("org.springframework.security:spring-security-config:${springSecurityVersion}")
     implementation("org.springframework.security:spring-security-crypto:${springSecurityVersion}")
 
+    implementation("org.springframework.security:spring-security-oauth2-client:${springSecurityVersion}")
+
     // validation
     implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
     implementation 'javax.validation:validation-api:2.0.1.Final'
@@ -147,6 +149,9 @@ dependencies {
     implementation "co.elastic.clients:elasticsearch-java:8.12.2" // 선택사항
 
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-admin:9.1.1'
 }
 
 
