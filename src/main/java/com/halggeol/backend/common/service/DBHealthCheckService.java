@@ -1,5 +1,7 @@
 package com.halggeol.backend.common.service;
 
+import com.halggeol.backend.common.HealthStatusHolder;
+import com.halggeol.backend.common.enums.DBType;
 import lombok.RequiredArgsConstructor;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.cluster.HealthResponse;
@@ -19,6 +21,8 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class DBHealthCheckService {
 
+    private final HealthStatusHolder healthStatusHolder;
+
     private final RedisTemplate<String, Object> redisTemplate;
     private final MongoTemplate mongoTemplate;
     private final ElasticsearchClient elasticsearchClient;
@@ -27,7 +31,7 @@ public class DBHealthCheckService {
     /**
      * 5분마다 모든 외부 서비스의 상태를 체크합니다.
      */
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 300000) // 5분 (300000), 1시간 (3600000)
     public void checkAllExternalServices() {
         log.info("--- Starting external services heartbeat check ---");
 
@@ -47,8 +51,10 @@ public class DBHealthCheckService {
             String response = redisTemplate.execute((RedisConnection connection) -> connection.ping());
             if ("PONG".equalsIgnoreCase(response)) {
                 log.info("✅ [Redis] is active.");
+                healthStatusHolder.updateStatusOnSuccess(DBType.REDIS);
             } else {
                 log.warn("🚨 [Redis] responded unexpectedly: {}", response);
+                healthStatusHolder.updateStatusOnFailure(DBType.REDIS, "Unexpected response: " + response);
             }
         } catch (Exception e) {
             log.error("🔥 [Redis] connection failed: {}", e.getMessage());
@@ -63,8 +69,10 @@ public class DBHealthCheckService {
              java.sql.Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
             log.info("✅ [MySQL/RDS] is active.");
+            healthStatusHolder.updateStatusOnSuccess(DBType.MYSQL);
         } catch (Exception e) {
             log.error("🔥 [MySQL/RDS] connection failed: {}", e.getMessage());
+            healthStatusHolder.updateStatusOnFailure(DBType.MYSQL, e.getMessage());
         }
     }
 
@@ -84,11 +92,15 @@ public class DBHealthCheckService {
             if (okStatus != null && okStatus.doubleValue() == 1.0) {
                 // --- 수정된 부분 끝 ---
                 log.info("✅ [MongoDB Atlas] is active.");
+                healthStatusHolder.updateStatusOnSuccess(DBType.MONGODB);
             } else {
                 log.warn("🚨 [MongoDB Atlas] ping failed: {}", pingResult != null ? pingResult.toJson() : "null response");
+//                healthStatusHolder.updateStatusOnFailure("MongoDB Atlas", "Ping failed: " + (pingResult != null ? pingResult.toJson() : "null response"));
+
             }
         } catch (Exception e) {
             log.error("🔥 [MongoDB Atlas] connection failed: {}", e.getMessage());
+            healthStatusHolder.updateStatusOnFailure(DBType.MONGODB, e.getMessage());
         }
     }
 
@@ -102,10 +114,14 @@ public class DBHealthCheckService {
 
             if (status == HealthStatus.Red) {
                 log.error("🔥 [Elasticsearch] cluster status is RED.");
+                healthStatusHolder.updateStatusOnFailure(DBType.ELASTICSEARCH, "Cluster status is RED");
             } else if (status == HealthStatus.Yellow) {
                 log.warn("🚨 [Elasticsearch] cluster status is YELLOW.");
+
+
             } else {
                 log.info("✅ [Elasticsearch] cluster status is GREEN.");
+                healthStatusHolder.updateStatusOnSuccess(DBType.ELASTICSEARCH);
             }
         } catch (Exception e) {
             log.error("🔥 [Elasticsearch] connection failed: {}", e.getMessage());
