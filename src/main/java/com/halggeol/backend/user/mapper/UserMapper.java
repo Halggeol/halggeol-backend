@@ -8,6 +8,10 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
+    // create
+    int insert(User user);
+
+    // read
     User findByEmail(String email);
 
     User findByEmailIncludingDeleted(String email);
@@ -23,8 +27,7 @@ public interface UserMapper {
 
     UserProfileResponseDTO getUserProfileByUserId(int id);
 
-    int insert(User user);
-
+    // update
     int updatePasswordByEmail(
         @Param("email") String email,
         @Param("newPassword") String newPassword
@@ -41,4 +44,7 @@ public interface UserMapper {
     );
 
     int updateDeletedDateById(int id);
+
+    // delete
+    int deleteUserByEmail(String email);
 }
