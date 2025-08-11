@@ -102,9 +102,10 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
+        // soft delete 된 회원 데이터 삭제
         User deleteUser = userMapper.findByEmailIncludingDeleted(userToJoin.getEmail());
         if (deleteUser != null && deleteUser.getDeletedDate() != null) {
-            // TODO: soft delete 된 회원이면 관련 데이터 전부 삭제하기
+            userMapper.deleteUserByEmail(userToJoin.getEmail());
         }
 
         User user = userToJoin.toVO();
