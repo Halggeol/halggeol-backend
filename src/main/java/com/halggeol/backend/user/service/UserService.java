@@ -7,13 +7,14 @@ import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
     User findByEmail(String email);
 
     void emailExists(String email);
 
-    Map<String, String> requestJoin(EmailDTO email);
+    ResponseEntity<Map<String, Object>> requestJoin(EmailDTO email);
 
     Map<String, String> join(UserJoinDTO user, String token);
 

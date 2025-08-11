@@ -12,10 +12,12 @@ import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,22 +48,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> requestJoin(EmailDTO email) {
+    public ResponseEntity<Map<String, Object>> requestJoin(EmailDTO email) {
         // 입력값 유효성 검증은 UserJoinDTO에서 진행
         // 검증 실패 시 MethodArgumentNotValidException 예외 발생
         // 스프링 MVC에서 자동으로 400 Bad Request로 응답함
 
-        if (findByEmail(email.getEmail()) != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            if (findByEmail(email.getEmail()) != null) {
+                response.put("success", false);
+                response.put("message", "이미 존재하는 사용자입니다.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+
+            mailService.sendMail(
+                MailDTO.builder()
+                    .email(email.getEmail())
+                    .token(jwtManager.generateVerifyToken(email.getEmail()))
+                    .mailType(MailType.SIGNUP)
+                    .build()
+            );
+
+            response.put("success", true);
+            response.put("message", "본인 인증 이메일이 전송되었습니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "회원가입 요청 이메일 전송 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-        mailService.sendMail(MailDTO.builder()
-                                    .email(email.getEmail())
-                                    .token(jwtManager.generateVerifyToken(email.getEmail()))
-                                    .mailType(MailType.SIGNUP)
-                                    .build());
-
-        return Map.of("message", "본인 인증 이메일이 전송되었습니다.");
     }
 
     @Transactional
