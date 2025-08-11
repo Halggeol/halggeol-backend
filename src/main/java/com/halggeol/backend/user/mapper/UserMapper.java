@@ -2,6 +2,7 @@ package com.halggeol.backend.user.mapper;
 
 import com.halggeol.backend.security.domain.User;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -25,6 +26,8 @@ public interface UserMapper {
         @Param("phone") String phone
     );
 
+    List<User> findUsersDeletedBefore(LocalDateTime deletedDate);
+
     UserProfileResponseDTO getUserProfileByUserId(int id);
 
     // update
@@ -47,4 +50,6 @@ public interface UserMapper {
 
     // delete
     int deleteUserByEmail(String email);
+
+    int deleteUserById(int id);
 }

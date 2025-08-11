@@ -14,6 +14,7 @@ public class BatchScheduler {
 
     private final JobLauncher jobLauncher;
     private final Job userActionLogJob;
+    private final Job hardDeleteJob;
 
 
     @Scheduled(cron = "30 0 0 * * *") // 매일 자정에 실행
@@ -24,5 +25,19 @@ public class BatchScheduler {
             .addLong("timestamp", System.currentTimeMillis())
             .toJobParameters();
         jobLauncher.run(userActionLogJob, params);
+    }
+
+    @Scheduled(cron = "0 0 3 * * *") // 매일 새벽 3시에 실행
+    public void runHardDeleteJob() {
+        try {
+            JobParameters params = new JobParametersBuilder()
+                .addLong("runDate", System.currentTimeMillis())
+                .toJobParameters();
+
+            jobLauncher.run(hardDeleteJob, params);
+            System.out.println("Hard delete job started at: " + new java.util.Date());
+        } catch (Exception e) {
+            System.out.println("Hard delete job failed: " + e.getMessage());
+        }
     }
 }
