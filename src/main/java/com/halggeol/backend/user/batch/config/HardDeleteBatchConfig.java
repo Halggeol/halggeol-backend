@@ -57,7 +57,14 @@ public class HardDeleteBatchConfig {
 
     @Bean
     public ItemProcessor<User, User> userItemProcessor() {
-        return user -> user;
+        return user -> {
+            log.info(
+                "Processing user for hard delete: id={}, username={}",
+                user.getId(),
+                user.getName()
+            );
+            return user;
+        };
     }
 
     @Bean
