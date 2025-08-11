@@ -6,7 +6,7 @@
 <mapper namespace="com.halggeol.backend.user.mapper.UserMapper">
 
   <select id="findByEmail" resultType="com.halggeol.backend.security.domain.User">
-    SELECT * FROM users WHERE email = #{email}
+    SELECT * FROM users WHERE email = #{email} AND deleted_date IS NULL
   </select>
 
   <select id="findNameById" resultType="java.lang.String">
@@ -18,7 +18,7 @@
   </select>
 
   <select id="findEmailByNameAndPhone" resultType="java.lang.String">
-    SELECT email FROM users WHERE name = #{name} AND phone = #{phone}
+    SELECT email FROM users WHERE name = #{name} AND phone = #{phone} AND deleted_date IS NULL
   </select>
 
   <select id="getUserProfileByUserId" resultType="com.halggeol.backend.user.dto.UserProfileResponseDTO">
