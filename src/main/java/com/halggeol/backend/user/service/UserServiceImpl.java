@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
 
         response.put("success", true);
         response.put("message", "회원가입이 완료되었습니다.");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Override
