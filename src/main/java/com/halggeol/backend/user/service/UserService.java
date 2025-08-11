@@ -16,7 +16,7 @@ public interface UserService {
 
     ResponseEntity<Map<String, Object>> requestJoin(EmailDTO email);
 
-    Map<String, String> join(UserJoinDTO user, String token);
+    ResponseEntity<Map<String, Object>> join(UserJoinDTO user, String token);
 
     String getNameById(int userId);
 

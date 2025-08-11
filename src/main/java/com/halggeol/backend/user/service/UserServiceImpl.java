@@ -83,15 +83,28 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Map<String, String> join(UserJoinDTO userToJoin, String token) {
+    public ResponseEntity<Map<String, Object>> join(UserJoinDTO userToJoin, String token) {
+        Map<String, Object> response = new HashMap<>();
+
         if (!jwtManager.validateToken(token)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰이 유효하지 않습니다.");
+            response.put("success", false);
+            response.put("message", "토큰이 유효하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
         if (!userToJoin.isValidAge()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "만 14세 이상 가입 가능합니다.");
+            response.put("success", false);
+            response.put("message", "만 14세 이상 가입 가능합니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         if (!userToJoin.isCorrectPassword()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            response.put("success", false);
+            response.put("message", "비밀번호가 일치하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        User deleteUser = userMapper.findByEmailIncludingDeleted(userToJoin.getEmail());
+        if (deleteUser != null && deleteUser.getDeletedDate() != null) {
+            // TODO: soft delete 된 회원이면 관련 데이터 전부 삭제하기
         }
 
         User user = userToJoin.toVO();
@@ -99,7 +112,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
 
-        return Map.of("message", "회원가입이 완료되었습니다.");
+        response.put("success", true);
+        response.put("message", "회원가입이 완료되었습니다.");
+        return ResponseEntity.ok(response);
     }
 
     @Override
