@@ -43,6 +43,7 @@ public class ElasticSearchConfig {
             })
             .build();
 
+        // 최근검색어/인기검색어 Instant 타입 변환 관련
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

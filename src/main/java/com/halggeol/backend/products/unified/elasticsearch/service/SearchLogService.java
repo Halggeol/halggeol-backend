@@ -27,9 +27,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class SearchLogService {
     private final ElasticsearchClient esClient;
+    private static final int MAX_SEARCHES = 5; // 최근 및 인기검색어 보여줄 개수
 
     public void saveRecentSearch(String keyword, Integer userId){
         try{
+            // 새 검색어 저장
             RecentSearchDocument doc = RecentSearchDocument.builder()
                 .keyword(keyword)
                 .timestamp(Instant.now())
@@ -71,7 +73,7 @@ public class SearchLogService {
     }
 
     // 최근 검색어 조회 (최근 5개)
-    public List<RecentSearchResponseDTO> getRecentSearches(int size, Integer userId){
+    public List<RecentSearchResponseDTO> getRecentSearches(Integer userId){
         try{
             SearchRequest request = SearchRequest.of(s->s
                 .index("recent_searches_index")
@@ -85,7 +87,7 @@ public class SearchLogService {
                         )
                     )
                 )
-                .size(size)
+                .size(MAX_SEARCHES)
                 .sort(sort->sort.field(f->f.field("timestamp").order(SortOrder.Desc)))
             );
 
@@ -102,11 +104,11 @@ public class SearchLogService {
     }
 
     // 인기 건색어 조회 (상위 5개)
-    public List<PopularSearchResponseDTO> getPopularSearches(int size){
+    public List<PopularSearchResponseDTO> getPopularSearches(){
         try{
             SearchRequest request = SearchRequest.of(s->s
                 .index("popular_searches_index")
-                .size(size)
+                .size(MAX_SEARCHES)
                 .sort(sort->sort.field(f->f.field("count").order(SortOrder.Desc)))
             );
 

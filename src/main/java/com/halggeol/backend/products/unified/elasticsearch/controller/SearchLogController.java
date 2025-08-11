@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,21 +20,18 @@ public class SearchLogController {
 
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentSearches(
-        @RequestParam(defaultValue = "5") int size,
         @AuthenticationPrincipal CustomUser user
     ){
         if (user == null) {
             return ResponseEntity.ok(List.of());
         }
         Integer userId = user.getUser().getId();
-        return ResponseEntity.ok(searchLogService.getRecentSearches(size, userId));
+        return ResponseEntity.ok(searchLogService.getRecentSearches(userId));
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<?> getPopularSearches(
-        @RequestParam(defaultValue = "5") int size
-    ){
-        return ResponseEntity.ok(searchLogService.getPopularSearches(size));
+    public ResponseEntity<?> getPopularSearches(){
+        return ResponseEntity.ok(searchLogService.getPopularSearches());
     }
 
 }
