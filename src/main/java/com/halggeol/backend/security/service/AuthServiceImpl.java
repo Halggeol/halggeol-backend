@@ -97,6 +97,7 @@ public class AuthServiceImpl implements AuthService {
                 response.put("success", false);
                 response.put("message", "일치하는 사용자 정보가 없습니다.");
                 return ResponseEntity.ok(response);
+            }
 
             mailService.sendMail(
                 MailDTO.builder()
