@@ -30,7 +30,8 @@ CREATE TABLE `mydata` (
                           `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, # 자동생성 ID
                           `collect_date` DATETIME, # 데이터 수집일
                           `asset` INT, # 자산 총액
-                          `user_id` INT NOT NULL # 사용자 ID, users 테이블의 id를 참조
+                          `user_id` INT NOT NULL, # 사용자 ID, users 테이블의 id를 참조
+                          FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `myproduct` (
@@ -41,7 +42,7 @@ CREATE TABLE `myproduct` (
                              `end_date` DATE, # 만기일
                              `product_id` VARCHAR(20) NOT NULL, # 제품 ID, products 테이블의 id를 참조
                              PRIMARY KEY (`id`),
-                             FOREIGN KEY (`mydata_id`) REFERENCES `mydata` (`id`)
+                             FOREIGN KEY (`mydata_id`) REFERENCES `mydata` (`id`) ON DELETE CASCADE
 );
 
 -- Table: products
@@ -251,7 +252,7 @@ CREATE TABLE `rec_item` (
                             `round` INT NULL # 추천 회차 (1, 2, 3 등)
 
                             PRIMARY KEY (`rec_id`, `user_id`),
-                            FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+                            FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 );
 
 -- 트래킹
@@ -298,5 +299,5 @@ CREATE TABLE `scrap` (
                          `user_id` INT NOT NULL, # 사용자 ID, users 테이블의 id를 참조
                          `product_id` VARCHAR(20) NOT NULL, # 상품 ID, products 테이블의 id를 참조
                          PRIMARY KEY (`user_id`, `product_id`),
-                         FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+                         FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 );

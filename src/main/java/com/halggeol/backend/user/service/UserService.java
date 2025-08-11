@@ -7,15 +7,16 @@ import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
     User findByEmail(String email);
 
     void emailExists(String email);
 
-    Map<String, String> requestJoin(EmailDTO email);
+    ResponseEntity<Map<String, Object>> requestJoin(EmailDTO email);
 
-    Map<String, String> join(UserJoinDTO user, String token);
+    ResponseEntity<Map<String, Object>> join(UserJoinDTO user, String token);
 
     String getNameById(int userId);
 
@@ -23,7 +24,7 @@ public interface UserService {
 
     Map<String, String> updateProfile(CustomUser user, UpdateProfileDTO info);
 
-    Map<String, String> deleteUser(CustomUser user, String bearerToken);
+    Map<String, String> markAsDeleted(CustomUser user, String bearerToken);
 
     Map<String, String> updateInsightCycle(CustomUser user, UpdateCycleRequestDTO cycle);
 }
