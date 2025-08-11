@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
     User findByEmail(String email);
 
+    User findByEmailIncludingDeleted(String email);
+
     String findNameById(int id);
 
     User findById(int id);
