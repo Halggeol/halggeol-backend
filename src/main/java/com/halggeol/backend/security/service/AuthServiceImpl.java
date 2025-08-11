@@ -96,11 +96,7 @@ public class AuthServiceImpl implements AuthService {
             if (userService.findByEmail(email.getEmail()) == null) {
                 response.put("success", false);
                 response.put("message", "일치하는 사용자 정보가 없습니다.");
-            }
-            else {
-                response.put("success", true);
-                response.put("message", "비밀번호 변경 이메일이 전송되었습니다.");
-            }
+                return ResponseEntity.ok(response);
 
             mailService.sendMail(
                 MailDTO.builder()
@@ -109,6 +105,9 @@ public class AuthServiceImpl implements AuthService {
                     .mailType(MailType.PASSWORD_RESET)
                     .build()
             );
+
+            response.put("success", true);
+            response.put("message", "비밀번호 변경 이메일이 전송되었습니다.");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
