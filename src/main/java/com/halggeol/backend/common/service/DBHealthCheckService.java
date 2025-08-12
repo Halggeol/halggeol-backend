@@ -116,6 +116,7 @@ public class DBHealthCheckService {
             }
         } catch (Exception e) {
             log.error("🔥 [Elasticsearch] connection failed: {}", e.getMessage());
+            healthStatusHolder.updateStatusOnFailure(DBType.ELASTICSEARCH, e.getMessage());
         }
     }
 }
