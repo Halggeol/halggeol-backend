@@ -24,4 +24,18 @@
     <param-value>false</param-value>
   </context-param>
 
+  <!-- Log4j2 Configuration -->
+  <context-param>
+    <param-name>log4j.configurationFile</param-name>
+    <param-value>classpath:log4j.xml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>Log4jContextSelector</param-name>
+    <param-value>org.apache.logging.log4j.core.async.AsyncLoggerContextSelector</param-value>
+  </context-param>
+  <context-param>
+    <param-name>log4j2.debug</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
 </web-app>
