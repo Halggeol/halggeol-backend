@@ -2,7 +2,7 @@
 <Configuration status="INFO">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%-5level: %c{1.} - %m%n"/>
+      <PatternLayout pattern="%-5level: %c - %m%n"/>
     </Console>
   </Appenders>
 
@@ -17,6 +17,10 @@
     <Logger name="org.springframework.beans" level="info"/>
     <Logger name="org.springframework.context" level="info"/>
     <Logger name="org.springframework.web" level="info"/>
+
+    <Logger name="com.halggeol.backend" level="info" additivity="false">
+      <AppenderRef ref="Console"/>
+    </Logger>
 
     <Logger name="jdbc.audit" level="warn"/>
     <Logger name="jdbc.resultset" level="warn"/>

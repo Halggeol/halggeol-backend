@@ -2,13 +2,20 @@ package com.halggeol.backend.user.mapper;
 
 import com.halggeol.backend.security.domain.User;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
+    // create
+    int insert(User user);
+
+    // read
     User findByEmail(String email);
+
+    User findByEmailIncludingDeleted(String email);
 
     String findNameById(int id);
 
@@ -19,10 +26,11 @@ public interface UserMapper {
         @Param("phone") String phone
     );
 
+    List<User> findUsersDeletedBefore(LocalDateTime deletedDate);
+
     UserProfileResponseDTO getUserProfileByUserId(int id);
 
-    int insert(User user);
-
+    // update
     int updatePasswordByEmail(
         @Param("email") String email,
         @Param("newPassword") String newPassword
@@ -37,6 +45,11 @@ public interface UserMapper {
         @Param("id") int id,
         @Param("insightCycle") String insightCycle
     );
+
+    int updateDeletedDateById(int id);
+
+    // delete
+    int deleteUserByEmail(String email);
 
     int deleteUserById(int id);
 }
