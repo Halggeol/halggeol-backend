@@ -25,17 +25,25 @@ public class InsightController {
 
     @GetMapping
     public List<InsightDTO> getInsightList(
-            @AuthenticationPrincipal CustomUser user,
-            @RequestParam(required = false) Integer round,
-            @RequestParam(required = false) String type
+        @AuthenticationPrincipal CustomUser user,
+        @RequestParam(required = false) Integer round,
+        @RequestParam(required = false) String type
     ) {
+        if (user == null) {
+            throw new IllegalArgumentException("인증된 사용자가 필요합니다.");
+        }
+
+        Long userId = (long) user.getUser().getId();
+
         if (round != null) {
             // 회차 기준으로 놓친 수익 Top 3 상품 조회
-            return insightService.getTop3MissedProducts(round,user);
+            return insightService.getTop3MissedProducts(round, user);
         } else if ("fund".equals(type)) {
-            return insightService.getFundInsight();
+            // 펀드 모아보기 - 사용자별로 필터링된 펀드만
+            return insightService.getFundInsightByUser(userId);
         } else if ("aggressive_pension".equals(type)) {
-            return insightService.getAggressivePensionInsight();
+            // 공격형 연금 모아보기 - 사용자별로 필터링된 공격형 연금만
+            return insightService.getAggressivePensionInsightByUser(userId);
         } else {
             throw new IllegalArgumentException("잘못된 요청입니다. 쿼리 파라미터를 확인하세요.");
         }
@@ -56,7 +64,7 @@ public class InsightController {
         return ResponseEntity.ok(data);
     }
 
-    @GetMapping("/{round}/products/{productId}}")
+    @GetMapping("/{round}/products/{productId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getInsightDetail(
         @PathVariable Integer round,
