@@ -113,6 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/main",
                 "/api/products",
                 "/api/products/basic",
+                "/api/search-logs/popular",
                 "/api/survey/knowledge/init",
                 "/api/survey/tendency/init",
                 "/api/insight",
