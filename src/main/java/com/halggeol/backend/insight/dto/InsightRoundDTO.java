@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,4 +16,5 @@ import java.util.List;
 public class InsightRoundDTO {
     private int round;
     private List<String> productIds;
+    private LocalDateTime recDate;
 }

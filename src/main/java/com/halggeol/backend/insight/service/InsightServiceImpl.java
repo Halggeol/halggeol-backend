@@ -76,14 +76,26 @@ public class InsightServiceImpl implements InsightService {
         return insightMapper.getTop3MissedProducts(round, userId);
     }
 
+//    @Override
+//    public List<InsightDTO> getFundInsight() {
+//        return insightMapper.getFundInsight();
+//    }
+//
+//    @Override
+//    public List<InsightDTO> getAggressivePensionInsight() {
+//        return insightMapper.getAggressivePensionInsight();
+//    }
+
+    // 새로 추가: 사용자별 펀드 인사이트 조회
     @Override
-    public List<InsightDTO> getFundInsight() {
-        return insightMapper.getFundInsight();
+    public List<InsightDTO> getFundInsightByUser(Long userId) {
+        return insightMapper.getFundInsightByUser(userId);
     }
 
+    // 새로 추가: 사용자별 공격형 연금 인사이트 조회
     @Override
-    public List<InsightDTO> getAggressivePensionInsight() {
-        return insightMapper.getAggressivePensionInsight();
+    public List<InsightDTO> getAggressivePensionInsightByUser(Long userId) {
+        return insightMapper.getAggressivePensionInsightByUser(userId);
     }
 
     @Override
@@ -412,14 +424,30 @@ public class InsightServiceImpl implements InsightService {
 //        fetchAndSaveExchangeRates(targetDate);
 //    }
 
-
     // 처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기
     @Override
     public List<InsightRoundDTO> getAllInsightRoundsByUser(Long userId) {
         return insightMapper.getAllInsightRoundsByUser(userId);
     }
 
-    public List<InsightRoundWithProductsDTO> getAllRoundsWithProductsByUser(Long userId) {
+//    public List<InsightRoundWithProductsDTO> getAllRoundsWithProductsByUser(Long userId) {
+//        // 1) 라운드별 상품ID 목록 가져오기
+//        List<InsightRoundDTO> rounds = getAllInsightRoundsByUser(userId);
+//
+//        // 2) 라운드별 상품 상세 리스트로 변환
+//        List<InsightRoundWithProductsDTO> result = new ArrayList<>();
+//
+//        for (InsightRoundDTO roundDTO : rounds) {
+//            int round = roundDTO.getRound();
+//            List<InsightDTO> products = insightMapper.getAllProductsByRoundAndUser(round, userId);
+//            result.add(new InsightRoundWithProductsDTO(round, products));
+//        }
+//        return result;
+//    }
+
+    // 기존 메서드 수정 - 타입 필터링 추가
+    @Override
+    public List<InsightRoundWithProductsDTO> getAllRoundsWithProductsByUser(Long userId, String type) {
         // 1) 라운드별 상품ID 목록 가져오기
         List<InsightRoundDTO> rounds = getAllInsightRoundsByUser(userId);
 
@@ -428,10 +456,28 @@ public class InsightServiceImpl implements InsightService {
 
         for (InsightRoundDTO roundDTO : rounds) {
             int round = roundDTO.getRound();
+
             List<InsightDTO> products = insightMapper.getAllProductsByRoundAndUser(round, userId);
-            result.add(new InsightRoundWithProductsDTO(round, products));
+
+            // 3) 타입 필터링 적용 (type이 null이 아닌 경우만)
+            if (type != null && !type.isEmpty()) {
+                products = products.stream()
+                        .filter(product -> type.equals(product.getType()))
+                        .collect(Collectors.toList());
+            }
+
+            // 4) 해당 라운드에 필터링된 상품이 있는 경우만 추가
+            if (!products.isEmpty()) {
+                result.add(new InsightRoundWithProductsDTO(round, products, roundDTO.getRecDate()));
+            }
         }
+
         return result;
+    }
+
+    // 기존 메서드는 오버로딩으로 유지 (하위 호환성)
+    public List<InsightRoundWithProductsDTO> getAllRoundsWithProductsByUser(Long userId) {
+        return getAllRoundsWithProductsByUser(userId, null);
     }
 
 }

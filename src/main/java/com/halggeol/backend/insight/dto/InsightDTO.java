@@ -2,6 +2,8 @@ package com.halggeol.backend.insight.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
