@@ -19,17 +19,19 @@ public class ProfitCalculationInput {
     private Float upfrontFee; // F의 선취수수료
     private List<ProfitSimulationDTO> profitSimulations; // 시뮬데이터
 
-    public static ProfitCalculationInput from(InsightDetailResponseDTO dto) {
+    public static ProfitCalculationInput from(InsightDetailResponseDTO baseInfo, List<ProfitSimulationDTO> initialSimulations) {
         return ProfitCalculationInput.builder()
-            .recDate(dto.getRecDate())
-            .anlzDate(dto.getAnlzDate())
-            .productId(dto.getId())
-            .maxLimit(dto.getMaxLimit())
-            .isCompound(dto.getIsCompound())
-            .saveTerm(dto.getSaveTerm())
-            .TER(dto.getTER())
-            .upfrontFee(dto.getUpfrontFee())
-            .profitSimulations(dto.getProfits())
+            // baseInfo
+            .recDate(baseInfo.getRecDate())
+            .anlzDate(baseInfo.getAnlzDate())
+            .productId(baseInfo.getId())
+            .maxLimit(baseInfo.getMaxLimit())
+            .isCompound(baseInfo.getIsCompound())
+            .saveTerm(baseInfo.getSaveTerm())
+            .TER(baseInfo.getTER())
+            .upfrontFee(baseInfo.getUpfrontFee())
+            // initialSimulations
+            .profitSimulations(initialSimulations)
             .build();
     }
 }

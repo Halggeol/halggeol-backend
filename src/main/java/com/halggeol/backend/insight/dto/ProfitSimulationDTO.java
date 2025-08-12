@@ -2,10 +2,14 @@ package com.halggeol.backend.insight.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class ProfitSimulationDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

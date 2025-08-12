@@ -22,5 +22,6 @@ public interface InsightDetailMapper {
     Long getAsset(@Param("id") int id, @Param("date") LocalDate date);
     BigDecimal getExchangeRate(@Param("currency") String currency, @Param("date") LocalDate date);
 
+    void updateRegretInsight(Map<String, Object> params);
     int updateRegretSurvey(Map<String, Object> params);
 }
