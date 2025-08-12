@@ -35,7 +35,7 @@
   </context-param>
   <context-param>
     <param-name>log4j2.debug</param-name>
-    <param-value>true</param-value>
+    <param-value>false</param-value>
   </context-param>
 
 </web-app>
