@@ -198,7 +198,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Scheduled(cron = "0 0 * * * *")
-    public void saveCacheRecommendProducts() {
+    @Override
+    public void saveCacheRegretRankingProducts() {
         List<UnifiedProductRegretRankingResponseDTO> ranking = unifiedProductService.getRegretRankingProducts();
 
         if (ranking == null || ranking.isEmpty()) {

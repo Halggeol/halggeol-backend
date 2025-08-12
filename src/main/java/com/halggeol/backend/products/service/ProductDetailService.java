@@ -15,4 +15,6 @@ public interface ProductDetailService {
     String checkRecommendProductStatus(@AuthenticationPrincipal CustomUser user, String productId);
 
     void updateProductStatus(@AuthenticationPrincipal CustomUser user, String productId, String productStatus);
+
+    public void saveCacheRegretRankingProducts();
 }
