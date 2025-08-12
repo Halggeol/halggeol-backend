@@ -309,53 +309,229 @@
     </select>
 
 
-    <select id="getFundInsight" resultType="com.halggeol.backend.insight.dto.InsightDTO">
+    <!-- 사용자별 펀드 인사이트 조회 -->
+    <select id="getFundInsightByUser" resultType="com.halggeol.backend.insight.dto.InsightDTO">
         SELECT
             p.id AS product_id,
             p.name,
             p.company AS company,
             'fund' AS type,
-            tmp.miss_amount
+            tmp.miss_amount,
+            tmp.round
         FROM (
-                 SELECT product1_id AS product_id, product1_status AS status, product1_miss_amount AS miss_amount FROM rec_item
+                 SELECT product1_id AS product_id, product1_status AS status, product1_miss_amount AS miss_amount, round, user_id FROM rec_item
+                 WHERE product1_status = '회고'
                  UNION ALL
-                 SELECT product2_id, product2_status, product2_miss_amount FROM rec_item
+                 SELECT product2_id, product2_status, product2_miss_amount, round, user_id FROM rec_item
+                 WHERE product2_status = '회고'
                  UNION ALL
-                 SELECT product3_id, product3_status, product3_miss_amount FROM rec_item
+                 SELECT product3_id, product3_status, product3_miss_amount, round, user_id FROM rec_item
+                 WHERE product3_status = '회고'
                  UNION ALL
-                 SELECT product4_id, product4_status, product4_miss_amount FROM rec_item
+                 SELECT product4_id, product4_status, product4_miss_amount, round, user_id FROM rec_item
+                 WHERE product4_status = '회고'
                  UNION ALL
-                 SELECT product5_id, product5_status, product5_miss_amount FROM rec_item
+                 SELECT product5_id, product5_status, product5_miss_amount, round, user_id FROM rec_item
+                 WHERE product5_status = '회고'
              ) tmp
                  JOIN fund p ON p.id = tmp.product_id
-        WHERE tmp.status = '회고'
-        ORDER BY tmp.miss_amount DESC
+        WHERE tmp.user_id = #{userId}
+        ORDER BY tmp.round, tmp.miss_amount DESC
     </select>
 
-
-    <select id="getAggressivePensionInsight" resultType="com.halggeol.backend.insight.dto.InsightDTO">
+    <!-- 사용자별 공격형 연금 인사이트 조회 -->
+    <select id="getAggressivePensionInsightByUser" resultType="com.halggeol.backend.insight.dto.InsightDTO">
         SELECT
         p.id AS product_id,
         p.name,
         p.company AS company,
         'pension' AS type,
-        tmp.miss_amount
+        tmp.miss_amount,
+        tmp.round
         FROM (
-        SELECT product1_id AS product_id, product1_status AS status, product1_miss_amount AS miss_amount FROM rec_item
+        SELECT product1_id AS product_id, product1_status AS status, product1_miss_amount AS miss_amount, round, user_id FROM rec_item
+        WHERE product1_status = '회고'
         UNION ALL
-        SELECT product2_id, product2_status, product2_miss_amount FROM rec_item
+        SELECT product2_id, product2_status, product2_miss_amount, round, user_id FROM rec_item
+        WHERE product2_status = '회고'
         UNION ALL
-        SELECT product3_id, product3_status, product3_miss_amount FROM rec_item
+        SELECT product3_id, product3_status, product3_miss_amount, round, user_id FROM rec_item
+        WHERE product3_status = '회고'
         UNION ALL
-        SELECT product4_id, product4_status, product4_miss_amount FROM rec_item
+        SELECT product4_id, product4_status, product4_miss_amount, round, user_id FROM rec_item
+        WHERE product4_status = '회고'
         UNION ALL
-        SELECT product5_id, product5_status, product5_miss_amount FROM rec_item
+        SELECT product5_id, product5_status, product5_miss_amount, round, user_id FROM rec_item
+        WHERE product5_status = '회고'
         ) tmp
         JOIN pension p ON p.id = tmp.product_id
-        WHERE tmp.status = '회고'
+        WHERE tmp.user_id = #{userId}
         AND p.id LIKE 'A%'  <!-- 공격형 연금만 필터링 -->
-        ORDER BY tmp.miss_amount DESC
+        ORDER BY tmp.round, tmp.miss_amount DESC
     </select>
+
+
+    <!-- 처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기  -->
+    <select id="getAllInsightRoundsByUser" resultMap="InsightRoundMap">
+        SELECT
+            round,
+            product_id,
+            rec_date
+        FROM (
+                 SELECT round, rec_date, product1_id AS product_id, product1_status AS status, user_id
+                 FROM rec_item
+                 UNION ALL
+                 SELECT round, rec_date, product2_id, product2_status, user_id
+                 FROM rec_item
+                 UNION ALL
+                 SELECT round, rec_date, product3_id, product3_status, user_id
+                 FROM rec_item
+                 UNION ALL
+                 SELECT round, rec_date, product4_id, product4_status, user_id
+                 FROM rec_item
+                 UNION ALL
+                 SELECT round, rec_date, product5_id, product5_status, user_id
+                 FROM rec_item
+             ) tmp
+        WHERE status = '회고' AND user_id = #{userId}
+        ORDER BY round
+    </select>
+
+    <!-- 사용자별 모든 회고 상품 조회 (타입 필터링 옵션) -->
+    <select id="getAllInsightRoundsByUserWithType" resultMap="InsightRoundMap">
+        SELECT
+        round,
+        product_id,
+        type
+        FROM (
+        <!-- saving -->
+        SELECT tmp.round, tmp.product_id, 'saving' AS type
+        FROM (
+        SELECT round, product1_id AS product_id, product1_status AS status, user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT round, product2_id, product2_status, user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT round, product3_id, product3_status, user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT round, product4_id, product4_status, user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT round, product5_id, product5_status, user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN savings p ON tmp.product_id = p.id
+        WHERE tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- fund -->
+        SELECT tmp.round, tmp.product_id, 'fund' AS type
+        FROM (
+        SELECT round, product1_id AS product_id, product1_status AS status, user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT round, product2_id, product2_status, user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT round, product3_id, product3_status, user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT round, product4_id, product4_status, user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT round, product5_id, product5_status, user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN fund p ON tmp.product_id = p.id
+        WHERE tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- pension -->
+        SELECT tmp.round, tmp.product_id, 'pension' AS type
+        FROM (
+        SELECT round, product1_id AS product_id, product1_status AS status, user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT round, product2_id, product2_status, user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT round, product3_id, product3_status, user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT round, product4_id, product4_status, user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT round, product5_id, product5_status, user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN pension p ON tmp.product_id = p.id
+        WHERE tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- deposit -->
+        SELECT tmp.round, tmp.product_id, 'deposit' AS type
+        FROM (
+        SELECT round, product1_id AS product_id, product1_status AS status, user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT round, product2_id, product2_status, user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT round, product3_id, product3_status, user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT round, product4_id, product4_status, user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT round, product5_id, product5_status, user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN deposit p ON tmp.product_id = p.id
+        WHERE tmp.user_id = #{userId}
+
+        UNION
+
+        <!-- forex -->
+        SELECT tmp.round, tmp.product_id, 'forex' AS type
+        FROM (
+        SELECT round, product1_id AS product_id, product1_status AS status, user_id FROM rec_item
+        WHERE product1_status = '회고'
+        UNION ALL
+        SELECT round, product2_id, product2_status, user_id FROM rec_item
+        WHERE product2_status = '회고'
+        UNION ALL
+        SELECT round, product3_id, product3_status, user_id FROM rec_item
+        WHERE product3_status = '회고'
+        UNION ALL
+        SELECT round, product4_id, product4_status, user_id FROM rec_item
+        WHERE product4_status = '회고'
+        UNION ALL
+        SELECT round, product5_id, product5_status, user_id FROM rec_item
+        WHERE product5_status = '회고'
+        ) tmp
+        JOIN forex p ON tmp.product_id = p.id
+        WHERE tmp.user_id = #{userId}
+        ) all_products
+        <where>
+            <if test="type != null and type != ''">
+                AND type = #{type}
+            </if>
+        </where>
+        ORDER BY round
+    </select>
+
+    <resultMap id="InsightRoundMap" type="com.halggeol.backend.insight.dto.InsightRoundDTO">
+        <result property="round" column="round"/>
+        <result column="rec_date" property="recDate" javaType="java.time.LocalDateTime"/>
+        <collection property="productIds" ofType="string">
+            <result column="product_id"/>
+        </collection>
+    </resultMap>
 
     <!--정확한 날짜의 환율만 있을 때 사용-->
     <select id="getForexRateOnDate" resultType="java.math.BigDecimal">
@@ -371,10 +547,10 @@
         SELECT price
         FROM forex_track
         WHERE product_id = #{productId}
-        AND currency = #{currency}
-        AND tracking_date &lt;= #{recDate}
+          AND currency = #{currency}
+          AND tracking_date &lt;= #{recDate}
         ORDER BY tracking_date DESC
-        LIMIT 1
+            LIMIT 1
     </select>
 
     <select id="getForexCurrencyByProductId" resultType="String">
@@ -399,32 +575,5 @@
         INSERT INTO forex_track (currency, price, tracking_date)
         VALUES (#{curUnit}, #{dealBasR}, #{baseDate})
     </insert>
-
-    <!-- 처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기  -->
-    <select id="getAllInsightRoundsByUser" resultMap="InsightRoundMap">
-        SELECT
-            round,
-            product_id
-        FROM (
-                 SELECT round, product1_id AS product_id, product1_status AS status, user_id FROM rec_item
-                 UNION ALL
-                 SELECT round, product2_id, product2_status, user_id FROM rec_item
-                 UNION ALL
-                 SELECT round, product3_id, product3_status, user_id FROM rec_item
-                 UNION ALL
-                 SELECT round, product4_id, product4_status, user_id FROM rec_item
-                 UNION ALL
-                 SELECT round, product5_id, product5_status, user_id FROM rec_item
-             ) tmp
-        WHERE status = '회고' AND user_id = #{userId}
-        ORDER BY round
-    </select>
-
-    <resultMap id="InsightRoundMap" type="com.halggeol.backend.insight.dto.InsightRoundDTO">
-        <result property="round" column="round"/>
-        <collection property="productIds" ofType="string">
-            <result column="product_id"/>
-        </collection>
-    </resultMap>
 
 </mapper>
