@@ -54,6 +54,7 @@ public class DBHealthCheckService {
             }
         } catch (Exception e) {
             log.error("🔥 [Redis] connection failed: {}", e.getMessage());
+            healthStatusHolder.updateStatusOnFailure(DBType.REDIS, e.getMessage());
         }
     }
 
