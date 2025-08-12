@@ -17,11 +17,11 @@ public interface InsightMapper {
 
     List<InsightDTO> getTop3MissedProducts(@Param("round") int round, @Param("userId") int userId);
 
-    //펀드 관련 인사이트 조회
-    List<InsightDTO> getFundInsight();
+    // 사용자별 펀드 인사이트 조회
+    List<InsightDTO> getFundInsightByUser(@Param("userId") Long userId);
 
-    //공격형 연금 상품 인사이트 조회
-    List<InsightDTO> getAggressivePensionInsight();
+    // 사용자별 공격형 연금 인사이트 조회
+    List<InsightDTO> getAggressivePensionInsightByUser(@Param("userId") Long userId);
 
     // 특정 상품의 특정 날짜 환율 가져오기 (ex : 과거 환율 데이터가 DB에 저장되어 있을 때 사용)
     BigDecimal getForexRateOnDate(@Param("productId") String productId,
@@ -47,5 +47,4 @@ public interface InsightMapper {
     List<InsightRoundDTO> getAllInsightRoundsByUser(Long userId);
 
     List<InsightDTO> getAllProductsByRoundAndUser(@Param("round") int round, @Param("userId") Long userId);
-
 }

@@ -28,23 +28,46 @@ public class InsightController {
             @RequestParam(required = false) Integer round,
             @RequestParam(required = false) String type
     ) {
+        if (user == null) {
+            throw new IllegalArgumentException("인증된 사용자가 필요합니다.");
+        }
+
+        Long userId = (long) user.getUser().getId();
+
         if (round != null) {
             // 회차 기준으로 놓친 수익 Top 3 상품 조회
-            return insightService.getTop3MissedProducts(round,user);
+            return insightService.getTop3MissedProducts(round, user);
         } else if ("fund".equals(type)) {
-            return insightService.getFundInsight();
+            // 펀드 모아보기 - 사용자별로 필터링된 펀드만
+            return insightService.getFundInsightByUser(userId);
         } else if ("aggressive_pension".equals(type)) {
-            return insightService.getAggressivePensionInsight();
+            // 공격형 연금 모아보기 - 사용자별로 필터링된 공격형 연금만
+            return insightService.getAggressivePensionInsightByUser(userId);
         } else {
             throw new IllegalArgumentException("잘못된 요청입니다. 쿼리 파라미터를 확인하세요.");
         }
     }
 
+    //처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기
+    @GetMapping("/with-products")
+    public ResponseEntity<List<InsightRoundWithProductsDTO>> getInsightRoundsWithProducts(
+            @AuthenticationPrincipal CustomUser user,
+            @RequestParam(required = false) String type
+    ) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long userId = (long) user.getUser().getId();
+        List<InsightRoundWithProductsDTO> data = insightService.getAllRoundsWithProductsByUser(userId, type);
+        return ResponseEntity.ok(data);
+    }
+
     @GetMapping("/details")
     public ResponseEntity<?> getInsightDetail(
-        @RequestParam Integer round,
-        @RequestParam String productId,
-        @AuthenticationPrincipal CustomUser user) {
+            @RequestParam Integer round,
+            @RequestParam String productId,
+            @AuthenticationPrincipal CustomUser user) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -61,8 +84,8 @@ public class InsightController {
 
     @PatchMapping("/details")
     public ResponseEntity<Void> updateRegretSurvey(
-        @AuthenticationPrincipal CustomUser user,
-        @RequestBody RegretSurveyRequestDTO request) {
+            @AuthenticationPrincipal CustomUser user,
+            @RequestBody RegretSurveyRequestDTO request) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -152,20 +175,4 @@ public class InsightController {
         insightService.fetchAndSaveExchangeRates();
         return ResponseEntity.ok("환율 데이터 수동 저장 완료");
     }
-
-
-    //처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기
-    @GetMapping("/with-products")
-    public ResponseEntity<List<InsightRoundWithProductsDTO>> getInsightRoundsWithProducts(
-            @AuthenticationPrincipal CustomUser user) {
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Long userId = (long) user.getUser().getId();  // ✅ 내부의 user 객체에서 꺼내야 함
-        List<InsightRoundWithProductsDTO> data = insightService.getAllRoundsWithProductsByUser(userId);
-        return ResponseEntity.ok(data);
-    }
-
-
 }

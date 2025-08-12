@@ -66,17 +66,23 @@
 
       d.description AS d_description,
 
+    <if test="userId != null">
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
+    </if>
+    <if test="userId == null">
+      NULL AS pd_advantage,
+      NULL AS pd_disadvantage,
+      false AS is_scraped
+    </if>
     FROM
       deposit d
-        LEFT JOIN
-      users u ON u.id = #{userId}
-        LEFT JOIN
-      personalized_description pd ON u.algo_code = pd.algo_code AND d.id = pd.product_id
-        LEFT JOIN
-      scrap s ON u.id = s.user_id AND d.id = s.product_id
+    <if test="userId != null">
+      LEFT JOIN users u ON u.id = #{userId}
+      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND d.id = pd.product_id
+      LEFT JOIN scrap s ON u.id = s.user_id AND d.id = s.product_id
+    </if>
     WHERE
       d.id = #{depositId}
   </select>
@@ -143,17 +149,23 @@
 
       s.description AS s_description,
 
+    <if test="userId != null">
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
+    </if>
+    <if test="userId == null">
+      NULL AS pd_advantage,
+      NULL AS pd_disadvantage,
+      false AS is_scraped
+    </if>
     FROM
       savings s
-        LEFT JOIN
-      users u ON u.id = #{userId}
-        LEFT JOIN
-      personalized_description pd ON u.algo_code = pd.algo_code AND s.id = pd.product_id
-        LEFT JOIN
-      scrap sc ON u.id = sc.user_id AND s.id = sc.product_id
+    <if test="userId != null">
+      LEFT JOIN users u ON u.id = #{userId}
+      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND s.id = pd.product_id
+      LEFT JOIN scrap sc ON u.id = sc.user_id AND s.id = sc.product_id
+    </if>
 
     WHERE
       s.id = #{savingsId}
@@ -218,17 +230,23 @@
 
       f.description AS f_description,
 
+    <if test="userId != null">
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
+    </if>
+    <if test="userId == null">
+      NULL AS pd_advantage,
+      NULL AS pd_disadvantage,
+      false AS is_scraped
+    </if>
     FROM
       fund f
-        LEFT JOIN
-      users u ON u.id = #{userId}
-        LEFT JOIN
-      personalized_description pd ON u.algo_code = pd.algo_code AND f.id = pd.product_id
-        LEFT JOIN
-      scrap sc ON u.id = sc.user_id AND f.id = sc.product_id
+    <if test="userId != null">
+      LEFT JOIN users u ON u.id = #{userId}
+      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND f.id = pd.product_id
+      LEFT JOIN scrap sc ON u.id = sc.user_id AND f.id = sc.product_id
+    </if>
     WHERE
       f.id = #{fundId}
   </select>
@@ -298,17 +316,24 @@
       fx.min_save_term AS fx_min_save_term,
       fx.max_save_term AS fx_max_save_term,
 
+    <if test="userId != null">
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
+    </if>
+    <if test="userId == null">
+      NULL AS pd_advantage,
+      NULL AS pd_disadvantage,
+      false AS is_scraped
+    </if>
+
     FROM
       forex fx
-        LEFT JOIN
-      users u ON u.id = #{userId}
-        LEFT JOIN
-      personalized_description pd ON u.algo_code = pd.algo_code AND fx.id = pd.product_id
-        LEFT JOIN
-      scrap sc ON u.id = sc.user_id AND fx.id = sc.product_id
+    <if test="userId != null">
+      LEFT JOIN users u ON u.id = #{userId}
+      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND fx.id = pd.product_id
+      LEFT JOIN scrap sc ON u.id = sc.user_id AND fx.id = sc.product_id
+    </if>
     WHERE
       fx.id = #{forexId}
   </select>
@@ -370,17 +395,23 @@
 
       pn.description AS p_description,
 
+    <if test="userId != null">
       pd.advantage AS pd_advantage,
       pd.disadvantage AS pd_disadvantage,
       CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
+    </if>
+    <if test="userId == null">
+      NULL AS pd_advantage,
+      NULL AS pd_disadvantage,
+      false AS is_scraped
+    </if>
     FROM
       pension pn
-        LEFT JOIN
-      users u ON u.id = #{userId}
-        LEFT JOIN
-      personalized_description pd ON u.algo_code = pd.algo_code AND pn.id = pd.product_id
-        LEFT JOIN
-      scrap sc ON u.id = sc.user_id AND pn.id = sc.product_id
+    <if test="userId != null">
+      LEFT JOIN users u ON u.id = #{userId}
+      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND pn.id = pd.product_id
+      LEFT JOIN scrap sc ON u.id = sc.user_id AND pn.id = sc.product_id
+    </if>
     WHERE
       pn.id = #{pensionId}
   </select>
