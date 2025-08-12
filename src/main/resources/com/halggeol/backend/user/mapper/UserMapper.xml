@@ -5,7 +5,20 @@
 
 <mapper namespace="com.halggeol.backend.user.mapper.UserMapper">
 
+  <insert id="insert">
+    INSERT INTO users (
+      email, name, password, phone, birth,
+      reg_date, klg_renew_date, risk_renew_date, docu_renew_date, insight_cycle)
+    VALUES(
+            #{email}, #{name}, #{password}, #{phone}, #{birth},
+            now(), now(), now(), now(), #{insightCycle})
+  </insert>
+
   <select id="findByEmail" resultType="com.halggeol.backend.security.domain.User">
+    SELECT * FROM users WHERE email = #{email} AND deleted_date IS NULL
+  </select>
+
+  <select id="findByEmailIncludingDeleted" resultType="com.halggeol.backend.security.domain.User">
     SELECT * FROM users WHERE email = #{email}
   </select>
 
@@ -18,22 +31,17 @@
   </select>
 
   <select id="findEmailByNameAndPhone" resultType="java.lang.String">
-    SELECT email FROM users WHERE name = #{name} AND phone = #{phone}
+    SELECT email FROM users WHERE name = #{name} AND phone = #{phone} AND deleted_date IS NULL
+  </select>
+
+  <select id="findUsersDeletedBefore" parameterType="java.time.LocalDateTime" resultType="com.halggeol.backend.security.domain.User">
+    SELECT * FROM users WHERE deleted_date &lt;= #{deletedDate}
   </select>
 
   <select id="getUserProfileByUserId" resultType="com.halggeol.backend.user.dto.UserProfileResponseDTO">
     SELECT email, name, phone, birth, risk, user_klg, klg_renew_date, risk_renew_date, docu_renew_date, insight_cycle
     FROM users WHERE id = #{id}
   </select>
-
-  <insert id="insert">
-    INSERT INTO users (
-        email, name, password, phone, birth,
-        reg_date, klg_renew_date, risk_renew_date, docu_renew_date, insight_cycle)
-    VALUES(
-        #{email}, #{name}, #{password}, #{phone}, #{birth},
-        now(), now(), now(), now(), #{insightCycle})
-  </insert>
 
   <update id="updatePasswordByEmail">
     UPDATE users SET password = #{newPassword} WHERE email = #{email}
@@ -47,8 +55,15 @@
     UPDATE users SET insight_cycle = #{insightCycle} WHERE id = #{id}
   </update>
 
+  <update id="updateDeletedDateById">
+    UPDATE users SET deleted_date = now() WHERE id = #{id}
+  </update>
+
+  <delete id="deleteUserByEmail">
+    DELETE FROM users WHERE email = #{email}
+  </delete>
+
   <delete id="deleteUserById">
     DELETE FROM users WHERE id = #{id}
   </delete>
-
 </mapper>

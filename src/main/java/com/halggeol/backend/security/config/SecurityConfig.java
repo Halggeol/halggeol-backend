@@ -119,7 +119,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/insight/*",
                 "/api/insight/details",
                 "/api/insight/details/*",
-                "/api/main" // TODO: 비로그인 API 분리 필요,
+                "/api/main", // TODO: 비로그인 API 분리 필요,
+                "/api/system/**",
+                "/api/products/detail/*"
             ).permitAll()                   // 비로그인 접근 허용
             .anyRequest().authenticated();  // 인증된 사용자만 접근 허용
 

@@ -67,10 +67,10 @@ public class AuthController {
 
     // 비로그인 상태 비밀번호 재설정 요청 API
     @PostMapping("/password/reset/request")
-    public ResponseEntity<Map<String, String>> requestResetPassword(
+    public ResponseEntity<Map<String, Object>> requestResetPassword(
         @Valid @RequestBody EmailDTO email
     ) {
-        return ResponseEntity.ok(authService.requestResetPassword(email));
+        return authService.requestResetPassword(email);
     }
 
     // 비로그인 상태 비밀번호 재설정 변경 API

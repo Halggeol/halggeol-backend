@@ -6,7 +6,7 @@
 <mapper namespace="com.halggeol.backend.security.mapper.UserDetailsMapper">
 
   <select id="get" resultType="com.halggeol.backend.security.domain.User">
-    SELECT * FROM users WHERE email = #{email}
+    SELECT * FROM users WHERE email = #{email} AND deleted_date IS NULL
   </select>
 
 </mapper>

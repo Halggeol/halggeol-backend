@@ -31,20 +31,20 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup/request")
-    public ResponseEntity<Map<String, String>> requestJoin(
+    public ResponseEntity<Map<String, Object>> requestJoin(
         @Valid @RequestBody EmailDTO email
     ) {
         // 회원가입 요청 (이메일 본인 인증)
-        return ResponseEntity.ok(userService.requestJoin(email));
+        return userService.requestJoin(email);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, String>> join(
+    public ResponseEntity<Map<String, Object>> join(
         @Valid @RequestBody UserJoinDTO user,
         @RequestParam String token
     ) {
         // 회원가입 등록 (회원 정보 저장)
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.join(user, token));
+        return userService.join(user, token);
     }
 
     @GetMapping("/me")
@@ -66,12 +66,12 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Map<String, String>> deleteUser(
+    public ResponseEntity<Map<String, String>> markAsDeleted(
         @AuthenticationPrincipal CustomUser user,
         @RequestHeader("Authorization") String bearerToken
     ) {
         // 회원 탈퇴
-        return ResponseEntity.ok(userService.deleteUser(user, bearerToken));
+        return ResponseEntity.ok(userService.markAsDeleted(user, bearerToken));
     }
 
     @PatchMapping("/me/update/cycle")
