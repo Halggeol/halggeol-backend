@@ -12,10 +12,12 @@ import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
 import com.halggeol.backend.user.dto.UserJoinDTO;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,35 +48,64 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> requestJoin(EmailDTO email) {
+    public ResponseEntity<Map<String, Object>> requestJoin(EmailDTO email) {
         // 입력값 유효성 검증은 UserJoinDTO에서 진행
         // 검증 실패 시 MethodArgumentNotValidException 예외 발생
         // 스프링 MVC에서 자동으로 400 Bad Request로 응답함
 
-        if (findByEmail(email.getEmail()) != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 사용자입니다.");
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            if (findByEmail(email.getEmail()) != null) {
+                response.put("success", false);
+                response.put("message", "이미 존재하는 사용자입니다.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+            }
+
+            mailService.sendMail(
+                MailDTO.builder()
+                    .email(email.getEmail())
+                    .token(jwtManager.generateVerifyToken(email.getEmail()))
+                    .mailType(MailType.SIGNUP)
+                    .build()
+            );
+
+            response.put("success", true);
+            response.put("message", "본인 인증 이메일이 전송되었습니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "회원가입 요청 이메일 전송 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-        mailService.sendMail(MailDTO.builder()
-                                    .email(email.getEmail())
-                                    .token(jwtManager.generateVerifyToken(email.getEmail()))
-                                    .mailType(MailType.SIGNUP)
-                                    .build());
-
-        return Map.of("message", "본인 인증 이메일이 전송되었습니다.");
     }
 
     @Transactional
     @Override
-    public Map<String, String> join(UserJoinDTO userToJoin, String token) {
+    public ResponseEntity<Map<String, Object>> join(UserJoinDTO userToJoin, String token) {
+        Map<String, Object> response = new HashMap<>();
+
         if (!jwtManager.validateToken(token)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰이 유효하지 않습니다.");
+            response.put("success", false);
+            response.put("message", "토큰이 유효하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
         if (!userToJoin.isValidAge()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "만 14세 이상 가입 가능합니다.");
+            response.put("success", false);
+            response.put("message", "만 14세 이상 가입 가능합니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         if (!userToJoin.isCorrectPassword()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+            response.put("success", false);
+            response.put("message", "비밀번호가 일치하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        // soft delete 된 회원 데이터 삭제
+        User deleteUser = userMapper.findByEmailIncludingDeleted(userToJoin.getEmail());
+        if (deleteUser != null && deleteUser.getDeletedDate() != null) {
+            userMapper.deleteUserByEmail(userToJoin.getEmail());
         }
 
         User user = userToJoin.toVO();
@@ -82,7 +113,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
 
-        return Map.of("message", "회원가입이 완료되었습니다.");
+        response.put("success", true);
+        response.put("message", "회원가입이 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Override
@@ -107,11 +140,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> deleteUser(CustomUser user, String bearerToken) {
+    public Map<String, String> markAsDeleted(CustomUser user, String bearerToken) {
         if (!jwtManager.isReverified(jwtManager.parseBearerToken(bearerToken))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 재확인되지 않았습니다.");
         }
-        userMapper.deleteUserById(user.getUser().getId());
+        userMapper.updateDeletedDateById(user.getUser().getId());
         return Map.of("message", "회원탈퇴가 완료되었습니다.");
     }
 

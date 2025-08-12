@@ -7,6 +7,7 @@ import com.halggeol.backend.security.dto.ReverifyPasswordDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
     Map<String, String> extendLogin(String email);
@@ -17,7 +18,7 @@ public interface AuthService {
 
     Map<String, String> resetPasswordWithLogin(CustomUser user, ResetPasswordDTO passwords, String bearerToken);
 
-    Map<String, String> requestResetPassword(EmailDTO email);
+    ResponseEntity<Map<String, Object>> requestResetPassword(EmailDTO email);
 
     Map<String, String> resetPasswordWithoutLogin(ResetPasswordDTO passwords, String token);
 }

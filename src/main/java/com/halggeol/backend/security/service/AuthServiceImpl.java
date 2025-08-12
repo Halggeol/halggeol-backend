@@ -11,11 +11,13 @@ import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.mapper.UserMapper;
 import com.halggeol.backend.user.service.UserService;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -87,16 +89,33 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Map<String, String> requestResetPassword(EmailDTO email) {
-        if (userService.findByEmail(email.getEmail()) != null) {
-            mailService.sendMail(MailDTO.builder()
-                                        .email(email.getEmail())
-                                        .token(jwtManager.generateVerifyToken(email.getEmail()))
-                                        .mailType(MailType.PASSWORD_RESET)
-                                        .build());
-        }
+    public ResponseEntity<Map<String, Object>> requestResetPassword(EmailDTO email) {
+        Map<String, Object> response = new HashMap<>();
 
-        return Map.of("message", "비밀번호 변경 이메일이 전송되었습니다.");
+        try {
+            if (userService.findByEmail(email.getEmail()) == null) {
+                response.put("success", false);
+                response.put("message", "일치하는 사용자 정보가 없습니다.");
+                return ResponseEntity.ok(response);
+            }
+
+            mailService.sendMail(
+                MailDTO.builder()
+                    .email(email.getEmail())
+                    .token(jwtManager.generateVerifyToken(email.getEmail()))
+                    .mailType(MailType.PASSWORD_RESET)
+                    .build()
+            );
+
+            response.put("success", true);
+            response.put("message", "비밀번호 변경 이메일이 전송되었습니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "비밀번호 재설정 이메일 전송 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @Override
