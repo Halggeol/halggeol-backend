@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductSearchService {
 
+    private static final Integer ANONYMOUS_USER_ID = -1;
     private final ElasticsearchClient esClient;
     private final SearchLogService searchLogService;
 
@@ -94,7 +95,7 @@ public class ProductSearchService {
     // 키워드 검색 조건
     private void addKeywordQuery(BoolQuery.Builder boolQueryBuilder, String keyword, CustomUser user) {
         if (keyword != null && !keyword.isBlank()) {
-            Integer userId = (user != null) ? user.getUser().getId() : -1;
+            Integer userId = (user != null) ? user.getUser().getId() : ANONYMOUS_USER_ID;
             searchLogService.saveRecentSearch(keyword, userId);
             searchLogService.incrementPopularSearchCount(keyword);
 

@@ -32,6 +32,10 @@ public class SearchLogService {
 
     // 최근 검색어 저장
     public void saveRecentSearch(String keyword, Integer userId){
+        if (userId == null || userId <= 0) {
+            log.warn("Skipping saveRecentSearch: invalid userId ({}) for keyword '{}'", userId, keyword);
+            return;
+        }
         try{
             // 기존 동일 검색어 기록 먼저 삭제 (최근 검색어 중복 제거)
             esClient.deleteByQuery(d->d
@@ -158,7 +162,7 @@ public class SearchLogService {
         }
     }
 
-    // 인기 건색어 조회 (상위 5개)
+    // 인기 검색어 조회 (상위 5개)
     public List<PopularSearchResponseDTO> getPopularSearches(){
         try{
             SearchRequest request = SearchRequest.of(s->s

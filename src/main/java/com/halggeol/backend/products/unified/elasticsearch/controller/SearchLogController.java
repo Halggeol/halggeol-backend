@@ -2,9 +2,9 @@ package com.halggeol.backend.products.unified.elasticsearch.controller;
 
 import com.halggeol.backend.products.unified.elasticsearch.service.SearchLogService;
 import com.halggeol.backend.security.domain.CustomUser;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,8 +26,7 @@ public class SearchLogController {
         @AuthenticationPrincipal CustomUser user
     ){
         if (user == null) {
-            return ResponseEntity.ok(List.of());
-        }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();        }
         Integer userId = user.getUser().getId();
         return ResponseEntity.ok(searchLogService.getRecentSearches(userId));
     }
@@ -38,7 +37,7 @@ public class SearchLogController {
         @PathVariable String keyword,
         @AuthenticationPrincipal CustomUser user){
         if (user == null) {
-            return ResponseEntity.ok(List.of());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         Integer userId = user.getUser().getId();
         searchLogService.deleteRecentSearch(keyword, userId);
@@ -49,8 +48,7 @@ public class SearchLogController {
     @DeleteMapping("/recent/all")
     public ResponseEntity<?> deleteAllSearches(@AuthenticationPrincipal CustomUser user){
         if (user == null) {
-            return ResponseEntity.ok(List.of());
-        }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();        }
         Integer userId = user.getUser().getId();
         searchLogService.deleteAllRecentSearches(userId);
         return ResponseEntity.noContent().build();
