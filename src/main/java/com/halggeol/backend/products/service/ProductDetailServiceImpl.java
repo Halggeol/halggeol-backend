@@ -11,9 +11,13 @@ import com.halggeol.backend.products.dto.PensionDetailResponseDTO;
 import com.halggeol.backend.products.dto.SavingsDetailResponseDTO;
 import com.halggeol.backend.products.dto.UserSpecificDataResponseDTO;
 import com.halggeol.backend.products.mapper.ProductDetailMapper;
+import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
+import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.security.domain.CustomUser;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,6 +32,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private final ProductDetailMapper productDetailMapper;
     private final RecommendService recommendService;
     private final LogService logService;
+    private final UnifiedProductService unifiedProductService;
+    private final CacheManager cacheManager;
 
     @Override
     @Transactional
@@ -191,8 +197,44 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetailMapper.updateProductStatus(user.getUser().getId(), productId, productStatus);
     }
 
-//    @Scheduled(fixedRate = 3600000) // 5시간마다 실행
-//    public void saveRecommendProducts() {
-//
-//    }
+    @Scheduled(cron = "0 0 * * * *")
+    public void saveCacheRecommendProducts() {
+        List<UnifiedProductRegretRankingResponseDTO> ranking = unifiedProductService.getRegretRankingProducts();
+
+        if (ranking == null || ranking.isEmpty()) {
+            return;
+        }
+
+        for (UnifiedProductRegretRankingResponseDTO rankedProduct : ranking) {
+            String productId = rankedProduct.getProductId();
+            if (productId == null || productId.isEmpty()) {
+                continue;
+            }
+
+            handleProductByConsumer(
+                productId,
+                id -> {
+                    Object dto = productDetailMapper.selectBaseDepositDetailById(id);
+                    cacheManager.getCache("deposit-detail").put(id, dto);
+                },
+                id -> {
+                    Object dto = productDetailMapper.selectBaseSavingsDetailById(id);
+                    cacheManager.getCache("savings-detail").put(id, dto);
+                },
+                id -> {
+                    Object dto = productDetailMapper.selectBaseFundDetailById(id);
+                    cacheManager.getCache("fund-detail").put(id, dto);
+                },
+                id -> {
+                    Object dto = productDetailMapper.selectBaseForexDetailById(id);
+                    cacheManager.getCache("forex-detail").put(id, dto);
+                },
+                id -> {
+                    Object dto = productDetailMapper.selectBasePensionDetailById(id);
+                    cacheManager.getCache("pension-detail").put(id, dto);
+                }
+            );
+
+        }
+    }
 }
