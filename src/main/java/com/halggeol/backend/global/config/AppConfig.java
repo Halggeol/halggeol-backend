@@ -17,6 +17,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -50,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @EnableTransactionManagement
+@EnableAsync
 public class AppConfig {
     @Value("${jdbc.driver}") String driver;
     @Value("${jdbc.url}") String url;

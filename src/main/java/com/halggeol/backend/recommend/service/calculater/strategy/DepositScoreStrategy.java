@@ -19,6 +19,6 @@ public class DepositScoreStrategy implements ScoreStrategy<DepositAlgorithmRespo
 
         double complexityScore = ScoreUtil.joinDenyScore(dto.getJoinDeny());
 
-        return new Score(yieldScore, riskScore, costScore, liquidityScore, complexityScore);
+        return new Score(dto.getId(),yieldScore, riskScore, costScore, liquidityScore, complexityScore);
     }
 }

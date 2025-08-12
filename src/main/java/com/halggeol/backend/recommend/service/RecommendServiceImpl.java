@@ -43,7 +43,7 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "15 0 0 * * *")
     public void updateAlgoCode() {
         System.out.println("Updating algorithm codes for all products...");
         updateStaticValues(); //최대/최소 금리를 업데이트
@@ -76,7 +76,7 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "30 0 0 * * *")
     public void updateRecommendation() {
         System.out.println("Updating recommendations for all users...");
         List<UserVectorResponseDTO> userVectors = mapper.getUserVectors(); //유저 벡터 리스트를 가져옴
@@ -208,6 +208,6 @@ public class RecommendServiceImpl implements RecommendService {
     public UserVectorResponseDTO initUserVector(TendencySurveyRequestDTO survey) {
         int yieldScore, riskScore, costScore, liquidityScore, complexityScore;
         //투자 성향 설문 결과를 기반으로 유저 벡터를 초기화
-        return null;
+        return UserVectorResponseDTO.builder().complexityScore(1.0).costScore(1.0).yieldScore(1.0).liquidityScore(1.0).riskScore(1.0).build();
     }
 }

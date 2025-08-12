@@ -41,6 +41,7 @@ public class ScoreCalculator {
                 .liquidityScore(score.getLiquidityScore())
                 .complexityScore(score.getComplexityScore())
                 .algoCode(score.getFinalScore(productType))
+                .id(score.getId())
                 .build();
     }
 }

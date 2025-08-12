@@ -37,6 +37,6 @@ public class PensionScoreStrategy implements ScoreStrategy<PensionAlgorithmRespo
             complexityScore = 0.5 + ScoreUtil.joinDenyScore(dto.getFSector());
         }
 
-        return new Score(yieldScore, riskScore, costScore, liquidityScore, complexityScore);
+        return new Score(dto.getId(),yieldScore, riskScore, costScore, liquidityScore, complexityScore);
     }
 }

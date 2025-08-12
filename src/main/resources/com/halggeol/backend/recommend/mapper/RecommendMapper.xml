@@ -260,7 +260,8 @@
       product2_id,
       product3_id,
       product4_id,
-      product5_id
+      product5_id,
+      anlz_date
     ) VALUES (
           #{userId},
               NOW(),
@@ -268,7 +269,8 @@
       #{product2Id},
       #{product3Id},
       #{product4Id},
-      #{product5Id}
+      #{product5Id},
+              NOW() + INTERVAL 1 MONTH
     )
   </insert>
 
@@ -478,7 +480,7 @@
 
   <update id="updateProductVectorById">
     <choose>
-      <when test="productVector.id.startsWith('D')">
+      <when test="productVector.id != null and productVector.id.startsWith('D')">
         UPDATE deposit
         SET yield_score = #{productVector.yieldScore},
             risk_score = #{productVector.riskScore},
@@ -488,7 +490,7 @@
             algo_code = #{productVector.algoCode}
         WHERE id = #{productVector.id}
       </when>
-      <when test="productVector.id.startsWith('S')">
+      <when test="productVector.id != null and productVector.id.startsWith('S')">
         UPDATE savings
         SET yield_score = #{productVector.yieldScore},
             risk_score = #{productVector.riskScore},
@@ -498,7 +500,7 @@
             algo_code = #{productVector.algoCode}
         WHERE id = #{productVector.id}
       </when>
-      <when test="productVector.id.startsWith('F')">
+      <when test="productVector.id != null and productVector.id.startsWith('F')">
         UPDATE fund
         SET yield_score = #{productVector.yieldScore},
             risk_score = #{productVector.riskScore},
@@ -508,7 +510,7 @@
             algo_code = #{productVector.algoCode}
         WHERE id = #{productVector.id}
       </when>
-      <when test="productVector.id.startsWith('A') or productVector.id.startsWith('C')">
+      <when test="productVector.id != null and (productVector.id.startsWith('A') or productVector.id.startsWith('C'))">
         UPDATE pension
         SET yield_score = #{productVector.yieldScore},
             risk_score = #{productVector.riskScore},
@@ -518,7 +520,7 @@
             algo_code = #{productVector.algoCode}
         WHERE id = #{productVector.id}
       </when>
-      <when test="productVector.id.startsWith('X')">
+      <when test="productVector.id != null and productVector.id.startsWith('X')">
         UPDATE forex
         SET yield_score = #{productVector.yieldScore},
             risk_score = #{productVector.riskScore},

@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Score {
+    private String id;
     private double yieldScore;
     private double riskScore;
     private double costScore;

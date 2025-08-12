@@ -101,13 +101,13 @@ public class UserActionBatchConfig {
         return new JdbcBatchItemWriterBuilder<User>()
             .dataSource(dataSource)
             .sql("""
-                UPDATE user SET
+                UPDATE users SET
                     complexity_score = :complexityScore,
                     liquidity_score = :liquidityScore,
                     cost_score = :costScore,
-                    yieldScore = :yieldScore,
+                    yield_score = :yieldScore,
                     risk_score = :riskScore
-                WHERE id = :id,
+                WHERE id = :id
                 """)
             .beanMapped()
             .build();
