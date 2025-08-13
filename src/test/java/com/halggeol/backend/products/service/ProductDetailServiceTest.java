@@ -267,7 +267,7 @@ class ProductDetailServiceTest {
         // When & Then
         if (invalidProductId1 != null && !invalidProductId1.isEmpty()) {
             char prefix1 = invalidProductId1.charAt(0);
-            assertFalse(prefix1 == 'D' || prefix1 == 'S' || prefix1 == 'F' || 
+            assertFalse(prefix1 == 'D' || prefix1 == 'S' || prefix1 == 'F' ||
                        prefix1 == 'X' || prefix1 == 'A' || prefix1 == 'C');
         }
 

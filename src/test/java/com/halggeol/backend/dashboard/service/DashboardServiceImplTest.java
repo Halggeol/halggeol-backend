@@ -191,7 +191,7 @@ class DashboardServiceImplTest {
     void testAssetDataListCreation() {
         // Given
         List<DashboardAssetResponseDTO> assets = new ArrayList<>();
-        
+
         DashboardAssetResponseDTO asset1 = new DashboardAssetResponseDTO("2024-01", "1000000");
         DashboardAssetResponseDTO asset2 = new DashboardAssetResponseDTO("2024-02", "1200000");
 
@@ -213,7 +213,7 @@ class DashboardServiceImplTest {
     void testPortfolioDataListCreation() {
         // Given
         List<DashboardPortfolioResponseDTO> portfolio = new ArrayList<>();
-        
+
         DashboardPortfolioResponseDTO item1 = new DashboardPortfolioResponseDTO("예금", 40.0);
         DashboardPortfolioResponseDTO item2 = new DashboardPortfolioResponseDTO("적금", 35.0);
         DashboardPortfolioResponseDTO item3 = new DashboardPortfolioResponseDTO("펀드", 25.0);
@@ -226,7 +226,7 @@ class DashboardServiceImplTest {
         // Then
         assertNotNull(portfolio);
         assertEquals(3, portfolio.size());
-        
+
         double totalRatio = portfolio.stream()
                 .mapToDouble(DashboardPortfolioResponseDTO::getRatio)
                 .sum();
@@ -322,7 +322,7 @@ class DashboardServiceImplTest {
         assertNotNull(responseDto);
         assertNotNull(assetDto);
         assertNotNull(portfolioDto);
-        
+
         assertNull(responseDto.getAvgRegretScore());
         assertNull(assetDto.getDate());
         assertNull(portfolioDto.getType());

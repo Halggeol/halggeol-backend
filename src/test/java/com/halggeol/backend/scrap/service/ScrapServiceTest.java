@@ -2,6 +2,7 @@ package com.halggeol.backend.scrap.service;
 
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
+import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.security.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -316,6 +317,35 @@ class ScrapServiceTest {
         assertEquals(2, dto1.getProductId().length());
         assertEquals(6, dto2.getProductId().length());
         assertEquals(20, dto3.getProductId().length());
+    }
+
+    @Test
+    @DisplayName("ScrappedProductResponseDTO - Builder 테스트")
+    void testScrappedProductResponseDTOBuilder() {
+        ScrappedProductResponseDTO dto = ScrappedProductResponseDTO.builder()
+            .productId("D0001")
+            .name("테스트 상품")
+            .company("테스트 은행")
+            .tag1("tag1")
+            .tag2("tag2")
+            .tag3("tag3")
+            .type("deposit")
+            .title(3.5)
+            .subTitle("subtitle")
+            .viewCnt(100)
+            .scrapCnt(200)
+            .build();
+
+        assertEquals("D0001", dto.getProductId());
+        assertEquals("테스트 상품", dto.getName());
+        assertEquals("테스트 은행", dto.getCompany());
+        assertEquals("tag1", dto.getTag1());
+        assertEquals("deposit", dto.getType());
+        assertEquals(3.5, dto.getTitle());
+        assertEquals("subtitle", dto.getSubTitle());
+        assertEquals(100, dto.getViewCnt());
+        assertEquals(200, dto.getScrapCnt());
+
     }
 
     // Helper methods
