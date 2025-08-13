@@ -18,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-@Data
 public class MailServiceImpl implements MailService {
     @Value("${frontend.url}")
     private String frontendUrl;
