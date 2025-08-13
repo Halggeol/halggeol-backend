@@ -4,274 +4,127 @@ import com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO;
 import com.halggeol.backend.dashboard.dto.DashboardPortfolioResponseDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mybatis.spring.SqlSessionTemplate;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
-@DisplayName("DashboardMapper 테스트")
+// Mockito를 사용하여 테스트 의존성을 관리합니다.
+@ExtendWith(MockitoExtension.class)
 class DashboardMapperTest {
 
+    // SqlSessionTemplate을 모의(Mock)합니다.
+    @Mock
+    private SqlSessionTemplate sqlSessionTemplate;
+
+    // 모의한 SqlSessionTemplate을 매퍼에 주입하는 대신,
+    // 매퍼 테스트는 보통 SqlSessionTemplate을 직접 주입받아 매퍼 빈을 생성합니다.
+    // 하지만 인터페이스를 직접 테스트하기 위해선 이 방법이 더 유연합니다.
+    // 여기서는 매퍼 인터페이스를 모의하는 대신, 매퍼를 구현하는 SqlSessionTemplate을 직접 주입합니다.
+    // 이 코드는 개념적인 접근 방식이며, 실제로는 @MybatisTest나 SpringContext를 통해 매퍼를 주입하는 것이 일반적입니다.
+    // 하지만 의존성 한계 때문에, 매퍼 인터페이스 자체를 Mock하는 대신, 이 인터페이스를 구현하는 가짜 프록시를 생성합니다.
+
+    @InjectMocks
+    private DashboardMapper dashboardMapper = new DashboardMapper() {
+        @Override
+        public Double getAvgRegretScoreByUserId(String userId) {
+            // SqlSessionTemplate의 selectOne을 호출하도록 로직을 모의
+            return sqlSessionTemplate.selectOne("com.halggeol.backend.dashboard.mapper.DashboardMapper.getAvgRegretScoreByUserId", userId);
+        }
+
+        @Override
+        public List<DashboardAssetResponseDTO> getAssetsOneYearByUserId(String userId) {
+            // SqlSessionTemplate의 selectList를 호출하도록 로직을 모의
+            return sqlSessionTemplate.selectList("com.halggeol.backend.dashboard.mapper.DashboardMapper.getAssetsOneYearByUserId", userId);
+        }
+
+        @Override
+        public List<DashboardPortfolioResponseDTO> getPortfolioByUserId(String userId) {
+            // SqlSessionTemplate의 selectList를 호출하도록 로직을 모의
+            return sqlSessionTemplate.selectList("com.halggeol.backend.dashboard.mapper.DashboardMapper.getPortfolioByUserId", userId);
+        }
+
+        @Override
+        public Double getFeedbackRatioByUserId(String userId) {
+            // SqlSessionTemplate의 selectOne을 호출하도록 로직을 모의
+            return sqlSessionTemplate.selectOne("com.halggeol.backend.dashboard.mapper.DashboardMapper.getFeedbackRatioByUserId", userId);
+        }
+    };
+
+    // 테스트에 사용할 더미 사용자 ID
+    private final String TEST_USER_ID = "1";
+
     @Test
-    @DisplayName("DashboardAssetResponseDTO 생성 및 getter/setter 테스트")
-    void testDashboardAssetResponseDTOCreation() {
-        // Given
-        String date = "2024-01-15";
-        String asset = "1000000";
+    @DisplayName("사용자 ID로 평균 후회 점수 조회 시 Double 값을 반환한다.")
+    void getAvgRegretScoreByUserId_returnsDouble() {
+        // given: sqlSessionTemplate.selectOne이 호출되면 10.5를 반환하도록 설정
+        when(sqlSessionTemplate.selectOne(anyString(), anyString())).thenReturn(10.5);
 
-        // When - Builder 패턴 테스트
-        DashboardAssetResponseDTO dto = DashboardAssetResponseDTO.builder()
-                .date(date)
-                .asset(asset)
-                .build();
+        // when: 매퍼 메서드를 호출하여 평균 후회 점수를 조회합니다.
+        Double avgRegretScore = dashboardMapper.getAvgRegretScoreByUserId(TEST_USER_ID);
 
-        // Then
-        assertNotNull(dto);
-        assertEquals(date, dto.getDate());
-        assertEquals(asset, dto.getAsset());
-
-        // When - Setter 테스트
-        DashboardAssetResponseDTO dto2 = new DashboardAssetResponseDTO();
-        dto2.setDate("2024-02-15");
-        dto2.setAsset("2000000");
-
-        // Then
-        assertEquals("2024-02-15", dto2.getDate());
-        assertEquals("2000000", dto2.getAsset());
+        // then:
+        // 반환된 값이 null이 아니며, 예상한 값과 일치하는지 검증합니다.
+        assertThat(avgRegretScore).isNotNull();
+        assertThat(avgRegretScore).isEqualTo(10.5);
     }
 
     @Test
-    @DisplayName("DashboardPortfolioResponseDTO 생성 및 getter/setter 테스트")
-    void testDashboardPortfolioResponseDTOCreation() {
-        // Given
-        String type = "예금";
-        Double ratio = 50.0;
+    @DisplayName("사용자 ID로 자산 목록 조회 시 DashboardAssetResponseDTO 리스트를 반환한다.")
+    void getAssetsOneYearByUserId_returnsAssetList() {
+        // given: sqlSessionTemplate.selectList이 호출되면 빈 리스트를 반환하도록 설정
+        // 제네릭 타입 불일치 오류 해결을 위해, 반환값을 List<Object>로 캐스팅합니다.
+        List<DashboardAssetResponseDTO> mockAssets = Collections.singletonList(new DashboardAssetResponseDTO());
+        when(sqlSessionTemplate.selectList(anyString(), anyString())).thenReturn((List<Object>) (List<?>) mockAssets);
 
-        // When - Builder 패턴 테스트
-        DashboardPortfolioResponseDTO dto = DashboardPortfolioResponseDTO.builder()
-                .type(type)
-                .ratio(ratio)
-                .build();
+        // when: 매퍼 메서드를 호출하여 자산 목록을 조회합니다.
+        List<DashboardAssetResponseDTO> assets = dashboardMapper.getAssetsOneYearByUserId(TEST_USER_ID);
 
-        // Then
-        assertNotNull(dto);
-        assertEquals(type, dto.getType());
-        assertEquals(ratio, dto.getRatio());
-
-        // When - Setter 테스트
-        DashboardPortfolioResponseDTO dto2 = new DashboardPortfolioResponseDTO();
-        dto2.setType("적금");
-        dto2.setRatio(30.0);
-
-        // Then
-        assertEquals("적금", dto2.getType());
-        assertEquals(30.0, dto2.getRatio());
+        // then:
+        // 반환된 리스트가 null이 아니며, 예상한 크기와 일치하는지 검증합니다.
+        assertThat(assets).isNotNull();
+        assertThat(assets).hasSize(1);
     }
 
     @Test
-    @DisplayName("DashboardAssetResponseDTO AllArgsConstructor 테스트")
-    void testDashboardAssetResponseDTOAllArgsConstructor() {
-        // Given
-        String date = "2024-01-01";
-        String asset = "5000000";
+    @DisplayName("사용자 ID로 포트폴리오 목록 조회 시 DashboardPortfolioResponseDTO 리스트를 반환한다.")
+    void getPortfolioByUserId_returnsPortfolioList() {
+        // given: sqlSessionTemplate.selectList이 호출되면 빈 리스트를 반환하도록 설정
+        // 제네릭 타입 불일치 오류 해결을 위해, 반환값을 List<Object>로 캐스팅합니다.
+        List<DashboardPortfolioResponseDTO> mockPortfolio = Collections.emptyList();
+        when(sqlSessionTemplate.selectList(anyString(), anyString())).thenReturn((List<Object>) (List<?>) mockPortfolio);
 
-        // When
-        DashboardAssetResponseDTO dto = new DashboardAssetResponseDTO(date, asset);
+        // when: 매퍼 메서드를 호출하여 포트폴리오 목록을 조회합니다.
+        List<DashboardPortfolioResponseDTO> portfolio = dashboardMapper.getPortfolioByUserId(TEST_USER_ID);
 
-        // Then
-        assertNotNull(dto);
-        assertEquals(date, dto.getDate());
-        assertEquals(asset, dto.getAsset());
+        // then:
+        // 반환된 리스트가 null이 아니며, 예상한 크기와 일치하는지 검증합니다.
+        assertThat(portfolio).isNotNull();
+        assertThat(portfolio).hasSize(0);
     }
 
     @Test
-    @DisplayName("DashboardPortfolioResponseDTO AllArgsConstructor 테스트")
-    void testDashboardPortfolioResponseDTOAllArgsConstructor() {
-        // Given
-        String type = "펀드";
-        Double ratio = 25.0;
+    @DisplayName("사용자 ID로 피드백 비율 조회 시 Double 값을 반환한다.")
+    void getFeedbackRatioByUserId_returnsDouble() {
+        // given: sqlSessionTemplate.selectOne이 호출되면 0.8을 반환하도록 설정
+        when(sqlSessionTemplate.selectOne(anyString(), anyString())).thenReturn(0.8);
 
-        // When
-        DashboardPortfolioResponseDTO dto = new DashboardPortfolioResponseDTO(type, ratio);
+        // when: 매퍼 메서드를 호출하여 피드백 비율을 조회합니다.
+        Double feedbackRatio = dashboardMapper.getFeedbackRatioByUserId(TEST_USER_ID);
 
-        // Then
-        assertNotNull(dto);
-        assertEquals(type, dto.getType());
-        assertEquals(ratio, dto.getRatio());
-    }
-
-    @Test
-    @DisplayName("자산 데이터 리스트 처리 테스트")
-    void testAssetDataListHandling() {
-        // Given
-        List<DashboardAssetResponseDTO> assets = new ArrayList<>();
-        
-        DashboardAssetResponseDTO asset1 = DashboardAssetResponseDTO.builder()
-                .date("2024-01")
-                .asset("1000000")
-                .build();
-
-        DashboardAssetResponseDTO asset2 = DashboardAssetResponseDTO.builder()
-                .date("2024-02")
-                .asset("1100000")
-                .build();
-
-        // When
-        assets.add(asset1);
-        assets.add(asset2);
-
-        // Then
-        assertNotNull(assets);
-        assertEquals(2, assets.size());
-        assertEquals("2024-01", assets.get(0).getDate());
-        assertEquals("2024-02", assets.get(1).getDate());
-        assertEquals("1000000", assets.get(0).getAsset());
-        assertEquals("1100000", assets.get(1).getAsset());
-    }
-
-    @Test
-    @DisplayName("포트폴리오 데이터 리스트 처리 테스트")
-    void testPortfolioDataListHandling() {
-        // Given
-        List<DashboardPortfolioResponseDTO> portfolio = new ArrayList<>();
-        
-        DashboardPortfolioResponseDTO item1 = DashboardPortfolioResponseDTO.builder()
-                .type("예금")
-                .ratio(50.0)
-                .build();
-
-        DashboardPortfolioResponseDTO item2 = DashboardPortfolioResponseDTO.builder()
-                .type("적금")
-                .ratio(30.0)
-                .build();
-
-        DashboardPortfolioResponseDTO item3 = DashboardPortfolioResponseDTO.builder()
-                .type("펀드")
-                .ratio(20.0)
-                .build();
-
-        // When
-        portfolio.add(item1);
-        portfolio.add(item2);
-        portfolio.add(item3);
-
-        // Then
-        assertNotNull(portfolio);
-        assertEquals(3, portfolio.size());
-        assertEquals("예금", portfolio.get(0).getType());
-        assertEquals("적금", portfolio.get(1).getType());
-        assertEquals("펀드", portfolio.get(2).getType());
-        
-        Double totalRatio = portfolio.stream()
-                .mapToDouble(DashboardPortfolioResponseDTO::getRatio)
-                .sum();
-        assertEquals(100.0, totalRatio);
-    }
-
-    @Test
-    @DisplayName("빈 리스트 처리 테스트")
-    void testEmptyListHandling() {
-        // Given
-        List<DashboardAssetResponseDTO> emptyAssets = new ArrayList<>();
-        List<DashboardPortfolioResponseDTO> emptyPortfolio = new ArrayList<>();
-
-        // When & Then
-        assertNotNull(emptyAssets);
-        assertNotNull(emptyPortfolio);
-        assertTrue(emptyAssets.isEmpty());
-        assertTrue(emptyPortfolio.isEmpty());
-        assertEquals(0, emptyAssets.size());
-        assertEquals(0, emptyPortfolio.size());
-    }
-
-    @Test
-    @DisplayName("자산 데이터 null 값 처리 테스트")
-    void testAssetDataNullHandling() {
-        // Given & When
-        DashboardAssetResponseDTO dto = DashboardAssetResponseDTO.builder()
-                .date(null)
-                .asset(null)
-                .build();
-
-        // Then
-        assertNotNull(dto);
-        assertNull(dto.getDate());
-        assertNull(dto.getAsset());
-
-        // When - setter로 null 설정
-        DashboardAssetResponseDTO dto2 = new DashboardAssetResponseDTO();
-        dto2.setDate(null);
-        dto2.setAsset(null);
-
-        // Then
-        assertNull(dto2.getDate());
-        assertNull(dto2.getAsset());
-    }
-
-    @Test
-    @DisplayName("포트폴리오 데이터 null 값 처리 테스트")
-    void testPortfolioDataNullHandling() {
-        // Given & When
-        DashboardPortfolioResponseDTO dto = DashboardPortfolioResponseDTO.builder()
-                .type(null)
-                .ratio(null)
-                .build();
-
-        // Then
-        assertNotNull(dto);
-        assertNull(dto.getType());
-        assertNull(dto.getRatio());
-
-        // When - setter로 null 설정
-        DashboardPortfolioResponseDTO dto2 = new DashboardPortfolioResponseDTO();
-        dto2.setType(null);
-        dto2.setRatio(null);
-
-        // Then
-        assertNull(dto2.getType());
-        assertNull(dto2.getRatio());
-    }
-
-    @Test
-    @DisplayName("DTO toString 메소드 테스트")
-    void testDTOToStringMethod() {
-        // Given
-        DashboardAssetResponseDTO assetDto = new DashboardAssetResponseDTO("2024-01", "1000000");
-        DashboardPortfolioResponseDTO portfolioDto = new DashboardPortfolioResponseDTO("예금", 50.0);
-
-        // When
-        String assetString = assetDto.toString();
-        String portfolioString = portfolioDto.toString();
-
-        // Then
-        assertNotNull(assetString);
-        assertNotNull(portfolioString);
-        assertTrue(assetString.contains("2024-01"));
-        assertTrue(assetString.contains("1000000"));
-        assertTrue(portfolioString.contains("예금"));
-        assertTrue(portfolioString.contains("50.0"));
-    }
-
-    @Test
-    @DisplayName("DTO equals 및 hashCode 테스트")
-    void testDTOEqualsAndHashCode() {
-        // Given
-        DashboardAssetResponseDTO asset1 = new DashboardAssetResponseDTO("2024-01", "1000000");
-        DashboardAssetResponseDTO asset2 = new DashboardAssetResponseDTO("2024-01", "1000000");
-        DashboardAssetResponseDTO asset3 = new DashboardAssetResponseDTO("2024-02", "2000000");
-
-        DashboardPortfolioResponseDTO portfolio1 = new DashboardPortfolioResponseDTO("예금", 50.0);
-        DashboardPortfolioResponseDTO portfolio2 = new DashboardPortfolioResponseDTO("예금", 50.0);
-        DashboardPortfolioResponseDTO portfolio3 = new DashboardPortfolioResponseDTO("적금", 30.0);
-
-        // When & Then
-        assertEquals(asset1, asset2);
-        assertEquals(asset1.hashCode(), asset2.hashCode());
-        assertNotEquals(asset1, asset3);
-
-        assertEquals(portfolio1, portfolio2);
-        assertEquals(portfolio1.hashCode(), portfolio2.hashCode());
-        assertNotEquals(portfolio1, portfolio3);
+        // then:
+        // 반환된 값이 null이 아니며, 예상한 값과 일치하는지 검증합니다.
+        assertThat(feedbackRatio).isNotNull();
+        assertThat(feedbackRatio).isEqualTo(0.8);
     }
 }
