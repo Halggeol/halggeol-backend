@@ -17,6 +17,7 @@ public class UserActionLogProcessor implements ItemProcessor<UserActionLog, User
     public User process(UserActionLog userActionLog) {
         // UserActionLog에서 필요한 정보를 추출하여 User 객체를 생성
         User user = recommendMapper.getUserById(userActionLog.getUserId());
+        System.out.println("Processing UserActionLog: " + userActionLog.getActionType() + " for User ID: " + user.getId());
         ProductVectorResponseDTO productVector = recommendMapper.getProductVectorById(userActionLog.getProductId());
         double actionScore = switch (userActionLog.getActionType()) {
             case "view" -> 1;
