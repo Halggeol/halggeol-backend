@@ -38,7 +38,7 @@
     <result property="isScraped" column="is_scraped"/>
   </resultMap>
 
-  <select id="selectDepositDetailById" resultMap="depositDetailResponseDTOMap">
+  <select id="selectBaseDepositDetailById" resultMap="depositDetailResponseDTOMap">
     SELECT
       d.id AS d_id,
       d.name AS d_name,
@@ -60,31 +60,31 @@
       d.view_cnt AS d_view_cnt,
       d.scrap_cnt AS d_scrap_cnt,
       d.regret_cnt AS d_regret_cnt,
-
       d.min_save_term AS d_min_save_term,
       d.max_save_term AS d_max_save_term,
-
       d.description AS d_description,
-
-    <if test="userId != null">
-      pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage,
-      CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
-    </if>
-    <if test="userId == null">
       NULL AS pd_advantage,
       NULL AS pd_disadvantage,
       false AS is_scraped
-    </if>
     FROM
       deposit d
-    <if test="userId != null">
-      LEFT JOIN users u ON u.id = #{userId}
-      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND d.id = pd.product_id
-      LEFT JOIN scrap s ON u.id = s.user_id AND d.id = s.product_id
-    </if>
     WHERE
       d.id = #{depositId}
+  </select>
+
+  <select id="selectUserSpecificDataForDeposit" resultType="com.halggeol.backend.products.dto.UserSpecificDataResponseDTO">
+    SELECT
+      pd.advantage AS advantage,
+      pd.disadvantage AS disadvantage,
+      CASE WHEN s.user_id IS NOT NULL THEN true ELSE false END AS isScraped
+    FROM
+      users u
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND pd.product_id = #{productId}
+        LEFT JOIN
+      scrap s ON u.id = s.user_id AND s.product_id = #{productId}
+    WHERE
+      u.id = #{userId}
   </select>
 
   <!-- 적금 -->
@@ -120,7 +120,7 @@
     <result property="disadvantage" column="pd_disadvantage"/>
     <result property="isScraped" column="is_scraped"/>
   </resultMap>
-  <select id="selectSavingsDetailById" resultMap="savingsDetailResponseDTOMap">
+  <select id="selectBaseSavingsDetailById" resultMap="savingsDetailResponseDTOMap">
     SELECT
       s.id AS s_id,
       s.name AS s_name,
@@ -143,32 +143,31 @@
       s.view_cnt AS s_view_cnt,
       s.scrap_cnt AS s_scrap_cnt,
       s.regret_cnt AS s_regret_cnt,
-
       s.min_save_term AS s_min_save_term,
       s.max_save_term AS s_max_save_term,
-
       s.description AS s_description,
-
-    <if test="userId != null">
-      pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage,
-      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
-    </if>
-    <if test="userId == null">
       NULL AS pd_advantage,
       NULL AS pd_disadvantage,
       false AS is_scraped
-    </if>
     FROM
       savings s
-    <if test="userId != null">
-      LEFT JOIN users u ON u.id = #{userId}
-      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND s.id = pd.product_id
-      LEFT JOIN scrap sc ON u.id = sc.user_id AND s.id = sc.product_id
-    </if>
-
     WHERE
       s.id = #{savingsId}
+  </select>
+
+  <select id="selectUserSpecificDataForSavings" resultType="com.halggeol.backend.products.dto.UserSpecificDataResponseDTO">
+    SELECT
+      pd.advantage AS advantage,
+      pd.disadvantage AS disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS isScraped
+    FROM
+      users u
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND pd.product_id = #{productId}
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND sc.product_id = #{productId}
+    WHERE
+      u.id = #{userId}
   </select>
 
   <!-- 펀드 -->
@@ -203,7 +202,7 @@
     <result property="isScraped" column="is_scraped"/>
   </resultMap>
 
-  <select id="selectFundDetailById" resultMap="fundDetailResponseDTOMap">
+  <select id="selectBaseFundDetailById" resultMap="fundDetailResponseDTOMap">
     SELECT
       f.id AS f_id,
       f.name AS f_name,
@@ -227,28 +226,29 @@
       f.view_cnt AS f_view_cnt,
       f.scrap_cnt AS f_scrap_cnt,
       f.regret_cnt AS f_regret_cnt,
-
       f.description AS f_description,
-
-    <if test="userId != null">
-      pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage,
-      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
-    </if>
-    <if test="userId == null">
       NULL AS pd_advantage,
       NULL AS pd_disadvantage,
       false AS is_scraped
-    </if>
     FROM
       fund f
-    <if test="userId != null">
-      LEFT JOIN users u ON u.id = #{userId}
-      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND f.id = pd.product_id
-      LEFT JOIN scrap sc ON u.id = sc.user_id AND f.id = sc.product_id
-    </if>
     WHERE
       f.id = #{fundId}
+  </select>
+
+  <select id="selectUserSpecificDataForFund" resultType="com.halggeol.backend.products.dto.UserSpecificDataResponseDTO">
+    SELECT
+      pd.advantage AS advantage,
+      pd.disadvantage AS disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS isScraped
+    FROM
+      users u
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND pd.product_id = #{productId}
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND sc.product_id = #{productId}
+    WHERE
+      u.id = #{userId}
   </select>
 
   <!-- 외화 -->
@@ -285,17 +285,14 @@
     <result property="disadvantage" column="pd_disadvantage"/>
     <result property="isScraped" column="is_scraped"/>
   </resultMap>
-  <select id="selectForexDetailById" resultMap="forexDetailResponseDTOMap">
+  <select id="selectBaseForexDetailById" resultMap="forexDetailResponseDTOMap">
     SELECT
       fx.id AS fx_id,
       fx.name AS fx_name,
       fx.rate AS fx_rate,
-
       fx.currency AS fx_currency,
-
       fx.min_limit AS fx_min_limit,
       fx.max_limit AS fx_max_limit,
-
       fx.reg_limit_date AS fx_reg_limit_date,
       fx.auto_renew AS fx_auto_renew,
       fx.extra_deposit AS fx_extra_deposit,
@@ -310,32 +307,32 @@
       fx.view_cnt AS fx_view_cnt,
       fx.scrap_cnt AS fx_scrap_cnt,
       fx.regret_cnt AS fx_regret_cnt,
-
       fx.description AS fx_description,
       fx.rate_type AS fx_rate_type,
       fx.min_save_term AS fx_min_save_term,
       fx.max_save_term AS fx_max_save_term,
-
-    <if test="userId != null">
-      pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage,
-      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
-    </if>
-    <if test="userId == null">
       NULL AS pd_advantage,
       NULL AS pd_disadvantage,
       false AS is_scraped
-    </if>
-
     FROM
       forex fx
-    <if test="userId != null">
-      LEFT JOIN users u ON u.id = #{userId}
-      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND fx.id = pd.product_id
-      LEFT JOIN scrap sc ON u.id = sc.user_id AND fx.id = sc.product_id
-    </if>
     WHERE
       fx.id = #{forexId}
+  </select>
+
+  <select id="selectUserSpecificDataForForex" resultType="com.halggeol.backend.products.dto.UserSpecificDataResponseDTO">
+    SELECT
+      pd.advantage AS advantage,
+      pd.disadvantage AS disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS isScraped
+    FROM
+      users u
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND pd.product_id = #{productId}
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND sc.product_id = #{productId}
+    WHERE
+      u.id = #{userId}
   </select>
 
   <!-- 연금 -->
@@ -369,7 +366,7 @@
     <result property="isScraped" column="is_scraped"/>
   </resultMap>
 
-  <select id="selectPensionDetailById" resultMap="pensionDetailResponseDTOMap">
+  <select id="selectBasePensionDetailById" resultMap="pensionDetailResponseDTOMap">
     SELECT
       pn.id AS p_id,
       pn.name AS p_name,
@@ -387,33 +384,33 @@
       pn.view_cnt AS p_view_cnt,
       pn.scrap_cnt AS p_scrap_cnt,
       pn.regret_cnt AS p_regret_cnt,
-
       pn.save_term AS p_save_term,
       pn.rate_type AS p_rate_type,
       pn.min_limit AS p_min_limit,
       pn.max_limit AS p_max_limit,
-
       pn.description AS p_description,
-
-    <if test="userId != null">
-      pd.advantage AS pd_advantage,
-      pd.disadvantage AS pd_disadvantage,
-      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS is_scraped
-    </if>
-    <if test="userId == null">
       NULL AS pd_advantage,
       NULL AS pd_disadvantage,
       false AS is_scraped
-    </if>
     FROM
       pension pn
-    <if test="userId != null">
-      LEFT JOIN users u ON u.id = #{userId}
-      LEFT JOIN personalized_description pd ON u.algo_code = pd.algo_code AND pn.id = pd.product_id
-      LEFT JOIN scrap sc ON u.id = sc.user_id AND pn.id = sc.product_id
-    </if>
     WHERE
       pn.id = #{pensionId}
+  </select>
+
+  <select id="selectUserSpecificDataForPension" resultType="com.halggeol.backend.products.dto.UserSpecificDataResponseDTO">
+    SELECT
+      pd.advantage AS advantage,
+      pd.disadvantage AS disadvantage,
+      CASE WHEN sc.user_id IS NOT NULL THEN true ELSE false END AS isScraped
+    FROM
+      users u
+        LEFT JOIN
+      personalized_description pd ON u.algo_code = pd.algo_code AND pd.product_id = #{productId}
+        LEFT JOIN
+      scrap sc ON u.id = sc.user_id AND sc.product_id = #{productId}
+    WHERE
+      u.id = #{userId}
   </select>
 
   <update id="incrementDepositViewCount">

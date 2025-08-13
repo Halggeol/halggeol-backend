@@ -7,10 +7,11 @@ import com.halggeol.backend.insight.dto.ProfitCalculationInput;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
 import com.halggeol.backend.insight.dto.RegretSurveyRequestDTO;
 import com.halggeol.backend.insight.mapper.InsightDetailMapper;
-import com.halggeol.backend.insight.util.calculator.ProfitCalculator;
 import com.halggeol.backend.insight.util.calculator.RegretInsightCalculator;
 import com.halggeol.backend.insight.service.strategy.InsightDetailFactory;
 import com.halggeol.backend.insight.service.strategy.InsightDetailStrategy;
+import com.halggeol.backend.insight.util.calculator.strategy.ProfitCalculatorFactory;
+import com.halggeol.backend.insight.util.calculator.strategy.ProfitCalculatorStrategy;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.recommend.service.RecommendServiceImpl.Recommendation;
 import com.halggeol.backend.security.domain.CustomUser;
@@ -18,7 +19,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +35,10 @@ public class InsightDetailServiceImpl implements InsightDetailService {
     private final InsightDetailMapper mapper;
     private final RecommendService recommendService;
     private final InsightDetailFactory factory;
+    private final ProfitCalculatorFactory calculatorFactory;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public InsightDetailResponseDTO getInsightDetail(Integer round, String productId, CustomUser user) {
         int userId = user.getUser().getId();
         ProductType productType = ProductType.fromProductId(productId);
@@ -48,47 +49,85 @@ public class InsightDetailServiceImpl implements InsightDetailService {
         LocalDate recDate = insightResponse.getRecDate();
         LocalDate anlzDate = insightResponse.getAnlzDate();
 
+        List<ProfitSimulationDTO> finalProfits = null;
+        List<ForexCompareDTO> forexInfo = null;
         RegretInsightCalculator.RegretInsight regret;
 
         // 외환 인사이트
         if(productType == ProductType.FOREX) {
-            List<ForexCompareDTO> forexInfo = getForexCompare(userId, insightResponse.getCurrency(), recDate, anlzDate);
-            insightResponse.setForexInfo(forexInfo);
+            forexInfo = getForexCompare(userId, insightResponse.getCurrency(), recDate, anlzDate);
 
             // 수익 시뮬레이션+후회지수 계산
             regret = RegretInsightCalculator.calculateForex(forexInfo);
 
         } else {
+            ProfitCalculatorStrategy calculatorStrategy = calculatorFactory.getStrategy(productType);
             List<ProfitSimulationDTO> simulation = strategy.fetchSimulation(round, productId, userId, recDate, anlzDate);
-            insightResponse.setProfits(simulation);
+            long principal = calculatorStrategy.estimateInvestmentAmount(simulation, insightResponse.getMaxLimit());
 
-            // 수익 시뮬레이션 계산
-            ProfitCalculationInput input = ProfitCalculationInput.from(insightResponse);
-            List<ProfitSimulationDTO> profits = ProfitCalculator.calculateProfitSimulations(input);
-            insightResponse.setProfits(profits);
+            ProfitCalculationInput input = ProfitCalculationInput.from(insightResponse, simulation);
+            finalProfits = calculatorStrategy.calculate(input, principal);
 
             // 후회지수 계산
-            regret = RegretInsightCalculator.calculate(insightResponse.getProfits());
+            regret = RegretInsightCalculator.calculate(finalProfits);
         }
 
-        insightResponse.setRegretScore((int) regret.getRegretScore());
-        insightResponse.setMissAmount((int) regret.getMissAmount());
+        // DB update
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("round", round);
+        params.put("productId", productId);
+        params.put("regretScore", regret.regretScore());
+        params.put("missAmount", regret.missAmount());
+
+        mapper.updateRegretInsight(params);
 
         // 유사도 측정
         List<Recommendation> similarProducts = recommendService.getSimilarProducts(productId);
-        insightResponse.setSimilarProducts(similarProducts);
+        return buildFinalResponse(insightResponse, finalProfits, forexInfo, regret, similarProducts);
+    }
 
-        return insightResponse;
+    private InsightDetailResponseDTO buildFinalResponse(InsightDetailResponseDTO baseInfo,
+        List<ProfitSimulationDTO> profits,
+        List<ForexCompareDTO> forexInfo,
+        RegretInsightCalculator.RegretInsight regret,
+        List<Recommendation> similarProducts) {
+        return InsightDetailResponseDTO.builder()
+            .recDate(baseInfo.getRecDate())
+            .anlzDate(baseInfo.getAnlzDate())
+            .id(baseInfo.getId())
+            .productName(baseInfo.getProductName())
+            .interestRate(baseInfo.getInterestRate())
+            .isCompound(baseInfo.getIsCompound())
+            .minLimit(baseInfo.getMinLimit())
+            .maxLimit(baseInfo.getMaxLimit())
+            .saveTerm(baseInfo.getSaveTerm())
+            .TER(baseInfo.getTER())
+            .upfrontFee(baseInfo.getUpfrontFee())
+            .currency(baseInfo.getCurrency())
+            .description(baseInfo.getDescription())
+            .advantage(baseInfo.getAdvantage())
+            .disadvantage(baseInfo.getDisadvantage())
+            .name(baseInfo.getName())
+            .isSurveyed(baseInfo.getIsSurveyed())
+            .isRegretted(baseInfo.getIsRegretted())
+            .regrettedReason(baseInfo.getRegrettedReason())
+            // 계산된 최종 결과 설정
+            .profits(profits)
+            .forexInfo(forexInfo)
+            .regretScore((int) regret.regretScore())
+            .missAmount((int) regret.missAmount())
+            .similarProducts(similarProducts)
+            .build();
     }
 
     private List<ForexCompareDTO> getForexCompare(int userId, String currencies, LocalDate recDate, LocalDate anlzDate) {
         List<ForexCompareDTO> forexInfo = new ArrayList<>();
         String[] currencyArray = currencies.split(",\\s*");
-        List<String> currencyList = Arrays.asList(currencyArray);
 
         Long asset = mapper.getAsset(userId, recDate);
 
-        for(String currency : currencyList) {
+        for(String currency : currencyArray) {
             BigDecimal pastRate = mapper.getExchangeRate(currency, recDate);
             BigDecimal currRate = mapper.getExchangeRate(currency, anlzDate);
 

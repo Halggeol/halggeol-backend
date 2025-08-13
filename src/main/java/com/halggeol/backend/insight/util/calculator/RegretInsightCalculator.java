@@ -5,8 +5,6 @@ import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 public class RegretInsightCalculator {
 
@@ -15,11 +13,7 @@ public class RegretInsightCalculator {
     private static final double MAX_SCORE = 100.0;
     private static final double MIN_SCORE = 0.0;
 
-    @Getter
-    @AllArgsConstructor
-    public static class RegretInsight {
-        private final double regretScore;
-        private final double missAmount;
+    public record RegretInsight(double regretScore, double missAmount) {
         public static final RegretInsight ZERO = new RegretInsight(0, 0);
     }
 

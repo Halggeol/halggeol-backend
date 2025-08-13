@@ -7,6 +7,7 @@ import com.halggeol.backend.security.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +21,13 @@ import java.util.*;
 public class InsightController {
 
     private final InsightService insightService;
-    private final InsightDetailService InsightDetailService;
+    private final InsightDetailService insightDetailService;
 
     @GetMapping
     public List<InsightDTO> getInsightList(
-            @AuthenticationPrincipal CustomUser user,
-            @RequestParam(required = false) Integer round,
-            @RequestParam(required = false) String type
+        @AuthenticationPrincipal CustomUser user,
+        @RequestParam(required = false) Integer round,
+        @RequestParam(required = false) String type
     ) {
         if (user == null) {
             throw new IllegalArgumentException("인증된 사용자가 필요합니다.");
@@ -63,33 +64,22 @@ public class InsightController {
         return ResponseEntity.ok(data);
     }
 
-    @GetMapping("/details")
+    @GetMapping("/{round}/products/{productId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getInsightDetail(
-            @RequestParam Integer round,
-            @RequestParam String productId,
-            @AuthenticationPrincipal CustomUser user) {
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        try {
-            InsightDetailResponseDTO response = InsightDetailService.getInsightDetail(round, productId, user);
-            if (response == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        @PathVariable Integer round,
+        @PathVariable String productId,
+        @AuthenticationPrincipal CustomUser user) {
+        InsightDetailResponseDTO response = insightDetailService.getInsightDetail(round, productId, user);
+        return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/details")
+    @PatchMapping("/feedback")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> updateRegretSurvey(
             @AuthenticationPrincipal CustomUser user,
             @RequestBody RegretSurveyRequestDTO request) {
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        InsightDetailService.updateRegretSurvey(user, request);
+        insightDetailService.updateRegretSurvey(user, request);
         return ResponseEntity.ok().build();
     }
 

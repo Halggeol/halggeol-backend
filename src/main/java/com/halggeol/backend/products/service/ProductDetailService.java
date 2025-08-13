@@ -1,6 +1,8 @@
 package com.halggeol.backend.products.service;
 
+import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.security.domain.CustomUser;
+import java.util.List;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,4 +17,9 @@ public interface ProductDetailService {
     String checkRecommendProductStatus(@AuthenticationPrincipal CustomUser user, String productId);
 
     void updateProductStatus(@AuthenticationPrincipal CustomUser user, String productId, String productStatus);
+
+    public void saveCacheRegretRankingProducts();
+
+//    void cacheUserRecommendedProducts(String userId,
+//        List<RecommendResponseDTO> recommendedProducts);
 }
