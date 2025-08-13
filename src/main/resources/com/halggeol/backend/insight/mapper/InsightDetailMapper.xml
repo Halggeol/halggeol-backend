@@ -212,7 +212,8 @@
              END                                                           AS regrettedReason,
            d.description,
            d.advantage,
-           d.disadvantage
+           d.disadvantage,
+           u.name
     FROM fund p
     <include refid="recItemJoin"/>
   </select>
@@ -300,7 +301,7 @@
     FROM mydata
     WHERE user_id = #{id} AND collect_date = #{date}
   </select>
-  
+
 <!--  환율 가져오기  -->
   <select id="getExchangeRate" resultType="BigDecimal">
     SELECT price
@@ -309,4 +310,25 @@
     LIMIT 1
   </select>
 
+<!--  후회지수 업데이트  -->
+  <update id="updateRegretInsight" parameterType="map">
+    UPDATE rec_item
+    SET
+      product1_regret_score = CASE WHEN product1_id = #{productId} THEN #{regretScore} ELSE product1_regret_score END,
+      product1_miss_amount  = CASE WHEN product1_id = #{productId} THEN #{missAmount}  ELSE product1_miss_amount  END,
+
+      product2_regret_score = CASE WHEN product2_id = #{productId} THEN #{regretScore} ELSE product2_regret_score END,
+      product2_miss_amount  = CASE WHEN product2_id = #{productId} THEN #{missAmount}  ELSE product2_miss_amount  END,
+
+      product3_regret_score = CASE WHEN product3_id = #{productId} THEN #{regretScore} ELSE product3_regret_score END,
+      product3_miss_amount  = CASE WHEN product3_id = #{productId} THEN #{missAmount}  ELSE product3_miss_amount  END,
+
+      product4_regret_score = CASE WHEN product4_id = #{productId} THEN #{regretScore} ELSE product4_regret_score END,
+      product4_miss_amount  = CASE WHEN product4_id = #{productId} THEN #{missAmount}  ELSE product4_miss_amount  END,
+
+      product5_regret_score = CASE WHEN product5_id = #{productId} THEN #{regretScore} ELSE product5_regret_score END,
+      product5_miss_amount  = CASE WHEN product5_id = #{productId} THEN #{missAmount}  ELSE product5_miss_amount  END
+    WHERE
+      user_id = #{userId} AND round = #{round}
+      </update>
 </mapper>
