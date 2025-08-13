@@ -22,7 +22,6 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-// Mockito를 사용하여 테스트 의존성을 관리합니다.
 @ExtendWith(MockitoExtension.class)
 class UserProductControllerTest {
 
@@ -37,13 +36,12 @@ class UserProductControllerTest {
     @Test
     @DisplayName("사용자 ID로 상품 목록 조회 시 HTTP 200과 상품 리스트를 반환한다.")
     void getUserProductsByUserId_returnsProductList() {
-        // given: 이 테스트에 필요한 Mock 객체를 생성하고 스터빙
+        // given
         CustomUser mockUser = mock(CustomUser.class);
         User coreUser = mock(User.class);
         lenient().when(mockUser.getUser()).thenReturn(coreUser);
         lenient().when(coreUser.getId()).thenReturn(TEST_USER_ID);
 
-        // 서비스가 반환할 가짜 DTO 리스트를 생성합니다.
         List<UserProductResponseDTO> expectedList = Collections.singletonList(UserProductResponseDTO.builder()
             .productId("D001")
             .name("Test Deposit Product")
@@ -66,7 +64,7 @@ class UserProductControllerTest {
     @Test
     @DisplayName("상품 목록이 비어있을 경우, 비어있는 리스트와 HTTP 200을 반환한다.")
     void getUserProductsByUserId_returnsEmptyList() {
-        // given: 이 테스트에 필요한 Mock 객체를 생성하고 스터빙
+        // given
         CustomUser mockUser = mock(CustomUser.class);
         User coreUser = mock(User.class);
         lenient().when(mockUser.getUser()).thenReturn(coreUser);

@@ -29,7 +29,6 @@ class UserProductMapperTest {
     private UserProductMapper userProductMapper = new UserProductMapper() {
         @Override
         public List<UserProductResponseDTO> getUserProductsByUserId(int userId) {
-            // SqlSessionTemplate의 selectList를 호출하도록 모의
             return sqlSessionTemplate.selectList("com.halggeol.backend.user.mapper.UserProductMapper.getUserProductsByUserId", userId);
         }
     };
@@ -40,7 +39,6 @@ class UserProductMapperTest {
     @DisplayName("사용자 ID로 상품 목록 조회 시 DTO 리스트를 반환한다.")
     void getUserProductsByUserId_returnsProductList() {
         // given
-        // SqlSessionTemplate이 반환할 가짜 DTO 리스트를 정의합니다.
         List<UserProductResponseDTO> expectedList = Collections.singletonList(
             UserProductResponseDTO.builder().productId("D001").build()
         );
@@ -50,9 +48,8 @@ class UserProductMapperTest {
         List<UserProductResponseDTO> result = userProductMapper.getUserProductsByUserId(TEST_USER_ID);
 
         // then
-        // 1. 반환된 리스트가 예상 리스트와 동일한지 확인
         assertThat(result).isSameAs(expectedList);
-        // 2. SqlSessionTemplate의 selectList 메서드가 올바른 인자(쿼리 ID, 사용자 ID)로 호출되었는지 검증
+
         verify(sqlSessionTemplate).selectList(eq("com.halggeol.backend.user.mapper.UserProductMapper.getUserProductsByUserId"), eq(TEST_USER_ID));
     }
 

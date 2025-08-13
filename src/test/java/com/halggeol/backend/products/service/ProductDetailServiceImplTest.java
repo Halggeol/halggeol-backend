@@ -82,7 +82,7 @@ class ProductDetailServiceImplTest {
             assertThat(result).isNotNull();
             assertThat(result.getAdvantage()).isEqualTo("Advantage");
             assertThat(result.getDisadvantage()).isEqualTo("Disadvantage");
-            // isScraped() 대신 getIsScraped()를 사용하도록 수정
+
             assertThat(result.getIsScraped()).isTrue();
             assertThat(result.getScore()).isEqualTo(85);
             verify(cache, times(1)).put(eq(TEST_PRODUCT_ID_DEPOSIT), any(DepositDetailResponseDTO.class));
@@ -145,7 +145,6 @@ class ProductDetailServiceImplTest {
             when(productDetailMapper.selectBaseSavingsDetailById(anyString())).thenReturn(null);
 
             // when
-            // user 인자로 null을 직접 전달하여 익명 사용자 시나리오를 명확히 테스트합니다.
             Object result = productDetailService.getProductDetailById("S999", null);
 
             // then

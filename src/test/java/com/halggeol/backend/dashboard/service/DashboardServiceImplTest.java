@@ -30,8 +30,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DashboardServiceImplTest {
-
-    // Mockito를 사용하여 필요한 의존성들을 가짜 객체로 만듭니다.
     @Mock
     private UserMapper userMapper;
 
@@ -52,23 +50,22 @@ class DashboardServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // unifiedProductService가 반환할 가짜 데이터를 정의합니다.
         mockRegretRanking = Collections.singletonList(UnifiedProductRegretRankingResponseDTO.builder().build());
     }
 
     @Test
     @DisplayName("로그인하지 않은 사용자가 대시보드에 접근하면 추천 상품 목록만 반환한다.")
     void getDashboardData_anonymousUser_returnsOnlyRegretRanking() {
-        // given: 로그인하지 않은 사용자 (user == null)
+        // given
         when(unifiedProductService.getRegretRankingProducts()).thenReturn(mockRegretRanking);
 
-        // when: getDashboardData 메서드를 호출합니다.
+        // when
         DashboardResponseDTO result = dashboardService.getDashboardData(null);
 
-        // then:
-        // 1. 반환된 객체의 추천 상품 목록이 예상 값과 일치하는지 확인합니다.
+        // then
         assertThat(result.getRegretRanking()).isEqualTo(mockRegretRanking);
-        // 2. 다른 매퍼나 서비스는 호출되지 않았는지 검증합니다.
+
+        // 다른 매퍼나 서비스는 호출되지 않았는지 검증
         verify(recommendService, never()).getRecommendProducts(anyString());
         verify(dashboardMapper, never()).getAvgRegretScoreByUserId(anyString());
         verify(userMapper, never()).findNameById(anyInt());
@@ -77,11 +74,10 @@ class DashboardServiceImplTest {
     @Test
     @DisplayName("로그인한 사용자가 대시보드에 접근하면 모든 데이터를 반환한다.")
     void getDashboardData_loggedInUser_returnsAllData() {
-        // given: 로그인한 사용자 (user != null)
+        // given
         CustomUser mockUser = mock(CustomUser.class);
         User coreUser = mock(User.class);
 
-        // 이 테스트에 필요한 스터빙만 여기에 작성합니다.
         when(mockUser.getUser()).thenReturn(coreUser);
         when(coreUser.getId()).thenReturn(1);
         when(unifiedProductService.getRegretRankingProducts()).thenReturn(mockRegretRanking);
@@ -92,16 +88,14 @@ class DashboardServiceImplTest {
         when(userMapper.findNameById(anyInt())).thenReturn("testuser");
         when(dashboardMapper.getFeedbackRatioByUserId(anyString())).thenReturn(0.8);
 
-        // when: getDashboardData 메서드를 호출합니다.
         DashboardResponseDTO result = dashboardService.getDashboardData(mockUser);
 
-        // then:
-        // 1. 반환된 객체의 각 필드 값이 예상 값과 일치하는지 확인합니다.
+        // then
         assertThat(result.getUserName()).isEqualTo("testuser");
         assertThat(result.getAvgRegretScore()).isEqualTo(10.5);
         assertThat(result.getRegretRanking()).isEqualTo(mockRegretRanking);
 
-        // 2. 모든 의존성 메서드가 한 번씩 호출되었는지 검증합니다.
+        // 다른 매퍼나 서비스는 호출되지 않았는지 검증
         verify(recommendService).getRecommendProducts(anyString());
         verify(dashboardMapper).getAvgRegretScoreByUserId(anyString());
         verify(dashboardMapper).getAssetsOneYearByUserId(anyString());

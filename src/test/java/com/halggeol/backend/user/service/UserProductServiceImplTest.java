@@ -35,7 +35,6 @@ class UserProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // Mock CustomUser 객체와 그 안에 포함된 User 객체 설정
         mockUser = mock(CustomUser.class);
         User coreUser = mock(User.class);
         when(mockUser.getUser()).thenReturn(coreUser);
@@ -46,7 +45,6 @@ class UserProductServiceImplTest {
     @DisplayName("사용자 ID로 상품 목록 조회 시 Mapper를 호출하고 DTO 리스트를 반환한다.")
     void getUserProductsByUserId_returnsProductList() {
         // given
-        // Mapper가 반환할 가짜 DTO 리스트를 정의합니다.
         List<UserProductResponseDTO> expectedList = Collections.singletonList(
             UserProductResponseDTO.builder().productId("D001").build()
         );
@@ -56,9 +54,9 @@ class UserProductServiceImplTest {
         List<UserProductResponseDTO> result = userProductService.getUserProductsByUserId(mockUser);
 
         // then
-        // 1. 반환된 리스트가 예상 리스트와 동일한지 확인
         assertThat(result).isSameAs(expectedList);
-        // 2. Mapper의 메서드가 올바른 인자(사용자 ID)로 한 번 호출되었는지 검증
+
+        // 메서드가 올바른 인자(사용자 ID)로 한 번 호출되었는지 검증
         verify(userProductMapper).getUserProductsByUserId(TEST_USER_ID);
     }
 

@@ -40,12 +40,8 @@ class DashboardControllerTest {
 
     @BeforeEach
     void setUp() {
-        // @AuthenticationPrincipal로 전달될 CustomUser 객체를 Mockito로 생성합니다.
-        // 이 방법은 CustomUser의 생성자를 알 필요가 없습니다.
         mockUser = mock(CustomUser.class);
 
-        // DashboardResponseDTO의 실제 구조를 반영하여 Mockito 객체를 생성하고 필드를 설정합니다.
-        // BDD(Builder) 패턴을 사용하여 가짜 데이터를 만듭니다.
         mockResponseDTO = DashboardResponseDTO.builder()
             .userName("testuser")
             .avgRegretScore(10.5)
@@ -60,22 +56,17 @@ class DashboardControllerTest {
     @Test
     @DisplayName("대시보드 데이터를 요청하면 HTTP 200과 올바른 DTO를 반환한다.")
     void getDashboard_Success_Returns200AndDTO() {
-        // given: dashboardService.getDashboardData(any())가 호출되면 mockResponseDTO를 반환하도록 설정
+        // given
         when(dashboardService.getDashboardData(any(CustomUser.class))).thenReturn(mockResponseDTO);
 
-        // when: 컨트롤러의 메서드를 직접 호출하고 반환된 ResponseEntity를 받습니다.
+        // when
         ResponseEntity<DashboardResponseDTO> responseEntity = dashboardController.getDashboard(mockUser);
 
         // then:
-        // 1. 응답의 HTTP 상태 코드가 HttpStatus.OK (200)인지 확인합니다.
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        // 2. 응답 본문의 DTO가 null이 아닌지 확인합니다.
         assertThat(responseEntity.getBody()).isNotNull();
-        // 3. 반환된 DTO의 userName 필드가 예상 값과 일치하는지 검증합니다.
         assertThat(responseEntity.getBody().getUserName()).isEqualTo("testuser");
-        // 4. 반환된 DTO의 avgRegretScore 필드가 예상 값과 일치하는지 검증합니다.
         assertThat(responseEntity.getBody().getAvgRegretScore()).isEqualTo(10.5);
-        // 5. 반환된 DTO의 assets 리스트의 크기가 예상 값과 일치하는지 검증합니다.
         assertThat(responseEntity.getBody().getAssets()).hasSize(1);
     }
 }
