@@ -12,6 +12,7 @@ import com.halggeol.backend.insight.service.strategy.InsightDetailFactory;
 import com.halggeol.backend.insight.service.strategy.InsightDetailStrategy;
 import com.halggeol.backend.insight.util.calculator.strategy.ProfitCalculatorFactory;
 import com.halggeol.backend.insight.util.calculator.strategy.ProfitCalculatorStrategy;
+import com.halggeol.backend.logs.service.LogService;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.recommend.service.RecommendServiceImpl.Recommendation;
 import com.halggeol.backend.security.domain.CustomUser;
@@ -36,6 +37,7 @@ public class InsightDetailServiceImpl implements InsightDetailService {
     private final RecommendService recommendService;
     private final InsightDetailFactory factory;
     private final ProfitCalculatorFactory calculatorFactory;
+    private final LogService logService;
 
     @Override
     @Transactional
@@ -162,6 +164,11 @@ public class InsightDetailServiceImpl implements InsightDetailService {
         params.put("surveyResult", surveyResult);
 
         mapper.updateRegretSurvey(params);
+        if(Boolean.TRUE.equals(surveyRequest.getIsRegretted())) {
+            logService.buildLog("regret", surveyRequest.getProductId(), userId);
+        } else {
+            logService.buildLog("no_regret", surveyRequest.getProductId(), userId);
+        }
     }
 
     private String resolveSurveyResult(Boolean isRegretted, Integer regrettedReason) {

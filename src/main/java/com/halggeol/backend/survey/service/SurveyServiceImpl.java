@@ -83,17 +83,18 @@ public class SurveyServiceImpl implements SurveyService {
             surveyResult.getInvestmentPeriodOption()
         );
 
-        UserVectorResponseDTO scores = null; // TODO: 5개 user score 점수 내기
+//        UserVectorResponseDTO scores = recommendService.; // TODO: 5개 user score 점수 내기
+        UserVectorResponseDTO scores = recommendService.initUserVector(surveyResult); // TODO: 5개 user score 점수 내기
 
-//        surveyMapper.updateTendencyByEmail(
-//            email,
-//            risk,
-//            scores.getYieldScore(),
-//            scores.getRiskScore(),
-//            scores.getCostScore(),
-//            scores.getLiquidityScore(),
-//            scores.getComplexityScore()
-//        );
+        surveyMapper.updateTendencyByEmail(
+            email,
+            risk,
+            scores.getYieldScore(),
+            scores.getRiskScore(),
+            scores.getCostScore(),
+            scores.getLiquidityScore(),
+            scores.getComplexityScore()
+        );
         return Map.of("message", "투자 성향 갱신이 완료되었습니다.");
     }
 

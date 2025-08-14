@@ -2,6 +2,7 @@ package com.halggeol.backend.scrap.service;
 
 import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByConsumer;
 
+import com.halggeol.backend.logs.service.LogService;
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScrapServiceImpl implements ScrapService {
 
     private final ScrapMapper scrapMapper;
+    private final LogService logService;
 
     @Override
     @Transactional
@@ -34,6 +36,7 @@ public class ScrapServiceImpl implements ScrapService {
             .productId(productId)
             .build();
 
+        logService.buildLog("add_scrap", productId, user.getUser().getId());
         scrapMapper.insertUserScrap(scrap);
     }
 
@@ -43,6 +46,7 @@ public class ScrapServiceImpl implements ScrapService {
         String productId = requestDto.getProductId();
 
         decrementProductScrapCountAsync(productId);
+        logService.buildLog("remove_scrap", productId, user.getUser().getId());
         scrapMapper.deleteUserScrap(user.getUser().getId(), productId);
     }
 

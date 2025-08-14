@@ -208,6 +208,6 @@ public class RecommendServiceImpl implements RecommendService {
     public UserVectorResponseDTO initUserVector(TendencySurveyRequestDTO survey) {
         int yieldScore, riskScore, costScore, liquidityScore, complexityScore;
         //투자 성향 설문 결과를 기반으로 유저 벡터를 초기화
-        return UserVectorResponseDTO.builder().complexityScore(1.0).costScore(1.0).yieldScore(1.0).liquidityScore(1.0).riskScore(1.0).build();
+        return UserVectorResponseDTO.builder().complexityScore(0.5).costScore(0.5).yieldScore(0.5).liquidityScore(0.5).riskScore(0.5).build();
     }
 }

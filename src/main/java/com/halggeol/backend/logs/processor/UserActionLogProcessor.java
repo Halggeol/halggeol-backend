@@ -22,10 +22,12 @@ public class UserActionLogProcessor implements ItemProcessor<UserActionLog, User
         double actionScore = switch (userActionLog.getActionType()) {
             case "view" -> 1;
             case "scroll" -> 5;
-            case "scrap" -> 10;
+            case "add_scrap" -> 10;
+            case "remove_scrap" -> -10;
             case "regret" -> 20;
             case "purchase" -> 50;
             case "resign" -> -20;
+            case "no_regret" -> -10;
             default ->
                 // 다른 액션 타입에 대한 처리
                 0;
