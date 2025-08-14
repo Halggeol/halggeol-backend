@@ -2,16 +2,39 @@ package com.halggeol.backend.scrap.service;
 
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
+import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
+import com.halggeol.backend.scrap.mapper.ScrapMapper;
 import com.halggeol.backend.security.domain.CustomUser;
 import com.halggeol.backend.security.domain.User;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ScrapServiceImpl 및 관련 DTO 테스트")
 class ScrapServiceImplTest {
+
+    @Mock
+    private ScrapMapper scrapMapper;
+
+    @InjectMocks
+    private ScrapServiceImpl scrapService;
 
     private CustomUser testUser;
     private int testUserId;
@@ -400,4 +423,52 @@ class ScrapServiceImplTest {
         assertFalse(userIdString.isEmpty());
         assertNotNull(userIdInteger);
     }
+
+    @Test
+    @DisplayName("스크랩된 상품 조회: 인증된 사용자 요청 시 성공적으로 관심 상품 목록 반환")
+    void getScrappedProducts_Success() {
+        // Given
+        List<String> types = List.of("deposit");
+        String sort = "recent";
+
+        // scrapMapper가 반환할 가짜 데이터 생성
+        List<ScrappedProductResponseDTO> mockProducts = Collections.singletonList(new ScrappedProductResponseDTO());
+        // scrapMapper.selectScrappedProducts가 호출될 때, 위에서 만든 가짜 데이터를 반환하도록 설정
+        when(scrapMapper.selectScrappedProducts(testUserId, types, sort)).thenReturn(mockProducts);
+
+        // When
+        ResponseEntity<?> response = scrapService.getScrappedProducts(testUser, types, sort);
+
+        // Then
+        // 1. HTTP 상태 코드가 200 OK 인지 확인
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // 2. 응답 본문이 scrapMapper가 반환한 데이터와 일치하는지 확인
+        assertEquals(mockProducts, response.getBody());
+
+        // 3. scrapMapper의 selectScrappedProducts 메서드가 정확히 1번, 올바른 인자들로 호출되었는지 검증
+        verify(scrapMapper, times(1)).selectScrappedProducts(testUserId, types, sort);
+
+    }
+
+    @Test
+    @DisplayName("스크랩된 상품 조회: 인증되지 않은 사용자(null)의 요청")
+    void getScrappedProducts_Unauthorized() {
+        // Given
+        CustomUser nullUser = null;
+        List<String> types = List.of("deposit");
+        String sort = "popularDesc";
+
+        // When
+        ResponseEntity<?> response = scrapService.getScrappedProducts(nullUser, types, sort);
+
+        // Then
+        // 1. HTTP 상태 코드가 401 Unauthorized 인지 확인
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        // 2. 응답 본문에 "User not authenticated" 메시지가 포함되어 있는지 확인
+        assertEquals("User not authenticated", response.getBody());
+        // 3. 사용자가 없으므로, scrapMapper의 어떤 메서드도 호출되지 않았는지 확인
+        verifyNoInteractions(scrapMapper);
+    }
+
 }

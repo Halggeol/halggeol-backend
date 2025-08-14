@@ -15,6 +15,7 @@
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="halggeol-db-identifier.cng8icy88ojm.us-east-1.rds.amazonaws.com" uuid="eed84a60-48f7-43d5-818f-301bbb2e60cd">
+      <driver-ref>mysql_aurora.aws_wrapper</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>software.amazon.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:aws-wrapper:mysql://halggeol-db-identifier.cng8icy88ojm.us-east-1.rds.amazonaws.com:3306</jdbc-url>
