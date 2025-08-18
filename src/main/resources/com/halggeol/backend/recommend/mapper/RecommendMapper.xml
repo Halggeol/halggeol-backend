@@ -532,4 +532,16 @@
       </when>
     </choose>
   </update>
+
+  <select id="getUserVectorByEmail" resultMap="UserVectorResponseDTOMap">
+    SELECT
+      id,
+      yield_score,
+      risk_score,
+      cost_score,
+      liquidity_score,
+      complexity_score
+    FROM users
+    WHERE email = #{email}
+  </select>
 </mapper>

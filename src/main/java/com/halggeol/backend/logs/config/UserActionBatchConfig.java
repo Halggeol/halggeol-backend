@@ -13,8 +13,12 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.binding.BindingException;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.SkipListener;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -25,13 +29,20 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.MongoItemReader;
 import org.springframework.batch.item.data.builder.MongoItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 @Configuration
 @EnableBatchProcessing
@@ -45,33 +56,39 @@ public class UserActionBatchConfig {
     private final RecommendMapper recommendMapper;
 
     @Bean
-    public DataSourceInitializer dataSourceInitializer() {
-        DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-        dataSourceInitializer.setDataSource(dataSource);
-
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-
-        populator.addScript(new ClassPathResource("org/springframework/batch/core/schema-mysql.sql"));
-        populator.setContinueOnError(true);
-        // 데이터베이스 초기화 로직을 추가할 수 있습니다.
-        // 예: 스키마 생성, 초기 데이터 삽입 등
-        dataSourceInitializer.setDatabasePopulator(populator);
-        return dataSourceInitializer;
-    }
-
-    @Bean Job userActionLogJob(MongoItemReader<UserActionLog> mongoActionLogReader) {
+    Job userActionLogJob(MongoItemReader<UserActionLog> mongoActionLogReader,
+        SkipListener<UserActionLog, User> batchSkipListener,
+        StepExecutionListener stepSummaryListener,
+        org.springframework.batch.core.JobExecutionListener jobSummaryListener // ✅ 메서드 파라미터로 주입
+    ) {
         return jobBuilderFactory.get("userActionLogJob")
-            .start(userActionLogStep(mongoActionLogReader))
+            .start(userActionLogStep(mongoActionLogReader, batchSkipListener, stepSummaryListener))
+            .listener(jobSummaryListener) // ✅ 이미 주입된 빈 사용 (자기 메서드 직접 호출 X)
             .build();
     }
 
     @Bean
-    public Step userActionLogStep(MongoItemReader<UserActionLog> mongoActionLogReader) {
+    public Step userActionLogStep(MongoItemReader<UserActionLog> mongoActionLogReader,
+        SkipListener<UserActionLog, User> batchSkipListener,
+        StepExecutionListener stepSummaryListener) {
         return stepBuilderFactory.get("userActionSummaryStep")
             .<UserActionLog, User> chunk(100)
             .reader(mongoActionLogReader)
             .processor(mysqlLogProcessor())
             .writer(mysqlLogWriter())
+            .faultTolerant()
+            //일시적 오류에 대해 재시도 설정
+            .retry(DeadlockLoserDataAccessException.class)
+            .retry(CannotAcquireLockException.class)
+            .retry(TransientDataAccessResourceException.class)
+            .retryLimit(3)
+            // 특정 예외에 대해 건너뛰기 설정
+            .skip(BindingException.class)
+            .skip(DuplicateKeyException.class)
+            .skipLimit(100)
+
+            .listener(batchSkipListener)
+            .listener(stepSummaryListener)
             .build();
     }
 
@@ -80,7 +97,7 @@ public class UserActionBatchConfig {
     public MongoItemReader<UserActionLog> mongoActionLogReader(MongoTemplate mongoTemplate) {
         ZoneId KST = ZoneId.of("Asia/Seoul");
         LocalDateTime today = LocalDateTime.now(KST);
-        Date from = Date.from(today.minusDays(1).atZone(KST).toInstant());
+        Date from = Date.from(today.minusMinutes(15).atZone(KST).toInstant());
         Date to = Date.from(today.atZone(KST).toInstant());
 
         return new MongoItemReaderBuilder<UserActionLog>()
@@ -134,6 +151,96 @@ public class UserActionBatchConfig {
                 WHERE id = :id
                 """)
             .beanMapped()
+            .assertUpdates(false) // 업데이트가 없더라도 예외 발생 방지
             .build();
+    }
+
+    @Bean
+    public org.springframework.batch.core.StepExecutionListener stepSummaryListener() {
+        return new org.springframework.batch.core.listener.StepExecutionListenerSupport() {
+            @Override
+            public ExitStatus afterStep(org.springframework.batch.core.StepExecution se) {
+                int read = se.getReadCount();
+                int write = se.getWriteCount();
+                int skip = se.getSkipCount();
+                int fail = se.getFailureExceptions() == null ? 0 : se.getFailureExceptions().size();
+                System.out.printf("[STEP] %s read=%d write=%d skip=%d fail=%d%n",
+                    se.getStepName(), read, write, skip, fail);
+                return se.getExitStatus();
+            }
+        };
+    }
+
+    @Bean
+    public org.springframework.batch.core.JobExecutionListener jobSummaryListener(
+        JavaMailSender mailSender,
+        @Value("${mail.to}") String toList,
+        @Value("${mail.from:}") String fromAddr // 없으면 생략
+    ) {
+        return new org.springframework.batch.core.listener.JobExecutionListenerSupport() {
+            @Override
+            public void afterJob(org.springframework.batch.core.JobExecution je) {
+                var status = je.getStatus();
+                var steps = je.getStepExecutions();
+
+                int totalRead  = steps.stream().mapToInt(org.springframework.batch.core.StepExecution::getReadCount).sum();
+                int totalWrite = steps.stream().mapToInt(org.springframework.batch.core.StepExecution::getWriteCount).sum();
+                int totalSkip  = steps.stream().mapToInt(org.springframework.batch.core.StepExecution::getSkipCount).sum();
+
+                String jobName = je.getJobInstance().getJobName();
+                String subject = String.format("[Batch] %s: %s (read=%d, write=%d, skip=%d)",
+                    jobName, status, totalRead, totalWrite, totalSkip);
+
+                StringBuilder body = new StringBuilder();
+                body.append("Job: ").append(jobName).append('\n')
+                    .append("Status: ").append(status).append('\n')
+                    .append("Read: ").append(totalRead).append('\n')
+                    .append("Write: ").append(totalWrite).append('\n')
+                    .append("Skip: ").append(totalSkip).append('\n')
+                    .append("Start: ").append(je.getStartTime()).append('\n')
+                    .append("End: ").append(je.getEndTime()).append('\n')
+                    .append("\nParameters:\n");
+
+                je.getJobParameters().getParameters().forEach((k, v) ->
+                    body.append(" - ").append(k).append(" = ").append(v.getValue()).append('\n')
+                );
+
+                if (!je.getFailureExceptions().isEmpty()) {
+                    body.append("\nFailures:\n");
+                    je.getFailureExceptions().forEach(ex ->
+                        body.append(" - ").append(ex.getClass().getSimpleName())
+                            .append(": ").append(ex.getMessage()).append('\n')
+                    );
+                }
+
+                // 알림 보낼 조건(예: 실패 또는 skip 발생 시만)
+                boolean shouldNotify = !status.isUnsuccessful() ? (totalSkip > 0) : true;
+
+                try {
+                    if (shouldNotify) {
+                        SimpleMailMessage msg = new SimpleMailMessage();
+                        if (fromAddr != null && !fromAddr.isBlank()) msg.setFrom(fromAddr);
+                        msg.setTo(parseRecipients(toList));
+                        msg.setSubject(subject);
+                        msg.setText(body.toString());
+                        mailSender.send(msg);
+                    }
+                } catch (Exception e) {
+                    // 메일 실패로 Job 자체가 실패하지 않도록 안전하게 처리
+                    System.err.println("[JOB][MAIL] send failed: " + e.getMessage());
+                }
+
+                // 콘솔 로그 요약
+                System.out.printf("[JOB] %s status=%s read=%d write=%d skip=%d%n",
+                    jobName, status, totalRead, totalWrite, totalSkip);
+            }
+
+            private String[] parseRecipients(String csv) {
+                return java.util.Arrays.stream(csv.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toArray(String[]::new);
+            }
+        };
     }
 }

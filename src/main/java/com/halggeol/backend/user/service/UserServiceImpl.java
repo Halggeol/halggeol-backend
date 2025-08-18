@@ -6,7 +6,6 @@ import com.halggeol.backend.security.mail.domain.MailType;
 import com.halggeol.backend.security.mail.dto.MailDTO;
 import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
-import com.halggeol.backend.user.dto.UpdateCycleRequestDTO.Cycle;
 import com.halggeol.backend.user.dto.UpdateProfileDTO;
 import com.halggeol.backend.user.dto.EmailDTO;
 import com.halggeol.backend.user.dto.UpdateCycleRequestDTO;
@@ -152,14 +151,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, String> updateInsightCycle(CustomUser user, UpdateCycleRequestDTO cycle) {
         cycle.validateCycleType();
-        if(cycle.getCycle().equals("WEEKLY_1") ) {
-            userMapper.updateInsightCycleById(user.getUser().getId(), "0 0 * * * MON");
-        } else if (cycle.getCycle().equals("WEEKLY_2")) {
-            userMapper.updateInsightCycleById(user.getUser().getId(), "0 0 0 0/14 * *");
-        } else if (cycle.getCycle().equals("MONTHLY_1")) {
-            userMapper.updateInsightCycleById(user.getUser().getId(), "0 0 0 1 * *");
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "설정 가능한 주기가 아닙니다.");
+        switch (cycle.getCycle()) {
+            case "WEEKLY_1" ->
+                userMapper.updateInsightCycleById(user.getUser().getId(), "0 0 0 1/7 * *");
+            case "WEEKLY_2" ->
+                userMapper.updateInsightCycleById(user.getUser().getId(), "0 0 0 1/14 * *");
+            case "MONTHLY_1" ->
+                userMapper.updateInsightCycleById(user.getUser().getId(), "0 0 0 1 * *");
+            default ->
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "설정 가능한 주기가 아닙니다.");
         }
         return Map.of("message", "인사이트 주기 변경이 완료되었습니다.");
     }

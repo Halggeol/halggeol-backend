@@ -57,9 +57,9 @@ public class UserProfileResponseDTO {
     }
 
     private String knowledgeToString(int userKlg) {
-        if (0 <= userKlg && userKlg < 30) return "하";
-        if (30 <= userKlg && userKlg < 60) return "중";
-        if (60 <= userKlg && userKlg <= 100) return "상";
+        if (0 <= userKlg && userKlg < 7) return "하";
+        if (7 <= userKlg && userKlg < 14) return "중";
+        if (14 <= userKlg && userKlg <= 20) return "상";
         return "";
     }
 

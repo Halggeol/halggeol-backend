@@ -18,9 +18,9 @@ public interface RecommendService {
 
     public List<RecommendResponseDTO> getRecommendProducts(String userId);
 
-    public void updateRecommendationByUserId(String userId);
+    public void updateRecommendationByEmail(String email);
 
     public Double getProductMatchScore(String productId, String userId);
 
-    public UserVectorResponseDTO initUserVector(TendencySurveyRequestDTO tendencySurveyRequestDTO);
+    public UserVectorResponseDTO initUserVector(TendencySurveyRequestDTO tendencySurveyRequestDTO, int risk);
 }

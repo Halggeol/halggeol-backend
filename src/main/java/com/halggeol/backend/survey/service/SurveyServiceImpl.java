@@ -3,6 +3,7 @@ package com.halggeol.backend.survey.service;
 import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.survey.dto.KnowledgeSurveyItemDTO;
 import com.halggeol.backend.survey.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.survey.dto.TendencyExperienceItemDTO;
 import com.halggeol.backend.survey.dto.TendencySurveyItemDTO;
@@ -30,6 +31,13 @@ public class SurveyServiceImpl implements SurveyService {
 
         int userKlg = 0; // TODO: surveyResult로 점수 내기
 
+        List<KnowledgeSurveyItemDTO> answers = surveyResult.getAnswers();
+
+        for( KnowledgeSurveyItemDTO answer : answers) {
+            if(answer.getCorrect()) {
+                userKlg += answer.getScore();
+            }
+        }
         surveyMapper.updateKnowledgeByEmail(email, userKlg);
         return Map.of("message", "금융 이해도 설정이 완료되었습니다.");
     }
@@ -42,6 +50,14 @@ public class SurveyServiceImpl implements SurveyService {
         String email = user.getUser().getEmail();
 
         int userKlg = 0; // TODO: surveyResult로 점수 내기
+
+        List<KnowledgeSurveyItemDTO> answers = surveyResult.getAnswers();
+
+        for( KnowledgeSurveyItemDTO answer : answers) {
+            if(answer.getCorrect()) {
+                userKlg += answer.getScore();
+            }
+        }
 
         surveyMapper.updateKnowledgeByEmail(email, userKlg);
         return Map.of("message", "금융 이해도 갱신이 완료되었습니다.");
@@ -57,7 +73,7 @@ public class SurveyServiceImpl implements SurveyService {
             surveyResult.getInvestmentPeriodOption()
         );
 
-        UserVectorResponseDTO scores = recommendService.initUserVector(surveyResult); // TODO: 5개 user score 점수 내기
+        UserVectorResponseDTO scores = recommendService.initUserVector(surveyResult, risk); // TODO: 5개 user score 점수 내기
 
         surveyMapper.updateTendencyByEmail(
             email,
@@ -68,6 +84,7 @@ public class SurveyServiceImpl implements SurveyService {
             scores.getLiquidityScore(),
             scores.getComplexityScore()
         );
+        recommendService.updateRecommendationByEmail(surveyResult.getEmail());
         return Map.of("message", "투자 성향 설정이 완료되었습니다.");
     }
 
@@ -84,7 +101,7 @@ public class SurveyServiceImpl implements SurveyService {
         );
 
 //        UserVectorResponseDTO scores = recommendService.; // TODO: 5개 user score 점수 내기
-        UserVectorResponseDTO scores = recommendService.initUserVector(surveyResult); // TODO: 5개 user score 점수 내기
+        UserVectorResponseDTO scores = recommendService.initUserVector(surveyResult, risk); // TODO: 5개 user score 점수 내기
 
         surveyMapper.updateTendencyByEmail(
             email,

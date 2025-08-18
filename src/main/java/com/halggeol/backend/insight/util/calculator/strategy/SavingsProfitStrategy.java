@@ -3,6 +3,7 @@ package com.halggeol.backend.insight.util.calculator.strategy;
 import com.halggeol.backend.insight.domain.ProductType;
 import com.halggeol.backend.insight.dto.ProfitCalculationInput;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +30,15 @@ public class SavingsProfitStrategy extends AbstractProfitCalculatorStrategy {
     @Override
     protected List<ProfitSimulationDTO> doCalculate(
         ProfitCalculationInput input, long principal, ProfitSimulationDTO base,
-        boolean isCompound, LocalDate baseDate, double rate
+        boolean isCompound, Date baseDate, double rate
     ) {
         List<ProfitSimulationDTO> resultList = new ArrayList<>();
         long profitAmount = 0;
 
         // 시작점 이후
         for (int month = 1; month <= MONTHS_IN_YEAR; month++) {
-            LocalDate date = baseDate.plusMonths(month);
+//            LocalDate date = baseDate.plusMonths(month);
+            Date date = baseDate != null ? Date.valueOf(baseDate.toLocalDate().plusMonths(month)) : Date.valueOf(LocalDate.now().plusMonths(month));
             long totalProfit = 0;
             for (int i = 1; i <= month; i++) {
                 int remain = MONTHS_IN_YEAR - i + 1;

@@ -228,7 +228,7 @@
         NULL AS lostAsset, NULL AS lostInvestment
         FROM aggressive_pension_track t
         LEFT JOIN mydata m ON m.collect_date = t.tracking_date AND m.user_id = #{userId}
-        WHERE t.product_id = #{productId} AND t.tracking_date BETWEEN #{recDate} AND #{anlzDate}
+        WHERE t.product_id = #{productId} AND t.tracking_date >= #{recDate}
       </when>
       <when test="type == 'fund'">
         SELECT
@@ -237,7 +237,7 @@
         NULL AS lostAsset, NULL AS lostInvestment
         FROM fund_track t
         LEFT JOIN mydata m ON m.collect_date = t.tracking_date AND m.user_id = #{userId}
-        WHERE t.product_id = #{productId} AND t.tracking_date BETWEEN #{recDate} AND #{anlzDate}
+        WHERE t.product_id = #{productId} AND t.tracking_date >= #{recDate}
       </when>
         <when test="type == 'conservative'">
           SELECT m.collect_date AS date, m.asset,

@@ -3,6 +3,7 @@ package com.halggeol.backend.insight.util.calculator.strategy;
 import com.halggeol.backend.insight.domain.ProductType;
 import com.halggeol.backend.insight.dto.ProfitCalculationInput;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class DepositProfitStrategy extends AbstractProfitCalculatorStrategy {
     @Override
     protected List<ProfitSimulationDTO> doCalculate(
         ProfitCalculationInput input, long principal, ProfitSimulationDTO base,
-        boolean isCompound, LocalDate baseDate, double rate
+        boolean isCompound, Date baseDate, double rate
     ) {
         int duration = input.getSaveTerm() != null ? input.getSaveTerm() : DEFAULT_DURATION_MONTHS;
 
@@ -42,9 +43,11 @@ public class DepositProfitStrategy extends AbstractProfitCalculatorStrategy {
             long monthlyProfit = totalProfit - profitAmount;
             profitAmount = totalProfit;
 
+            baseDate.toLocalDate();
             resultList.add(
                 ProfitSimulationDTO.builder()
-                    .date(baseDate.plusMonths(month))
+//                    .date(baseDate.plusMonths(month))
+                    .date(Date.valueOf(baseDate.toLocalDate().plusMonths(month)))
                     .profit(base.getProfit())
                     .asset(base.getAsset())
                     .lostInvestment(monthlyProfit)

@@ -37,6 +37,9 @@ public class FundProfitStrategy implements ProfitCalculatorStrategy {
 
         // 시작점
         ProfitSimulationDTO base = profits.get(0);
+//        for(int i = 1; i < profits.size(); i++) {
+//            System.out.println("date: " + profits.get(i).getDate() + ", profit: " + profits.get(i).getProfit() + ", asset: " + profits.get(i).getAsset());
+//        }
         resultList.add(createInitialState(base));
 
         double actualPrincipal = principal * (1 - upfrontFee / 100.0);
@@ -44,6 +47,7 @@ public class FundProfitStrategy implements ProfitCalculatorStrategy {
 
         for (int i = 1; i < profits.size(); i++) {
             ProfitSimulationDTO profitData = profits.get(i);
+            if(profitData.getAsset() == null || profitData.getDate() == null) break;
             double profitRate = profitData.getProfit() != null ? profitData.getProfit() / 100.0 : 0.0;
             double dailyProfit = currentValuation * profitRate;
             double terFee = currentValuation * ter / DAYS_IN_YEAR;

@@ -37,6 +37,7 @@ public interface RecommendMapper {
 
     ProductVectorResponseDTO getProductVectorById(@Param("id") String productId);
     UserVectorResponseDTO getUserVectorById(@Param("id") Integer userId);
+    UserVectorResponseDTO getUserVectorByEmail(@Param("email") String email);
     User getUserById(@Param("id") Integer userId);
 
     int updateProductVectorById(@Param("productVector") ProductVectorUpdateResponseDTO productVector);

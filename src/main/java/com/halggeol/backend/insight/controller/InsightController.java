@@ -23,7 +23,7 @@ public class InsightController {
     private final InsightService insightService;
     private final InsightDetailService insightDetailService;
 
-    @GetMapping("/with-products")
+    @GetMapping("with-products")
     public List<InsightDTO> getInsightList(
         @AuthenticationPrincipal CustomUser user,
         @RequestParam(required = false) Integer round,
@@ -50,7 +50,7 @@ public class InsightController {
     }
 
     //처음 http://localhost:8080/api/insight 여기 상품 목록 가져오기
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<List<InsightRoundWithProductsDTO>> getInsightRoundsWithProducts(
             @AuthenticationPrincipal CustomUser user,
             @RequestParam(required = false) String type

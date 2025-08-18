@@ -2,6 +2,7 @@ package com.halggeol.backend.insight.util.calculator.strategy;
 
 import com.halggeol.backend.insight.dto.ProfitCalculationInput;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,8 @@ public abstract class AbstractProfitCalculatorStrategy implements ProfitCalculat
         ProfitSimulationDTO base = profits.get(0);
         resultList.add(createInitialState(base));
         boolean isCompound = input.getIsCompound();
-        LocalDate baseDate = base.getDate();
+//        LocalDate baseDate = base.getDate();
+        Date baseDate = base.getDate() != null ? base.getDate() : Date.valueOf(LocalDate.now());
         double rate = base.getProfit() != null ? base.getProfit() / 100.0 : 0.0;
 
         List<ProfitSimulationDTO> calculatedPart = doCalculate(input, principal, base, isCompound, baseDate, rate);
@@ -29,7 +31,7 @@ public abstract class AbstractProfitCalculatorStrategy implements ProfitCalculat
 
     protected abstract List<ProfitSimulationDTO> doCalculate(
         ProfitCalculationInput input, long principal, ProfitSimulationDTO base,
-        boolean isCompound, LocalDate baseDate, double rate
+        boolean isCompound, Date baseDate, double rate
     );
 
     protected ProfitSimulationDTO createInitialState(ProfitSimulationDTO base) {
