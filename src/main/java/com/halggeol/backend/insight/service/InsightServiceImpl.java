@@ -418,9 +418,9 @@ public class InsightServiceImpl implements InsightService {
 ////        현재 날짜 기준으로 몇일전
 ////        String targetDate = LocalDate.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //
-
-    /// /        날짜 직접 지정
-//        String targetDate = "20250706";
+//
+//    //        날짜 직접 지정
+//        String targetDate = "20250809";
 //        fetchAndSaveExchangeRates(targetDate);
 //    }
 
