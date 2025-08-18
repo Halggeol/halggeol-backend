@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.halggeol.backend.recommend.service.RecommendServiceImpl.Recommendation;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class InsightDetailResponseDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate recDate; // 후회 날짜
@@ -31,7 +35,7 @@ public class InsightDetailResponseDTO {
 
     // 회고 관련
     private Integer regretScore; // 후회지수
-    private Integer missAmount; // 놓친 금액
+    private Long missAmount; // 놓친 금액
 
     // 상품 정보 관련
     // 현재는 비동기 처리로 사용하는 중

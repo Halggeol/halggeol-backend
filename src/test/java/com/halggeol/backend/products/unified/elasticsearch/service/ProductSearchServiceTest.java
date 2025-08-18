@@ -1,340 +1,231 @@
-//package com.halggeol.backend.products.unified.elasticsearch.service;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.ArgumentMatchers.*;
-//import static org.mockito.Mockito.*;
-//
-//import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
-//import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
-//import java.time.LocalDateTime;
-//import java.util.Collections;
-//import java.util.List;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.mockito.ArgumentCaptor;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.junit.jupiter.MockitoExtension;
-//import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-//import org.springframework.data.elasticsearch.core.SearchHit;
-//import org.springframework.data.elasticsearch.core.SearchHits;
-//import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-//
-//@ExtendWith(MockitoExtension.class)
-//class ProductSearchServiceTest {
-//
-//    @Mock
-//    private ElasticsearchOperations elasticsearchOperations;
-//
-//    @Mock
-//    private SearchHits<ProductDocument> searchHits;
-//
-//    @Mock
-//    private SearchHit<ProductDocument> searchHit1;
-//
-//    @Mock
-//    private SearchHit<ProductDocument> searchHit2;
-//
-//    @InjectMocks
-//    private ProductSearchService productSearchService;
-//
-//    // ProductDocument 인스턴스 준비
-//    private ProductDocument testProductDoc1;
-//    private ProductDocument testProductDoc2;
-//
-//    @BeforeEach
-//    void setUp() {
-//        // ProductDocument 인스턴스 생성 및 초기화
-//        testProductDoc1 = new ProductDocument();
-//        testProductDoc1.setId("D1");
-//        testProductDoc1.setProductId("PROD001");
-//        testProductDoc1.setName("Test Product 1");
-//        testProductDoc1.setCompany("Test Company 1");
-//        testProductDoc1.setTag1("tag1");
-//        testProductDoc1.setTag2("tag2");
-//        testProductDoc1.setTag3("tag3");
-//        testProductDoc1.setTitle(3.5);
-//        testProductDoc1.setSubTitle("Test SubTitle 1");
-//        testProductDoc1.setType("savings");
-//        testProductDoc1.setFSector(1);
-//        testProductDoc1.setSaveTerm(12);
-//        testProductDoc1.setMinAmount(10000);
-//        testProductDoc1.setViewCnt(100);
-//        testProductDoc1.setScrapCnt(50);
-//        testProductDoc1.setTimestamp(LocalDateTime.parse("2023-01-01T10:00:00")); // LocalDateTime 타입으로 변경
-//
-//        testProductDoc2 = new ProductDocument();
-//        testProductDoc2.setId("D2");
-//        testProductDoc2.setProductId("PROD002");
-//        testProductDoc2.setName("Test Product 2");
-//        testProductDoc2.setCompany("Test Company 2");
-//        testProductDoc2.setTag1("tag1");
-//        testProductDoc2.setTag2("tag2");
-//        testProductDoc2.setTag3("tag3");
-//        testProductDoc2.setTitle(4.0); // Double 타입으로 변경
-//        testProductDoc2.setSubTitle("Test SubTitle 2");
-//        testProductDoc2.setType("deposit");
-//        testProductDoc2.setFSector(2);
-//        testProductDoc2.setSaveTerm(24);
-//        testProductDoc2.setMinAmount(50000);
-//        testProductDoc2.setViewCnt(200);
-//        testProductDoc2.setScrapCnt(75);
-//        testProductDoc2.setTimestamp(LocalDateTime.parse("2023-01-02T11:00:00")); // LocalDateTime 타입으로 변경
-//    }
-//
-//    @Test
-//    @DisplayName("모든 필터 없이 기본 검색 테스트")
-//    void searchProducts_WithNoFilters_ShouldReturnAllResults() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHit2.getContent()).thenReturn(testProductDoc2);
-//        when(searchHits.getSearchHits()).thenReturn(List.of(searchHit1, searchHit2));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, null, null, null, null, null
-//        );
-//
-//        // Then
-//        assertEquals(2, results.size());
-//        assertEquals("Test Product 1", results.get(0).getName());
-//        assertEquals("Test Product 2", results.get(1).getName());
-//
-//        verify(elasticsearchOperations, times(1)).search(any(NativeSearchQuery.class), eq(ProductDocument.class));
-//    }
-//
-//    @Test
-//    @DisplayName("키워드로 검색 테스트")
-//    void searchProducts_WithKeyword_ShouldApplyMatchQuery() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, "Test Product", null, null, null, null
-//        );
-//
-//        // Then
-//        assertEquals(1, results.size());
-//        assertEquals("Test Product 1", results.get(0).getName());
-//
-//        ArgumentCaptor<NativeSearchQuery> queryCaptor = ArgumentCaptor.forClass(NativeSearchQuery.class);
-//        verify(elasticsearchOperations).search(queryCaptor.capture(), eq(ProductDocument.class));
-//
-//        NativeSearchQuery capturedQuery = queryCaptor.getValue();
-//        assertNotNull(capturedQuery.getQuery());
-//    }
-//
-//    @Test
-//    @DisplayName("상품 유형 필터링 테스트")
-//    void searchProducts_WithType_ShouldApplyTypeFilter() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, null, null, List.of("savings"), null, null
-//        );
-//
-//        // Then
-//        assertEquals(1, results.size());
-//        assertEquals(Collections.singletonList("savings"), results.get(0).getType());
-//    }
-//
-//    @Test
-//    @DisplayName("금융권 필터링 테스트")
-//    void searchProducts_WithFSector_ShouldApplyFSectorFilter() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, null, Collections.singletonList(1), null, null, null
-//        );
-//
-//        // Then
-//        assertEquals(1, results.size());
-//        assertEquals(Collections.singletonList(1), results.get(0).getFSector());
-//    }
-//
-//    @Test
-//    @DisplayName("가입 기간 필터링 테스트")
-//    void searchProducts_WithSaveTerm_ShouldApplySaveTermFilter() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, null, null, null, null, 12
-//        );
-//
-//        // Then
-//        assertEquals(1, results.size());
-//        assertEquals(12, results.get(0).getSaveTerm());
-//    }
-//
-//    @Test
-//    @DisplayName("최소 가입금액 필터링 테스트")
-//    void searchProducts_WithMinAmount_ShouldApplyMinAmountFilter() {
-//        // Given
-//        when(searchHit2.getContent()).thenReturn(testProductDoc2);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit2));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, null, null, null, "30000", null
-//        );
-//
-//        // Then
-//        assertEquals(1, results.size());
-//        assertTrue(results.get(0).getMinAmount() >= 30000);
-//    }
-//
-//    @Test
-//    @DisplayName("잘못된 최소 가입금액으로 검색 시 필터 무시")
-//    void searchProducts_WithInvalidMinAmount_ShouldIgnoreFilter() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHit2.getContent()).thenReturn(testProductDoc2);
-//        when(searchHits.getSearchHits()).thenReturn(List.of(searchHit1, searchHit2));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, null, null, null, "invalid_amount", null
-//        );
-//
-//        // Then
-//        assertEquals(2, results.size());
-//    }
-//
-//    @Test
-//    @DisplayName("인기순 정렬(popularDesc) 테스트")
-//    void searchProducts_WithPopularSort_ShouldApplyScriptSort() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        productSearchService.searchProducts(
-//            "popularDesc", null, null, null, null, null
-//        );
-//
-//        // Then
-//        verify(elasticsearchOperations).search(any(NativeSearchQuery.class), eq(ProductDocument.class));
-//    }
-//
-//    @Test
-//    @DisplayName("금리순 정렬(rateDesc) 테스트")
-//    void searchProducts_WithRateSort_ShouldApplyTitleSort() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        productSearchService.searchProducts(
-//            "rateDesc", null, null, null, null, null
-//        );
-//
-//        // Then
-//        verify(elasticsearchOperations).search(any(NativeSearchQuery.class), eq(ProductDocument.class));
-//    }
-//
-//    @Test
-//    @DisplayName("복합 필터링 테스트")
-//    void searchProducts_WithMultipleFilters_ShouldApplyAllFilters() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            "popularDesc", "Test", Collections.singletonList(1), List.of("savings"), "5000", 12
-//        );
-//
-//        // Then
-//        assertEquals(1, results.size());
-//        ProductSearchResponseDTO result = results.get(0);
-//        assertEquals("Test Product 1", result.getName());
-//        assertEquals(Collections.singletonList("savings"), result.getType());
-//        assertEquals(Collections.singletonList(1), result.getFSector());
-//        assertEquals(12, result.getSaveTerm());
-//        assertTrue(result.getMinAmount() >= 5000);
-//    }
-//
-//    @Test
-//    @DisplayName("검색 결과가 없는 경우 테스트")
-//    void searchProducts_WithNoResults_ShouldReturnEmptyList() {
-//        // Given
-//        when(searchHits.getSearchHits()).thenReturn(Collections.emptyList());
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, "NonExistentProduct", null, null, null, null
-//        );
-//
-//        // Then
-//        assertTrue(results.isEmpty());
-//    }
-//
-//    @Test
-//    @DisplayName("DTO 변환 검증 테스트")
-//    void searchProducts_ShouldCorrectlyConvertToDTO() {
-//        // Given
-//        when(searchHit1.getContent()).thenReturn(testProductDoc1);
-//        when(searchHits.getSearchHits()).thenReturn(Collections.singletonList(searchHit1));
-//        when(elasticsearchOperations.search(any(NativeSearchQuery.class), eq(ProductDocument.class)))
-//            .thenReturn(searchHits);
-//
-//        // When
-//        List<ProductSearchResponseDTO> results = productSearchService.searchProducts(
-//            null, null, null, null, null, null
-//        );
-//
-//        // Then
-//        assertEquals(1, results.size());
-//        ProductSearchResponseDTO result = results.get(0);
-//
-//        assertEquals(testProductDoc1.getProductId(), result.getProductId());
-//        assertEquals(testProductDoc1.getName(), result.getName());
-//        assertEquals(testProductDoc1.getCompany(), result.getCompany());
-//        assertEquals(testProductDoc1.getTag1(), result.getTag1());
-//        assertEquals(testProductDoc1.getTag2(), result.getTag2());
-//        assertEquals(testProductDoc1.getTag3(), result.getTag3());
-//        assertEquals(testProductDoc1.getTitle(), result.getTitle());
-//        assertEquals(testProductDoc1.getSubTitle(), result.getSubTitle());
-//        assertEquals(Collections.singletonList(testProductDoc1.getType()), result.getType());
-//        assertEquals(Collections.singletonList(testProductDoc1.getFSector()), result.getFSector());
-//        assertEquals(testProductDoc1.getSaveTerm(), result.getSaveTerm());
-//        assertEquals(testProductDoc1.getMinAmount(), result.getMinAmount());
-//        assertEquals(testProductDoc1.getViewCnt(), result.getViewCnt());
-//        assertEquals(testProductDoc1.getScrapCnt(), result.getScrapCnt());
-//    }
-//}
+package com.halggeol.backend.products.unified.elasticsearch.service;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ShardStatistics;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.elasticsearch.core.search.TotalHits;
+import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation;
+import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
+import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
+import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.security.domain.User;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("ProductSearchService 단위 테스트")
+class ProductSearchServiceTest {
+
+    @Mock
+    private ElasticsearchClient esClient;
+
+    @Mock
+    private SearchLogService searchLogService;
+
+    @InjectMocks
+    private ProductSearchService productSearchService;
+
+    private ProductDocument testProductDoc1;
+    private CustomUser testUser;
+
+    @BeforeEach
+    void setUp() {
+        // 테스트용 ProductDocument 객체 생성
+        testProductDoc1 = new ProductDocument();
+        testProductDoc1.setProductId("PROD001");
+        testProductDoc1.setName("테스트 예금 상품");
+        testProductDoc1.setCompany("테스트 은행");
+        testProductDoc1.setType("deposit");
+        testProductDoc1.setFSector(1);
+        testProductDoc1.setSaveTerm(12);
+        testProductDoc1.setMinAmount(10000);
+        testProductDoc1.setMinSaveTerm(6);
+        testProductDoc1.setMaxSaveTerm(24);
+
+        // 테스트용 사용자 객체 생성
+        User user = User.builder()
+            .id(1)
+            .name("테스트 사용자")
+            .email("kim01@example.com")
+            .password("12341234")
+            .build();
+        testUser = new CustomUser(user);
+    }
+
+    // Mock SearchResponse를 생성하는 헬퍼 메서드
+    private SearchResponse<ProductDocument> createMockSearchResponse(List<ProductDocument> documents) {
+        List<Hit<ProductDocument>> hits = documents.stream()
+            .map(doc->Hit.<ProductDocument>of(h->h
+                .index("products_index")
+                .id(doc.getProductId())
+                .source(doc)
+            ))
+            .collect(Collectors.toList());
+
+        TotalHits totalHits = TotalHits.of(th -> th.value(hits.size()).relation(TotalHitsRelation.Eq));
+        HitsMetadata<ProductDocument> hitsMetadata = HitsMetadata.of(hm -> hm.hits(hits).total(totalHits));
+        ShardStatistics shards = ShardStatistics.of(s->s.total(1).successful(1).failed(0));
+
+        return SearchResponse.of(sr -> sr
+            .hits(hitsMetadata)
+            .took(10)
+            .timedOut(false)
+            .shards(shards)
+        );
+    }
+
+    @Test
+    @DisplayName("키워드 검색 시 match 쿼리 생성 및 로그 서비스 호출 검증")
+    void searchProducts_WithKeyword_ShouldBuildCorrectQueryAndLog() throws IOException {
+        // Given
+        String keyword = "테스트";
+        SearchResponse<ProductDocument> mockResponse = createMockSearchResponse(List.of(testProductDoc1));
+        when(esClient.search(any(SearchRequest.class), eq(ProductDocument.class))).thenReturn(mockResponse);
+
+        // When
+        productSearchService.searchProducts(null, keyword, null, null, null, null, testUser);
+
+        // Then
+        // 1. esClient.search 메서드로 전달된 SearchRequest를 캡처
+        ArgumentCaptor<SearchRequest> requestCaptor = ArgumentCaptor.forClass(SearchRequest.class);
+        verify(esClient).search(requestCaptor.capture(), eq(ProductDocument.class));
+        SearchRequest capturedRequest = requestCaptor.getValue();
+
+        // 2. 캡처된 쿼리가 올바른지 검증
+        Query query = capturedRequest.query();
+        assertTrue(query.isBool());
+        assertTrue(query.bool().must().get(0).bool().should().get(0).isMatch());
+        assertEquals(keyword, query.bool().must().get(0).bool().should().get(0).match().query().stringValue());
+
+        // 3. 로그 서비스가 호출되었는지 검증
+        verify(searchLogService, times(1)).saveRecentSearch(keyword, testUser.getUser().getId());
+        verify(searchLogService, times(1)).incrementPopularSearchCount(keyword);
+    }
+
+    @Test
+    @DisplayName("다양한 필터 적용 시 올바른 filter 쿼리 생성 검증")
+    void searchProducts_WithMultipleFilters_ShouldBuildCorrectFilterQuery() throws IOException {
+        // Given
+        List<String> types = List.of("deposit");
+        List<Integer> fSectors = List.of(1);
+        Integer minAmount = 10000;
+        Integer saveTerm = 12;
+
+        SearchResponse<ProductDocument> mockResponse = createMockSearchResponse(Collections.emptyList());
+        when(esClient.search(any(SearchRequest.class), eq(ProductDocument.class))).thenReturn(mockResponse);
+
+        // When
+        productSearchService.searchProducts(null, null, fSectors, types, minAmount, saveTerm, null);
+
+        // Then
+        ArgumentCaptor<SearchRequest> requestCaptor = ArgumentCaptor.forClass(SearchRequest.class);
+        verify(esClient).search(requestCaptor.capture(), eq(ProductDocument.class));
+        SearchRequest capturedRequest = requestCaptor.getValue();
+
+        // 캡처된 쿼리에서 필터 목록을 가져와 검증
+        List<Query> filters = capturedRequest.query().bool().filter();
+        assertEquals(4, filters.size()); // type, fSector, minAmount, saveTerm 4개의 필터가 적용되어야 함
+
+        // 각 필터의 종류와 값이 올바른지 간단히 확인
+        assertTrue(filters.stream().anyMatch(q -> q.isTerms() && q.terms().field().equals("type.keyword")));
+        assertTrue(filters.stream().anyMatch(q -> q.isTerms() && q.terms().field().equals("fsector")));
+        assertTrue(filters.stream().anyMatch(q -> q.isRange() && q.range().field().equals("minamount")));
+        assertTrue(filters.stream().anyMatch(q -> q.isBool() && q.bool().should().get(0).isTerm())); // saveTerm 필터는 복잡한 bool 쿼리
+    }
+
+    @Test
+    @DisplayName("금리순 정렬(rateDesc) 시 올바른 SortOptions 생성 검증")
+    void searchProducts_WithRateSort_ShouldBuildCorrectSortOptions() throws IOException {
+        // Given
+        String sort = "rateDesc";
+        SearchResponse<ProductDocument> mockResponse = createMockSearchResponse(Collections.emptyList());
+        when(esClient.search(any(SearchRequest.class), eq(ProductDocument.class))).thenReturn(mockResponse);
+
+        // When
+        productSearchService.searchProducts(sort, null, null, null, null, null, null);
+
+        // Then
+        ArgumentCaptor<SearchRequest> requestCaptor = ArgumentCaptor.forClass(SearchRequest.class);
+        verify(esClient).search(requestCaptor.capture(), eq(ProductDocument.class));
+        SearchRequest capturedRequest = requestCaptor.getValue();
+
+        // 정렬 옵션이 title 필드 기준 내림차순인지 검증
+        assertEquals("title", capturedRequest.sort().get(0).field().field());
+        assertEquals("desc", capturedRequest.sort().get(0).field().order().jsonValue());
+    }
+
+    @Test
+    @DisplayName("기본(인기순) 정렬 시 올바른 Script Sort 생성 검증")
+    void searchProducts_WithDefaultSort_ShouldBuildScriptSort() throws IOException {
+        // Given
+        String sort = null; // 기본 정렬
+        SearchResponse<ProductDocument> mockResponse = createMockSearchResponse(Collections.emptyList());
+        when(esClient.search(any(SearchRequest.class), eq(ProductDocument.class))).thenReturn(mockResponse);
+
+        // When
+        productSearchService.searchProducts(sort, null, null, null, null, null, null);
+
+        // Then
+        ArgumentCaptor<SearchRequest> requestCaptor = ArgumentCaptor.forClass(SearchRequest.class);
+        verify(esClient).search(requestCaptor.capture(), eq(ProductDocument.class));
+        SearchRequest capturedRequest = requestCaptor.getValue();
+
+        // 정렬 옵션이 스크립트 기반인지 검증
+        assertTrue(capturedRequest.sort().get(0).isScript());
+        assertEquals("doc['view_cnt'].value + doc['scrap_cnt'].value * 2", capturedRequest.sort().get(0).script().script().inline().source());
+    }
+
+    @Test
+    @DisplayName("검색 결과가 성공적으로 DTO로 변환되는지 검증")
+    void searchProducts_Success_ShouldReturnCorrectDtoList() throws IOException {
+        // Given
+        SearchResponse<ProductDocument> mockResponse = createMockSearchResponse(List.of(testProductDoc1));
+        when(esClient.search(any(SearchRequest.class), eq(ProductDocument.class))).thenReturn(mockResponse);
+
+        // When
+        ResponseEntity<?> responseEntity = productSearchService.searchProducts(null, null, null, null, null, null, null);
+        List<ProductSearchResponseDTO> results = (List<ProductSearchResponseDTO>) responseEntity.getBody();
+
+        // Then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(results);
+        assertEquals(1, results.size());
+        assertEquals("PROD001", results.get(0).getProductId());
+        assertEquals("테스트 예금 상품", results.get(0).getName());
+    }
+
+    @Test
+    @DisplayName("Elasticsearch에서 예외 발생 시 500 에러 응답 반환")
+    void searchProducts_WhenEsClientThrowsException_ShouldReturn500Error() throws IOException {
+        // Given
+        when(esClient.search(any(SearchRequest.class), eq(ProductDocument.class)))
+            .thenThrow(new IOException("Elasticsearch connection failed"));
+
+        // When
+        ResponseEntity<?> responseEntity = productSearchService.searchProducts(null, "test", null, null, null, null, null);
+
+        // Then
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertTrue(((String) responseEntity.getBody()).contains("검색 실패"));
+    }
+}

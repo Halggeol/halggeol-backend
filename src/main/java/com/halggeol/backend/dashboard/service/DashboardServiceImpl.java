@@ -4,6 +4,7 @@ import com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO;
 import com.halggeol.backend.dashboard.dto.DashboardPortfolioResponseDTO;
 import com.halggeol.backend.dashboard.dto.DashboardResponseDTO;
 import com.halggeol.backend.dashboard.mapper.DashboardMapper;
+//import com.halggeol.backend.products.service.ProductDetailService;
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
@@ -28,6 +29,7 @@ public class DashboardServiceImpl implements DashboardService {
 //    private final UserService userService; 
     private final RecommendService recommendService;
     private final UnifiedProductService unifiedProductService;
+//    private final ProductDetailService productDetailService;
 
     @Override
     @Transactional(readOnly = true)
@@ -64,6 +66,8 @@ public class DashboardServiceImpl implements DashboardService {
 
         Double feedbackRatio = dashboardMapper.getFeedbackRatioByUserId(userId);
         dashboardResponse.setFeedbackRatio(feedbackRatio);
+
+//        productDetailService.cacheUserRecommendedProducts(userId, recommendedProducts);
 
         return dashboardResponse;
     }

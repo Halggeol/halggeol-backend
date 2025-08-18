@@ -1,15 +1,20 @@
 package com.halggeol.backend.scrap.mapper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.halggeol.backend.scrap.domain.Scrap;
+import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -203,5 +208,36 @@ class ScrapMapperTest {
 
         // Then
         verify(scrapMapper, times(1)).decrementPensionScrapCount(pensionProductId);
+    }
+
+    @Test
+    @DisplayName("관심상품 조회: 성공")
+    void testSelectScrappedProducts() {
+        // Given
+        List<String> testTypes = List.of("savings", "pension");
+        String testSort = "rateDesc";
+
+        ScrappedProductResponseDTO mockProduct1 = new ScrappedProductResponseDTO();
+        mockProduct1.setProductId("S001");
+        mockProduct1.setName("savings");
+
+        ScrappedProductResponseDTO mockProduct2 = new ScrappedProductResponseDTO();
+        mockProduct2.setProductId("P002");
+        mockProduct2.setName("pension");
+
+        List<ScrappedProductResponseDTO> mockProducts = List.of(mockProduct1, mockProduct2);
+
+        // When
+        Mockito.when(scrapMapper.selectScrappedProducts(testUserId, testTypes, testSort)).thenReturn(mockProducts);
+
+        List<ScrappedProductResponseDTO> result = scrapMapper.selectScrappedProducts(testUserId, testTypes, testSort);
+
+        verify(scrapMapper, times(1)).selectScrappedProducts(testUserId, testTypes, testSort);
+        assertNotNull(result);
+        assertEquals(2,result.size());
+        assertEquals("S001", result.get(0).getProductId());
+        assertEquals("P002", result.get(1).getProductId());
+
+
     }
 }

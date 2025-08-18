@@ -2,12 +2,14 @@ package com.halggeol.backend.scrap.service;
 
 import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByConsumer;
 
+import com.halggeol.backend.logs.service.LogService;
 import com.halggeol.backend.scrap.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
 import com.halggeol.backend.security.domain.CustomUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScrapServiceImpl implements ScrapService {
 
     private final ScrapMapper scrapMapper;
+    private final LogService logService;
 
     @Override
     @Transactional
@@ -33,6 +36,7 @@ public class ScrapServiceImpl implements ScrapService {
             .productId(productId)
             .build();
 
+        logService.buildLog("add_scrap", productId, user.getUser().getId());
         scrapMapper.insertUserScrap(scrap);
     }
 
@@ -42,6 +46,7 @@ public class ScrapServiceImpl implements ScrapService {
         String productId = requestDto.getProductId();
 
         decrementProductScrapCountAsync(productId);
+        logService.buildLog("remove_scrap", productId, user.getUser().getId());
         scrapMapper.deleteUserScrap(user.getUser().getId(), productId);
     }
 
@@ -76,7 +81,7 @@ public class ScrapServiceImpl implements ScrapService {
     public ResponseEntity<?> getScrappedProducts(@AuthenticationPrincipal CustomUser user, List<String> types,
         String sort) {
         if (user == null) {
-            return ResponseEntity.internalServerError().body("User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
         return ResponseEntity.ok().body(scrapMapper.selectScrappedProducts(user.getUser().getId(), types, sort));
     }

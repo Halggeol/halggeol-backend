@@ -19,7 +19,7 @@ public class BatchScheduler {
     private final Job hardDeleteJob;
 
 
-    @Scheduled(cron = "30 0 0 * * *") // 매일 자정에 실행
+    @Scheduled(cron = "0 0/15 * * * *") // 매일 자정에 실행
     public void runJob() throws Exception {
         System.out.println("Batch job started at: " + new java.util.Date());
         // Job 실행
@@ -27,6 +27,7 @@ public class BatchScheduler {
             .addLong("timestamp", System.currentTimeMillis())
             .toJobParameters();
         jobLauncher.run(userActionLogJob, params);
+        System.out.println("Batch job completed at: " + new java.util.Date());
     }
 
     @Scheduled(cron = "0 0 3 * * *") // 매일 새벽 3시에 실행

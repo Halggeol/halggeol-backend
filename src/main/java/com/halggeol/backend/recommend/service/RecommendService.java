@@ -1,7 +1,9 @@
 package com.halggeol.backend.recommend.service;
 
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
+import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendServiceImpl.Recommendation;
+import com.halggeol.backend.survey.dto.TendencySurveyRequestDTO;
 import java.util.List;
 
 public interface RecommendService {
@@ -16,7 +18,9 @@ public interface RecommendService {
 
     public List<RecommendResponseDTO> getRecommendProducts(String userId);
 
-    public void updateRecommendationByUserId(String userId);
+    public void updateRecommendationByEmail(String email);
 
     public Double getProductMatchScore(String productId, String userId);
+
+    public UserVectorResponseDTO initUserVector(TendencySurveyRequestDTO tendencySurveyRequestDTO, int risk);
 }

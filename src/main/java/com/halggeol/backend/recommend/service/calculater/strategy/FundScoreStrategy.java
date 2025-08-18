@@ -21,6 +21,6 @@ public class FundScoreStrategy implements ScoreStrategy<FundAlgorithmResponseDTO
         else if (dto.getCategory().contains("혼합형")) complexityScore = 0.4;
         else complexityScore = 0.2; // 기타 카테고리
 
-        return new Score(yieldScore, riskScore, costScore, liquidityScore, complexityScore);
+        return new Score(dto.getId(),yieldScore, riskScore, costScore, liquidityScore, complexityScore);
     }
 }

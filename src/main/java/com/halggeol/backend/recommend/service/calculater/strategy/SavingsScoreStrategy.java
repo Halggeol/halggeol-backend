@@ -21,6 +21,6 @@ public class SavingsScoreStrategy implements ScoreStrategy<SavingsAlgorithmRespo
         double complexityScore = ScoreUtil.joinDenyScore(dto.getJoinDeny())
                 + (dto.getRateType().contains("단리") ? 0.1 : 0.0);
 
-        return new Score(yieldScore, riskScore, costScore, liquidityScore, complexityScore);
+        return new Score(dto.getId(),yieldScore, riskScore, costScore, liquidityScore, complexityScore);
     }
 }

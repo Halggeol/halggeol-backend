@@ -22,7 +22,7 @@ public class ForexScoreStrategy implements ScoreStrategy<ForexAlgorithmResponseD
         double complexityScore = ScoreUtil.joinDenyScore(dto.getTaxRefund())
                 + (dto.getProtect() == 1 ? 0.1 : 0.0);
 
-        return new Score(yieldScore, riskScore, costScore, liquidityScore, complexityScore);
+        return new Score(dto.getId(),yieldScore, riskScore, costScore, liquidityScore, complexityScore);
     }
 
 

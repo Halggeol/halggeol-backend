@@ -7,6 +7,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javax.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,10 @@ public class MailServiceImpl implements MailService {
     }
 
     public void settingByMailType(MailType mailType, String token) {
+        if (mailType == null) {
+            throw new IllegalArgumentException("Mail type은 null이 아니어야 합니다.");
+        }
+
         switch (mailType) {
             case SIGNUP:
                 subject = "Signup to Halggeol";
@@ -82,7 +87,7 @@ public class MailServiceImpl implements MailService {
                 break;
 
             default:
-                throw new IllegalArgumentException("Unknown mail type: " + mailType);
+                throw new IllegalArgumentException("유효하지 않은 메일 유형: " + mailType);
         }
     }
 }

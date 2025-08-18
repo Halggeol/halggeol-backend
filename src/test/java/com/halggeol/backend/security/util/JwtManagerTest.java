@@ -1,54 +1,98 @@
 package com.halggeol.backend.security.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.halggeol.backend.global.config.AppConfig;
-import com.halggeol.backend.user.dto.UserJoinDTO;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import java.util.Date;
-import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfig.class})
-@Log4j2
+import static org.assertj.core.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("JwtManager Mockito 단위 테스트")
 class JwtManagerTest {
-    // 시간도 테스트 해봐야됨
 
-    @Autowired
     private JwtManager jwtManager;
+    private static final String SECRET_KEY =
+        "thisIsASecretKeyForJwtTestsAndMustBeLongEnough123"; // 최소 32바이트 이상
+
+    @BeforeEach
+    void setUp() {
+        jwtManager = new JwtManager(SECRET_KEY);
+    }
 
     @Test
-    void generateVerifyToken() {
+    void generateAccessToken_and_getEmail_shouldReturnSameEmail() {
+        /* Given */
         String email = "test@example.com";
-        String token = jwtManager.generateVerifyToken(email);
-        assertDoesNotThrow(() -> jwtManager.validateToken(token));
-    }
 
-    @Test
-    void getEmail() {
-        String email = "test@test.com";
+        /* When */
         String token = jwtManager.generateAccessToken(email);
-        assertEquals(email, jwtManager.getEmail(token));
+        String parsedEmail = jwtManager.getEmail(token);
+
+        /* Then */
+        assertThat(parsedEmail).isEqualTo(email);
     }
 
     @Test
-    void validateToken() {
-        String token = Jwts.builder()
-            .setSubject("")
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(new Date().getTime() + 3000))
-            .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))
-            .compact();
-        assertThrows(Exception.class, () -> {
-            jwtManager.validateToken(token);
-        });
+    void generateVerifyToken_and_validateToken_shouldReturnTrue() {
+        /* Given */
+        String token = jwtManager.generateVerifyToken("verify@example.com");
+
+        /* When */
+        boolean isValid = jwtManager.validateToken(token);
+
+        /* Then */
+        assertThat(isValid).isTrue();
+    }
+
+    @Test
+    void generateReverifyToken_and_isReverified_shouldReturnTrue() {
+        /* Given */
+        String token = jwtManager.generateReverifyToken("reverify@example.com");
+
+        /* When */
+        boolean flag = jwtManager.isReverified(token);
+
+        /* Then */
+        assertThat(flag).isTrue();
+    }
+
+    @Test
+    void validateToken_shouldReturnFalse_whenTokenIsInvalid() {
+        /* Given */
+        String invalidToken = "invalid.jwt.token";
+
+        /* When */
+        boolean isValid = jwtManager.validateToken(invalidToken);
+
+        /* Then */
+        assertThat(isValid).isFalse();
+    }
+
+    @Test
+    void parseBearerToken_shouldReturnToken_whenPrefixIsPresent() {
+        /* Given */
+        String rawToken = jwtManager.generateAccessToken("bearer@example.com");
+        String bearerToken = JwtManager.BEARER_PREFIX + rawToken;
+
+        /* When */
+        String parsed = jwtManager.parseBearerToken(bearerToken);
+
+        /* Then */
+        assertThat(parsed).isEqualTo(rawToken);
+    }
+
+    @Test
+    void parseBearerToken_shouldReturnNull_whenPrefixIsMissing() {
+        /* Given */
+        String rawToken = jwtManager.generateAccessToken("noBearer@example.com");
+
+        /* When */
+        String parsed = jwtManager.parseBearerToken(rawToken);
+
+        /* Then */
+        assertThat(parsed).isNull();
     }
 }

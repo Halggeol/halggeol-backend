@@ -15,6 +15,7 @@ import com.halggeol.backend.recommend.dto.SavingsAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
 import com.halggeol.backend.recommend.mapper.RecommendMapper;
 import com.halggeol.backend.recommend.service.calculater.ScoreCalculator;
+import com.halggeol.backend.survey.dto.TendencySurveyRequestDTO;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -42,31 +43,36 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void updateAlgoCode() {
         System.out.println("Updating algorithm codes for all products...");
         updateStaticValues(); //최대/최소 금리를 업데이트
         List<DepositAlgorithmResponseDTO> depositList = mapper.getDepositAlgorithmDetail();
+        System.out.println("Deposit Algorithm Details: " + depositList.size());
         for(DepositAlgorithmResponseDTO deposit : depositList) {
             ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("deposit", deposit);
             mapper.updateProductVectorById(responseDTO); // 0~100으로 변환
         }
         List<SavingsAlgorithmResponseDTO> savingsList = mapper.getSavingsAlgorithmDetail();
+        System.out.println("Savings Algorithm Details: " + savingsList.size());
         for(SavingsAlgorithmResponseDTO savings : savingsList) {
             ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("savings", savings);
             mapper.updateProductVectorById(responseDTO);
             }
         List<FundAlgorithmResponseDTO> fundList = mapper.getFundAlgorithmDetail();
+        System.out.println("Fund Algorithm Details: " + fundList.size());
         for (FundAlgorithmResponseDTO fund : fundList) {
             ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("fund", fund);
             mapper.updateProductVectorById(responseDTO);
         }
         List<PensionAlgorithmResponseDTO> pensionList = mapper.getPensionAlgorithmDetail();
+        System.out.println("Pension Algorithm Details: " + pensionList.size());
         for (PensionAlgorithmResponseDTO pension : pensionList) {
             ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("pension", pension);
             mapper.updateProductVectorById(responseDTO);
         }
         List<ForexAlgorithmResponseDTO> forexList = mapper.getForexAlgorithmDetail();
+        System.out.println("Forex Algorithm Details: " + forexList.size());
         for( ForexAlgorithmResponseDTO forex : forexList) {
             ProductVectorUpdateResponseDTO responseDTO = ScoreCalculator.calculate("forex", forex);
             mapper.updateProductVectorById(responseDTO);
@@ -75,7 +81,7 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 0 1 * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void updateRecommendation() {
         System.out.println("Updating recommendations for all users...");
         List<UserVectorResponseDTO> userVectors = mapper.getUserVectors(); //유저 벡터 리스트를 가져옴
@@ -108,17 +114,10 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    public void updateRecommendationByUserId(String userId) {
+    public void updateRecommendationByEmail(String userId) {
         //특정 유저의 추천 상품을 업데이트하는 로직
-        List<UserVectorResponseDTO> userVectors = mapper.getUserVectors();
+        UserVectorResponseDTO userVector = mapper.getUserVectorByEmail(userId);
         //유저 벡터를 가져옴
-        UserVectorResponseDTO userVector = null;
-        for (UserVectorResponseDTO vector : userVectors) {
-            if (vector.getId().equals(userId)) {
-                userVector = vector;
-                break;
-            }
-        }
         if (userVector == null) {
             System.out.println("User vector not found for user ID: " + userId);
             return; //유저 벡터가 없는 경우
@@ -155,9 +154,11 @@ public class RecommendServiceImpl implements RecommendService {
         List<Double> productVectorList = List.of(productVector.getYieldScore(), productVector.getRiskScore(),
             productVector.getCostScore(), productVector.getLiquidityScore(), productVector.getComplexityScore());
         List<ProductVectorResponseDTO> productVectors = mapper.getProductVectors();
+        // 자기 자신이 뜨면 제외 후 유사도를 계산하여 5개 추천
         return productVectors.stream()
-            .map(dto -> new Recommendation(dto, cosineSimilarity(List.of(dto.getYieldScore(),dto.getRiskScore(),dto.getCostScore(),
-                dto.getLiquidityScore(),dto.getComplexityScore()), productVectorList)))
+            .filter(dto -> !dto.getId().equals(productId)) // 자기 자신 제외
+            .map(dto -> new Recommendation(dto, cosineSimilarity(List.of(dto.getYieldScore(), dto.getRiskScore(),
+                dto.getCostScore(), dto.getLiquidityScore(), dto.getComplexityScore()), productVectorList)))
             .sorted(Comparator.comparingDouble(Recommendation::score).reversed())
             .limit(5)
             .toList();
@@ -202,5 +203,49 @@ public class RecommendServiceImpl implements RecommendService {
             return cosineSimilarity(productVectorList, userVectorList);
         }
         return null; //해당 상품이 추천 목록에 없는 경우 null 반환
+    }
+
+    public UserVectorResponseDTO initUserVector(TendencySurveyRequestDTO survey, int risk) {
+        if(risk == 1) { // 가장 공격적 투자 성향
+            return UserVectorResponseDTO.builder()
+                .yieldScore(0.85)
+                .riskScore(0.85)
+                .costScore(0.5)
+                .liquidityScore(0.35)
+                .complexityScore(0.7)
+                .build();
+        } else if(risk == 2) {
+            return UserVectorResponseDTO.builder()
+                .yieldScore(0.7)
+                .riskScore(0.65)
+                .costScore(0.4)
+                .liquidityScore(0.5)
+                .complexityScore(0.5)
+                .build();
+        } else if(risk == 3) {
+            return UserVectorResponseDTO.builder()
+                .yieldScore(0.55)
+                .riskScore(0.45)
+                .costScore(0.35)
+                .liquidityScore(0.65)
+                .complexityScore(0.4)
+                .build();
+        } else if(risk == 4) {
+            return UserVectorResponseDTO.builder()
+                .yieldScore(0.45)
+                .riskScore(0.25)
+                .costScore(0.25)
+                .liquidityScore(0.75)
+                .complexityScore(0.25)
+                .build();
+        } else { // 가장 안전 추구 투자 성향
+            return UserVectorResponseDTO.builder()
+                .yieldScore(0.35)
+                .riskScore(0.1)
+                .costScore(0.2)
+                .liquidityScore(0.85)
+                .complexityScore(0.15)
+                .build();
+        }
     }
 }
