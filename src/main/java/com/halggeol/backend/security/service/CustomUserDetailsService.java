@@ -1,7 +1,7 @@
 package com.halggeol.backend.security.service;
 
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.security.mapper.UserDetailsMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

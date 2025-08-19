@@ -1,6 +1,6 @@
 package com.halggeol.backend.survey.controller;
 
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import com.halggeol.backend.survey.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.survey.dto.TendencySurveyRequestDTO;
 import com.halggeol.backend.survey.service.SurveyService;

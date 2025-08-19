@@ -5,37 +5,22 @@
 <mapper namespace="com.halggeol.backend.dashboard.mapper.DashboardMapper">
   <select id="getAvgRegretScoreByUserId" resultType="java.lang.Double">
     SELECT
-      AVG(regret_score_union.score)
+      CASE
+        WHEN cnt = 0 THEN NULL
+        ELSE total / cnt
+        END AS avg_regret_score
     FROM (
-           SELECT product1_regret_score AS score
+           SELECT
+             SUM(IFNULL(product1_regret_score,0) + IFNULL(product2_regret_score,0)
+               + IFNULL(product3_regret_score,0) + IFNULL(product4_regret_score,0)
+               + IFNULL(product5_regret_score,0)) AS total,
+             SUM( (product1_regret_score IS NOT NULL) + (product2_regret_score IS NOT NULL)
+               + (product3_regret_score IS NOT NULL) + (product4_regret_score IS NOT NULL)
+               + (product5_regret_score IS NOT NULL) ) AS cnt
            FROM rec_item
-           WHERE user_id = #{userId} AND product1_regret_score IS NOT NULL
-
-           UNION ALL
-
-           SELECT product2_regret_score AS score
-           FROM rec_item
-           WHERE user_id = #{userId} AND product2_regret_score IS NOT NULL
-
-           UNION ALL
-
-           SELECT product3_regret_score AS score
-           FROM rec_item
-           WHERE user_id = #{userId} AND product3_regret_score IS NOT NULL
-
-           UNION ALL
-
-           SELECT product4_regret_score AS score
-           FROM rec_item
-           WHERE user_id = #{userId} AND product4_regret_score IS NOT NULL
-
-           UNION ALL
-
-           SELECT product5_regret_score AS score
-           FROM rec_item
-           WHERE user_id = #{userId} AND product5_regret_score IS NOT NULL
-         ) AS regret_score_union;
-    </select>
+           WHERE user_id = #{userId}
+         ) t;
+  </select>
 
   <select id="getAssetsOneYearByUserId" resultType="com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO">
     SELECT
@@ -43,8 +28,8 @@
       asset
     FROM mydata
     WHERE user_id = #{userId}
-    AND collect_date <![CDATA[ >= ]]> DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-    AND collect_date <![CDATA[ <= ]]> CURDATE()
+      AND collect_date <![CDATA[ >= ]]> DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+      AND collect_date <![CDATA[ <= ]]> CURDATE()
     ORDER BY collect_date ASC;
   </select>
   <select id="getPortfolioByUserId" resultType="com.halggeol.backend.dashboard.dto.DashboardPortfolioResponseDTO">
@@ -66,10 +51,10 @@
             FROM mydata
             WHERE user_id = #{userId}
             ORDER BY collect_date DESC, id DESC
-        LIMIT 1
-        )
-    ) AS CHAR
-  ) AS ratio
+            LIMIT 1
+          )
+        ) AS CHAR
+      ) AS ratio
     FROM myproduct mp
     WHERE mp.mydata_id = (
       SELECT id
@@ -77,35 +62,32 @@
       WHERE user_id = #{userId}
       ORDER BY collect_date DESC, id DESC
       LIMIT 1
-      )
+    )
     GROUP BY type
     ORDER BY type ASC;
-    </select>
+  </select>
 
   <select id="getFeedbackRatioByUserId" resultType="java.lang.Double">
     SELECT
-      CASE
-        WHEN total_products = 0 THEN 0.0
-        ELSE CAST(feedback_products AS DECIMAL(10,2)) / total_products
-        END AS feedback_ratio
+      CASE WHEN denom = 0 THEN 0.0 ELSE num / denom END AS feedback_ratio
     FROM (
            SELECT
              SUM(
-               (product1_status = '회고') +
-               (product2_status = '회고') +
-               (product3_status = '회고') +
-               (product4_status = '회고') +
-               (product5_status = '회고')
-             ) AS feedback_products,
+               IF(TRIM(COALESCE(product1_status,'')) = '회고', 1, 0) +
+               IF(TRIM(COALESCE(product2_status,'')) = '회고', 1, 0) +
+               IF(TRIM(COALESCE(product3_status,'')) = '회고', 1, 0) +
+               IF(TRIM(COALESCE(product4_status,'')) = '회고', 1, 0) +
+               IF(TRIM(COALESCE(product5_status,'')) = '회고', 1, 0)
+             ) AS num,
              SUM(
-               (product1_status IS NOT NULL) +
-               (product2_status IS NOT NULL) +
-               (product3_status IS NOT NULL) +
-               (product4_status IS NOT NULL) +
-               (product5_status IS NOT NULL)
-             ) AS total_products
+               IF(TRIM(COALESCE(product1_status,'')) != '', 1, 0) +
+               IF(TRIM(COALESCE(product2_status,'')) != '', 1, 0) +
+               IF(TRIM(COALESCE(product3_status,'')) != '', 1, 0) +
+               IF(TRIM(COALESCE(product4_status,'')) != '', 1, 0) +
+               IF(TRIM(COALESCE(product5_status,'')) != '', 1, 0)
+             ) AS denom
            FROM rec_item
            WHERE user_id = #{userId}
-         ) AS feedback_stats;
+         ) t
   </select>
 </mapper>

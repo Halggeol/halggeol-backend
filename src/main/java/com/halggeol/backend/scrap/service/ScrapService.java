@@ -1,7 +1,7 @@
 package com.halggeol.backend.scrap.service;
 
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -15,7 +15,7 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import com.halggeol.backend.products.unified.elasticsearch.document.ProductDocument;
 import com.halggeol.backend.products.unified.elasticsearch.dto.ProductSearchResponseDTO;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

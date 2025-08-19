@@ -127,11 +127,12 @@ public class RecommendServiceImpl implements RecommendService {
 
         List<ProductVectorResponseDTO> productVectors = mapper.getProductVectors();
         List<Recommendation> recommendations = recommendTop5(productVectors, userVectorList);
+        int userid = mapper.findUserIdByEmail(userId);
         System.out.println("Top 5 Recommendations for User ID: " + userId);
         for (Recommendation recommendation : recommendations) {
             System.out.println("Product: " + recommendation.dto().getId() + ", Score: " + recommendation.score());
         }
-        mapper.saveRecommendations(Integer.parseInt(userId), recommendations.get(0).dto.getId(),recommendations.get(1).dto.getId(),
+        mapper.saveRecommendations(userid, recommendations.get(0).dto.getId(),recommendations.get(1).dto.getId(),
             recommendations.get(2).dto.getId(), recommendations.get(3).dto.getId(), recommendations.get(4).dto.getId());
     }
 

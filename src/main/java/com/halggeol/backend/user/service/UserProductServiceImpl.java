@@ -1,6 +1,6 @@
 package com.halggeol.backend.user.service;
 
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import com.halggeol.backend.user.dto.UserProductResponseDTO;
 import com.halggeol.backend.user.mapper.UserProductMapper;
 import java.util.List;

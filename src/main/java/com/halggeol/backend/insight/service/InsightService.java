@@ -1,7 +1,7 @@
 package com.halggeol.backend.insight.service;
 
 import com.halggeol.backend.insight.dto.*;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 
 import java.util.List;
 

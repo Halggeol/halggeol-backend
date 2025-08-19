@@ -1,4 +1,4 @@
-package com.halggeol.backend.logs.config;
+package com.halggeol.backend.batch.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

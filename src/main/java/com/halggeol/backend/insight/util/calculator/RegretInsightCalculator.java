@@ -9,7 +9,7 @@ import java.util.List;
 public class RegretInsightCalculator {
 
     private static final double INVESTMENT_RATIO = 0.2;
-    private static final double REGRET_SCORE_FACTOR = 500.0;
+    private static final double REGRET_SCORE_FACTOR = 1000.0;
     private static final double MAX_SCORE = 100.0;
     private static final double MIN_SCORE = 0.0;
 

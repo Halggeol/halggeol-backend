@@ -3,10 +3,10 @@ package com.halggeol.backend.scrap.service;
 import static com.halggeol.backend.common.ProductPrefixHandler.handleProductByConsumer;
 
 import com.halggeol.backend.logs.service.LogService;
-import com.halggeol.backend.scrap.domain.Scrap;
+import com.halggeol.backend.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

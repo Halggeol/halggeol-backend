@@ -1,7 +1,7 @@
 package com.halggeol.backend.security.handler;
 
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.security.dto.AuthResultDTO;
 import com.halggeol.backend.security.util.JsonResponse;
 import com.halggeol.backend.security.util.JwtManager;

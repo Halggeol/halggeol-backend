@@ -1,6 +1,6 @@
 package com.halggeol.backend.insight.service.strategy;
 
-import com.halggeol.backend.insight.domain.ProductType;
+import com.halggeol.backend.insight.enums.ProductType;
 import com.halggeol.backend.insight.dto.InsightDetailResponseDTO;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
 import com.halggeol.backend.insight.mapper.InsightDetailMapper;

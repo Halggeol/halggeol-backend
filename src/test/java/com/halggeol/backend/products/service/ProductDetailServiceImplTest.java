@@ -1,16 +1,12 @@
 package com.halggeol.backend.products.service;
 
-import com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO;
 import com.halggeol.backend.products.dto.*;
 import com.halggeol.backend.products.mapper.ProductDetailMapper;
-import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import com.halggeol.backend.products.unified.service.UnifiedProductService;
-import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendService;
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User; // 실제 User 클래스를 임포트
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User; // 실제 User 클래스를 임포트
 import com.halggeol.backend.logs.service.LogService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,8 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
-import java.util.Collections;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;

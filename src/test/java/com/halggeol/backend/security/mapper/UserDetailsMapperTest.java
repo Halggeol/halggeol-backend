@@ -1,6 +1,6 @@
 package com.halggeol.backend.security.mapper;
 
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

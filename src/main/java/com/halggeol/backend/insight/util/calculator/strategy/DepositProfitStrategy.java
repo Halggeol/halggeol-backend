@@ -1,10 +1,9 @@
 package com.halggeol.backend.insight.util.calculator.strategy;
 
-import com.halggeol.backend.insight.domain.ProductType;
+import com.halggeol.backend.insight.enums.ProductType;
 import com.halggeol.backend.insight.dto.ProfitCalculationInput;
 import com.halggeol.backend.insight.dto.ProfitSimulationDTO;
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;

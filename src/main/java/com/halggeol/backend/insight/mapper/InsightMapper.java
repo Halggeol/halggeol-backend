@@ -1,10 +1,8 @@
 package com.halggeol.backend.insight.mapper;
 
 import com.halggeol.backend.insight.dto.ExchangeRateDTO;
-import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDTO;
 import com.halggeol.backend.insight.dto.InsightRoundDTO;
-import com.halggeol.backend.security.domain.CustomUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

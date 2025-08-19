@@ -3,7 +3,7 @@ package com.halggeol.backend.insight.controller;
 import com.halggeol.backend.insight.dto.*;
 import com.halggeol.backend.insight.service.InsightDetailService;
 import com.halggeol.backend.insight.service.InsightService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

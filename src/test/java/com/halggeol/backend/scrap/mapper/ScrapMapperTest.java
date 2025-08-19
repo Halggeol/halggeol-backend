@@ -6,7 +6,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.halggeol.backend.scrap.domain.Scrap;
+import com.halggeol.backend.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

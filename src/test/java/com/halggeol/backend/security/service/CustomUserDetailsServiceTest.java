@@ -4,10 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.security.mapper.UserDetailsMapper;
-import com.halggeol.backend.security.service.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

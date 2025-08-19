@@ -2,7 +2,7 @@ package com.halggeol.backend.recommend.mapper;
 
 import com.halggeol.backend.recommend.dto.ProductVectorUpdateResponseDTO;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.recommend.dto.DepositAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.ForexAlgorithmResponseDTO;
 import com.halggeol.backend.recommend.dto.FundAlgorithmResponseDTO;
@@ -51,4 +51,6 @@ public interface RecommendMapper {
 
 
     List<RecommendResponseDTO> getRecommendationsByUserId(String userId);
+
+    Integer findUserIdByEmail(String email);
 }

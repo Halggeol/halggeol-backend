@@ -1,6 +1,6 @@
 package com.halggeol.backend.scrap.mapper;
 
-import com.halggeol.backend.scrap.domain.Scrap;
+import com.halggeol.backend.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;

@@ -1,6 +1,6 @@
 package com.halggeol.backend.user.mapper;
 
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.user.dto.UserProfileResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;

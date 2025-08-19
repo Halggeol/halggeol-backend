@@ -1,11 +1,11 @@
 package com.halggeol.backend.scrap.service;
 
-import com.halggeol.backend.scrap.domain.Scrap;
+import com.halggeol.backend.domain.Scrap;
 import com.halggeol.backend.scrap.dto.ScrapRequestDTO;
 import com.halggeol.backend.scrap.dto.ScrappedProductResponseDTO;
 import com.halggeol.backend.scrap.mapper.ScrapMapper;
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,11 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;

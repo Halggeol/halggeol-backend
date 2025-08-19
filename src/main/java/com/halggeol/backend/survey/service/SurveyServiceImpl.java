@@ -2,7 +2,7 @@ package com.halggeol.backend.survey.service;
 
 import com.halggeol.backend.recommend.dto.UserVectorResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import com.halggeol.backend.survey.dto.KnowledgeSurveyItemDTO;
 import com.halggeol.backend.survey.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.survey.dto.TendencyExperienceItemDTO;

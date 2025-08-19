@@ -274,7 +274,7 @@
     )
   </insert>
 
-  <select id="getUserById" resultType="com.halggeol.backend.security.domain.User">
+  <select id="getUserById" resultType="com.halggeol.backend.domain.User">
     SELECT * FROM users WHERE id = #{id}
   </select>
 
@@ -543,5 +543,9 @@
       complexity_score
     FROM users
     WHERE email = #{email}
+  </select>
+
+  <select id="findUserIdByEmail" resultType="int">
+    SELECT id FROM users WHERE email = #{email}
   </select>
 </mapper>

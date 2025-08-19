@@ -1,6 +1,6 @@
 package com.halggeol.backend.user.mapper;
 
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;
 import com.halggeol.backend.user.dto.UserJoinDTO;

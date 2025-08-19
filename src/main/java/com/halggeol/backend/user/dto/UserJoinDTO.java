@@ -1,6 +1,6 @@
 package com.halggeol.backend.user.dto;
 
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.security.util.RegexConstants;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;

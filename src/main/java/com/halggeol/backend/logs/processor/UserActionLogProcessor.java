@@ -1,6 +1,6 @@
 package com.halggeol.backend.logs.processor;
 
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.domain.UserActionLog;
 import com.halggeol.backend.recommend.dto.ProductVectorResponseDTO;
 import com.halggeol.backend.recommend.mapper.RecommendMapper;

@@ -1,7 +1,7 @@
 package com.halggeol.backend.user.controller;
 
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.user.dto.UserProductResponseDTO;
 import com.halggeol.backend.user.service.UserProductService;
 import org.junit.jupiter.api.DisplayName;

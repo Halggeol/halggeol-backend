@@ -3,7 +3,7 @@ package com.halggeol.backend.dashboard.controller;
 import com.halggeol.backend.dashboard.dto.DashboardResponseDTO;
 import com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO;
 import com.halggeol.backend.dashboard.service.DashboardService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import org.junit.jupiter.api.BeforeEach;

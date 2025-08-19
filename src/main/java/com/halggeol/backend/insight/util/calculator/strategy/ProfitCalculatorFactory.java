@@ -1,6 +1,6 @@
 package com.halggeol.backend.insight.util.calculator.strategy;
 
-import com.halggeol.backend.insight.domain.ProductType;
+import com.halggeol.backend.insight.enums.ProductType;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

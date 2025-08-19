@@ -1,7 +1,7 @@
-package com.halggeol.backend.logs.config;
+package com.halggeol.backend.batch.util;
 
 import com.halggeol.backend.domain.UserActionLog;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

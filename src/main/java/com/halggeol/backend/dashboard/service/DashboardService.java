@@ -2,7 +2,7 @@ package com.halggeol.backend.dashboard.service;
 
 import com.halggeol.backend.dashboard.dto.DashboardAssetResponseDTO;
 import com.halggeol.backend.dashboard.dto.DashboardResponseDTO;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import java.util.List;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;

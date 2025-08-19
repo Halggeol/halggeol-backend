@@ -1,4 +1,4 @@
-package com.halggeol.backend.insight.domain;
+package com.halggeol.backend.insight.enums;
 
 import lombok.Getter;
 

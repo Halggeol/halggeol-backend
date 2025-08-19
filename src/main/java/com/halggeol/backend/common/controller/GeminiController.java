@@ -1,7 +1,7 @@
 package com.halggeol.backend.common.controller;
 
 import com.halggeol.backend.common.service.GeminiService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

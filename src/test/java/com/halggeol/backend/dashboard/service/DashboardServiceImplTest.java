@@ -5,8 +5,8 @@ import com.halggeol.backend.dashboard.mapper.DashboardMapper;
 import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResponseDTO;
 import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.service.RecommendService;
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User; // 실제 User 클래스를 임포트
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User; // 실제 User 클래스를 임포트
 import com.halggeol.backend.user.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

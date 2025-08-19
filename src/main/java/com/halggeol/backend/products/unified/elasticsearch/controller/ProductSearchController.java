@@ -1,7 +1,7 @@
 package com.halggeol.backend.products.unified.elasticsearch.controller;
 
 import com.halggeol.backend.products.unified.elasticsearch.service.ProductSearchService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

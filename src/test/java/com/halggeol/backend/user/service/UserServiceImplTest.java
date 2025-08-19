@@ -1,7 +1,7 @@
 package com.halggeol.backend.user.service;
 
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.security.mail.dto.MailDTO;
 import com.halggeol.backend.security.mail.service.MailService;
 import com.halggeol.backend.security.util.JwtManager;

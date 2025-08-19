@@ -2,7 +2,7 @@ package com.halggeol.backend.products.controller;
 
 import com.halggeol.backend.products.dto.ProductStatusRequestDTO;
 import com.halggeol.backend.products.service.ProductDetailService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

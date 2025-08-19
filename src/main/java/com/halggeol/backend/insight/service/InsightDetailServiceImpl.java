@@ -1,6 +1,6 @@
 package com.halggeol.backend.insight.service;
 
-import com.halggeol.backend.insight.domain.ProductType;
+import com.halggeol.backend.insight.enums.ProductType;
 import com.halggeol.backend.insight.dto.ForexCompareDTO;
 import com.halggeol.backend.insight.dto.InsightDetailResponseDTO;
 import com.halggeol.backend.insight.dto.ProfitCalculationInput;
@@ -15,7 +15,7 @@ import com.halggeol.backend.insight.util.calculator.strategy.ProfitCalculatorStr
 import com.halggeol.backend.logs.service.LogService;
 import com.halggeol.backend.recommend.service.RecommendService;
 import com.halggeol.backend.recommend.service.RecommendServiceImpl.Recommendation;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;

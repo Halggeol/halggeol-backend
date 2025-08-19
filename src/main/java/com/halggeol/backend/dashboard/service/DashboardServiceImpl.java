@@ -9,7 +9,7 @@ import com.halggeol.backend.products.unified.dto.UnifiedProductRegretRankingResp
 import com.halggeol.backend.products.unified.service.UnifiedProductService;
 import com.halggeol.backend.recommend.dto.RecommendResponseDTO;
 import com.halggeol.backend.recommend.service.RecommendService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import com.halggeol.backend.user.mapper.UserMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +33,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "userDashboardDataCache", key = "#user?.getUser()?.getId() != null ? #user.getUser().getId() : 'anonymous'")
-    public DashboardResponseDTO getDashboardData(@AuthenticationPrincipal CustomUser user) {
+//    @Cacheable(value = "userDashboardDataCache", key = "#user?.getUser()?.getId() != null ? #user.getUser().getId() : 'anonymous'")
+    public DashboardResponseDTO getDashboardData(CustomUser user) {
         DashboardResponseDTO dashboardResponse = new DashboardResponseDTO();
 
         if (user == null) {

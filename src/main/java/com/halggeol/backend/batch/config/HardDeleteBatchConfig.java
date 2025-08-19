@@ -1,6 +1,6 @@
-package com.halggeol.backend.user.batch.config;
+package com.halggeol.backend.batch.config;
 
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;

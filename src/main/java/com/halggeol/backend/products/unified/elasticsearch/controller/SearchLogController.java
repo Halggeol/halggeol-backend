@@ -1,7 +1,7 @@
 package com.halggeol.backend.products.unified.elasticsearch.controller;
 
 import com.halggeol.backend.products.unified.elasticsearch.service.SearchLogService;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

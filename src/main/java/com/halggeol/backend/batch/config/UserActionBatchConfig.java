@@ -1,7 +1,7 @@
-package com.halggeol.backend.logs.config;
+package com.halggeol.backend.batch.config;
 
 
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.domain.UserActionLog;
 import com.halggeol.backend.logs.processor.UserActionLogProcessor;
 import com.halggeol.backend.logs.repository.UserActionLogRepository;
@@ -24,7 +24,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.MongoItemReader;
 import org.springframework.batch.item.data.builder.MongoItemReaderBuilder;
@@ -32,15 +31,12 @@ import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilde
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DeadlockLoserDataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -59,11 +55,11 @@ public class UserActionBatchConfig {
     Job userActionLogJob(MongoItemReader<UserActionLog> mongoActionLogReader,
         SkipListener<UserActionLog, User> batchSkipListener,
         StepExecutionListener stepSummaryListener,
-        org.springframework.batch.core.JobExecutionListener jobSummaryListener // ✅ 메서드 파라미터로 주입
+        org.springframework.batch.core.JobExecutionListener jobSummaryListener // 메서드 파라미터로 주입
     ) {
         return jobBuilderFactory.get("userActionLogJob")
             .start(userActionLogStep(mongoActionLogReader, batchSkipListener, stepSummaryListener))
-            .listener(jobSummaryListener) // ✅ 이미 주입된 빈 사용 (자기 메서드 직접 호출 X)
+            .listener(jobSummaryListener) // 이미 주입된 빈 사용 (자기 메서드 직접 호출 X)
             .build();
     }
 

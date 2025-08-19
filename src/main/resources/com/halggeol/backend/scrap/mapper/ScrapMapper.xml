@@ -4,12 +4,12 @@
 
 <mapper namespace="com.halggeol.backend.scrap.mapper.ScrapMapper">
 
-  <resultMap id="userScrapResultMap" type="com.halggeol.backend.scrap.domain.Scrap">
+  <resultMap id="userScrapResultMap" type="com.halggeol.backend.domain.Scrap">
     <id property="userId" column="user_id"/>
     <id property="productId" column="product_id"/>
   </resultMap>
 
-  <insert id="insertUserScrap" parameterType="com.halggeol.backend.scrap.domain.Scrap">
+  <insert id="insertUserScrap" parameterType="com.halggeol.backend.domain.Scrap">
     INSERT INTO scrap (
       user_id,
       product_id

@@ -7,8 +7,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.halggeol.backend.security.domain.CustomUser;
-import com.halggeol.backend.security.domain.User;
+import com.halggeol.backend.domain.CustomUser;
+import com.halggeol.backend.domain.User;
 import com.halggeol.backend.survey.dto.KnowledgeSurveyRequestDTO;
 import com.halggeol.backend.survey.dto.TendencySurveyRequestDTO;
 import com.halggeol.backend.survey.service.SurveyService;

@@ -2,13 +2,14 @@ package com.halggeol.backend.insight.service;
 
 import com.halggeol.backend.insight.dto.*;
 import com.halggeol.backend.insight.mapper.InsightMapper;
-import com.halggeol.backend.security.domain.CustomUser;
+import com.halggeol.backend.domain.CustomUser;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -447,6 +448,7 @@ public class InsightServiceImpl implements InsightService {
 
     // 기존 메서드 수정 - 타입 필터링 추가
     @Override
+//    @Cacheable(value = "insightDataCache", key = "#user?.getUser()?.getId() != null ? #user.getUser().getId() : 'anonymous'")
     public List<InsightRoundWithProductsDTO> getAllRoundsWithProductsByUser(Long userId, String type) {
         // 1) 라운드별 상품ID 목록 가져오기
         List<InsightRoundDTO> rounds = getAllInsightRoundsByUser(userId);
